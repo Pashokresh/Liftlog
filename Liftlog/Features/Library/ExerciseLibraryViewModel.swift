@@ -28,7 +28,7 @@ final class ExerciseLibraryViewModel {
         }
     }
     
-    func createExercise(name: String, description: String) {
+    func createExercise(name: String, description: String?) {
         do {
             let exercise = try repository.create(name: name, description: description)
             exercises.append(exercise)

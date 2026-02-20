@@ -29,6 +29,8 @@ protocol WorkoutRepositoryProtocol {
     
     func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID) throws
     
+    func updateSet(_ model: ExerciseSetModel) throws
+    
     func deleteSet(_ id: UUID) throws
     
     // MARK: - Methods working with tags

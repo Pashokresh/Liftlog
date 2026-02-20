@@ -14,6 +14,7 @@ extension ExerciseSet {
         ExerciseSetModel(
             id: id ?? UUID(),
             order: Int(order),
+            note: note,
             type: duration > 0 ?
                 .timed(duration: duration) :
                     .weighted(reps: Int(reps), weight: weight)

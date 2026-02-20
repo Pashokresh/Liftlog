@@ -10,12 +10,12 @@ import CoreData
 
 @main
 struct LiftlogApp: App {
-    let persistenceController = PersistenceController.shared
-
+    @State private var dependencies = AppDependencies()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(dependencies)
         }
     }
 }

@@ -93,28 +93,19 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
     
     func deleteExercise(_ id: UUID) throws {
-        let request = WorkoutExercise.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        
-        guard let workoutExercise = try context.fetch(request).first else {
-            throw LiftlogError.noData(description: String(localized: "Exercise was not found"))
-        }
+        let workoutExercise = try fetchWorkoutExercise(id)
         
         context.delete(workoutExercise)
         try context.save()
     }
     
     func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID) throws {
-        let request = WorkoutExercise.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", workoutExerciseID as CVarArg)
-        
-        guard let workoutExercise = try context.fetch(request).first else {
-            throw LiftlogError.noData(description: String(localized: "Set was not found"))
-        }
+        let workoutExercise = try fetchWorkoutExercise(workoutExerciseID)
         
         let set = ExerciseSet(context: context)
         set.id = UUID()
         set.order = Int16(setModel.order)
+        set.note = setModel.note
         set.workoutExercise = workoutExercise
         
         switch setModel.type {
@@ -128,13 +119,26 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         try context.save()
     }
     
-    func deleteSet(_ id: UUID) throws {
-        let request = ExerciseSet.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+    func updateSet(_ model: ExerciseSetModel) throws {
+        let set = try fetchSet(model.id)
         
-        guard let set = try context.fetch(request).first else {
-            throw LiftlogError.noData(description: String(localized: "Set was not found"))
+        set.id = model.id
+        set.order = Int16(model.order)
+        set.note = model.note
+        
+        switch model.type {
+        case .weighted(let reps, let weight):
+            set.reps = Int16(reps)
+            set.weight = weight
+        case .timed(let duration):
+            set.duration = duration
         }
+        
+        try context.save()
+    }
+    
+    func deleteSet(_ id: UUID) throws {
+        let set = try fetchSet(id)
         
         context.delete(set)
         try context.save()
@@ -171,5 +175,29 @@ extension CoreDataWorkoutRepository: WorkoutEntityProviderProtocol {
         }
         
         return workout
+    }
+}
+
+extension CoreDataWorkoutRepository {
+    fileprivate func fetchSet(_ id: UUID) throws -> ExerciseSet {
+        let request = ExerciseSet.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        guard let set = try context.fetch(request).first else {
+            throw LiftlogError.noData(description: String(localized: "Set was not found"))
+        }
+        
+        return set
+    }
+    
+    fileprivate func fetchWorkoutExercise(_ id: UUID) throws -> WorkoutExercise {
+        let request = WorkoutExercise.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        guard let workoutExercise = try context.fetch(request).first else {
+            throw LiftlogError.noData(description: String(localized: "Set was not found"))
+        }
+        
+        return workoutExercise
     }
 }

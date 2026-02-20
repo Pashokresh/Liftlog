@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct WorkoutModel: Identifiable {
+struct WorkoutModel: Identifiable, Equatable {
     let id: UUID
     let name: String
     let date: Date
     let notes: String?
-    let tags: [TagModel]
-    let exercises: [ExerciseModel]
+    var tags: [TagModel]
+    var exercises: [ExerciseModel]
 }

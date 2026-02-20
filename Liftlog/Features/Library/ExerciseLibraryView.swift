@@ -49,7 +49,7 @@ struct ExerciseLibraryView: View {
                     }
                 } label: {
                     Image(systemName: "magnifyingglass")
-                        .font(.title2)
+                        .font(.headline)
                 }
                 .glassEffect(.identity)
             }
@@ -59,7 +59,8 @@ struct ExerciseLibraryView: View {
                     isAddingExercise = true
                 } label: {
                     Image(systemName: "plus")
-                        .font(.title2)
+                        .font(.headline)
+                        .foregroundStyle(.white)
                 }
                 .buttonStyle(.glassProminent)
             }
@@ -94,7 +95,14 @@ struct ExerciseLibraryView: View {
             }
         })
         .sheet(isPresented: $isAddingExercise) {
-            EmptyView()
+            AddExerciseView {
+                viewModel.createExercise(
+                    name: $0,
+                    description: $1
+                )
+            }
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .alert(String(localized: "Error"),
                isPresented: Binding(
