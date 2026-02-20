@@ -24,50 +24,88 @@ struct ExerciseLibraryView: View {
         }
     }
     
-    var body: some View {
-        NavigationStack {
-            List {
-                ForEach(filteredExercises) {
-                    Text($0.name)
-                }
-                .onDelete { indexSet in
-                    indexSet.forEach {
-                        viewModel.deleteExercise(filteredExercises[$0].id)
-                    }
-                }
+    private var navigationContent: some View {
+        List {
+            ForEach(filteredExercises) { exercise in
+                ExerciseRowView(exercise: exercise)
             }
-            .searchable(text: $searchText)
-            .environment(\.defaultMinListRowHeight, 80)
-            .navigationLinkIndicatorVisibility(.hidden)
-            .navigationTitle(String(localized: "Exercise Library"))
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                       isAddingExercise = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title2)
-                    }
-                    .glassEffect(.regular.tint(.green).interactive())
-                    .clipShape(.circle)
-                    
+            .onDelete { indexSet in
+                indexSet.forEach {
+                    viewModel.deleteExercise(filteredExercises[$0].id)
                 }
-            }
-            .sheet(isPresented: $isAddingExercise) {
-                EmptyView()
-            }
-            .alert(String(localized: "Error"),
-                   isPresented: Binding(
-                    get: { viewModel.error != nil },
-                    set: { if !$0 { viewModel.error = nil } }
-                   )
-            ) {
-                Button("OK") { viewModel.error = nil }
-            } message: {
-                Text(viewModel.error?.localizedDescription ?? "")
             }
         }
-        
+        .animation(.easeInOut(duration: 0.3), value: filteredExercises.map { $0.id })
+        .environment(\.defaultMinListRowHeight, 80)
+        .navigationLinkIndicatorVisibility(.hidden)
+        .navigationTitle(String(
+            localized: "Exercise Library"
+        ))
+        .toolbar {
+            ToolbarItem(id: "exercise.library.search", placement: .automatic) {
+                Button {
+                    withAnimation {
+                        isSearching = true
+                    }
+                } label: {
+                    Image(systemName: "magnifyingglass")
+                        .font(.title2)
+                }
+                .glassEffect(.identity)
+            }
+            
+            ToolbarItem(id: "exercise.library.add.new", placement: .automatic) {
+                Button {
+                    isAddingExercise = true
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.title2)
+                }
+                .buttonStyle(.glassProminent)
+            }
+        }
+            
+    }
+    
+    var body: some View {
+        Group {
+            NavigationStack {
+                if isSearching {
+                    navigationContent
+                        .searchable(text: $searchText,
+                                    isPresented: $isSearching,
+                                    prompt: String(
+                                        localized: "Search Exercise"
+                                    )
+                        )
+                        .onSubmit(of: .search) {
+                            withAnimation {
+                                isSearching = false
+                            }
+                        }
+                } else {
+                    navigationContent
+                }
+            }
+        }
+        .onChange(of: isSearching,{ wasSearching, nowSearching in
+            if wasSearching && !nowSearching {
+                searchText = ""
+            }
+        })
+        .sheet(isPresented: $isAddingExercise) {
+            EmptyView()
+        }
+        .alert(String(localized: "Error"),
+               isPresented: Binding(
+                get: { viewModel.error != nil },
+                set: { if !$0 { viewModel.error = nil } }
+               )
+        ) {
+            Button("OK") { viewModel.error = nil }
+        } message: {
+            Text(viewModel.error?.localizedDescription ?? "")
+        }
         .onAppear {
             viewModel.loadExercises()
         }

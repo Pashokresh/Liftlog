@@ -11,7 +11,17 @@ struct ExerciseRowView: View {
     let exercise: ExerciseModel
     
     var body: some View {
-        
+        VStack(alignment: .leading) {
+            Text(exercise.name)
+                .font(.title2)
+                .foregroundStyle(.primary)
+            if let description = exercise.description, !description.isEmpty {
+                Text(exercise.description!)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
+            }
+            
+        }
     }
 }
 
