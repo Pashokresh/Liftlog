@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct WorkoutDetailView: View {
+    
+    @State var workout: WorkoutModel
+    
+    init(workout: WorkoutModel) {
+        self.workout = workout
+    }
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationStack {
+            
+        }
     }
 }
 
 #Preview {
-    WorkoutDetailView()
+    WorkoutDetailView(workout: WorkoutModel.mock)
 }

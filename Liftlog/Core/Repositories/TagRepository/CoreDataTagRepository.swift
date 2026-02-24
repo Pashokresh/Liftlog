@@ -34,39 +34,31 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
         return tag.toDomain()
     }
     
-    func update(model: TagModel) throws {
-        let tag = try fetchTag(model.id)
+    func update(model: TagModel) async throws {
+        let tag = try await fetchTag(model.id)
         
         tag.name = model.name
         
         try context.save()
     }
     
-    func delete(_ id: UUID) throws {
-       let tag = try fetchTag(id)
+    func delete(_ id: UUID) async throws {
+        let tag = try await fetchTag(id)
         
         context.delete(tag)
         try context.save()
     }
 }
 
-extension CoreDataTagRepository: TagEntityProviderProtocol {
+extension CoreDataTagRepository {
     
-    func fetchTag(_ id: UUID) throws -> Tag {
-        let request = Tag.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+    fileprivate func fetchTag(_ id: UUID) async throws -> Tag {
+        let request = fetchRequest(for: Tag.self, with: [id])
         
         guard let tag = try context.fetch(request).first else {
             throw LiftlogError.noData(description: String(localized: "Tag was not found"))
         }
         
         return tag
-    }
-    
-    func fetchTags(_ ids: [UUID]) throws -> [Tag] {
-        let request = Tag.fetchRequest()
-        request.predicate = NSPredicate(format: "id IN %@", ids as CVarArg)
-        
-        return try context.fetch(request)
     }
 }

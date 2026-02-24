@@ -113,7 +113,7 @@ extension WorkoutModel {
             name: "Training 4",
             date: Date.now,
             notes: "Training I can skip once in a while",
-            tags: [TagModel.mocks[3]], exercises: ExerciseModel.mocks),
+            tags: [TagModel.mocks[0]], exercises: ExerciseModel.mocks),
     ]
 }
 

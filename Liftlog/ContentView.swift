@@ -12,7 +12,22 @@ struct ContentView: View {
     @Environment(AppDependencies.self) private var dependencies
 
     var body: some View {
-        ExerciseLibraryView(viewModel: ExerciseLibraryViewModel(repository: dependencies.exerciseRepository))
+        TabView {
+            Tab(String(localized: "Workouts"), systemImage: "figure.strengthtraining.traditional") {
+                WorkoutListView(
+                    viewModel: WorkoutListViewModel(
+                        repository: dependencies.workoutRepository
+                    )
+                )
+            }
+            Tab(String(localized: "Exercises"), systemImage: "list.bullet.rectangle") {
+                ExerciseLibraryView(
+                    viewModel: ExerciseLibraryViewModel(
+                        repository: dependencies.exerciseRepository
+                    )
+                )
+            }
+        }
     }
 }
 

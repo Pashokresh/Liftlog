@@ -8,9 +8,10 @@
 import Foundation
 
 @Observable
+@MainActor
 final class ExerciseLibraryViewModel {
     private(set) var exercises: [ExerciseModel] = []
-    var error: Error?
+    private(set) var error: Error?
     
     private let repository: ExerciseRepositoryProtocol
     
@@ -19,30 +20,38 @@ final class ExerciseLibraryViewModel {
     }
     
     func loadExercises() {
-        self.error = nil
-        
-        do {
-            exercises = try repository.fetchAll()
-        } catch {
-            self.error = error
+        Task {
+            do {
+                exercises = try await repository.fetchAll()
+            } catch {
+                self.error = error
+            }
         }
     }
     
     func createExercise(name: String, description: String?) {
-        do {
-            let exercise = try repository.create(name: name, description: description)
-            exercises.append(exercise)
-        } catch {
-            self.error = error
+        Task {
+            do {
+                let exercise = try await repository.create(name: name, description: description)
+                exercises.append(exercise)
+            } catch {
+                self.error = error
+            }
         }
     }
     
     func deleteExercise(_ id: UUID) {
-        do {
-            try repository.delete(id)
-            exercises.removeAll { $0.id == id }
-        } catch {
-            self.error = error
+        Task {
+            do {
+                try await repository.delete(id)
+                exercises.removeAll { $0.id == id }
+            } catch {
+                self.error = error
+            }
         }
+    }
+    
+    func nullifyError() {
+        self.error = nil
     }
 }

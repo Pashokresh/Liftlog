@@ -8,11 +8,36 @@
 import SwiftUI
 
 struct WorkoutRowView: View {
+    
+    let workout: WorkoutModel
+    
+    private var formattedDate: String {
+        workout.date.formatted(date: .abbreviated, time: .omitted)
+    }
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack(alignment: .leading) {
+            Text(workout.name)
+                .font(.headline)
+            HStack {
+                Text(formattedDate)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                if !workout.exercises.isEmpty {
+                    Text("·")
+                    Text(workout.tags
+                        .map { $0.name }
+                        .joined(separator: " "))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                }
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 
 #Preview {
-    WorkoutRowView()
+    WorkoutRowView(workout: WorkoutModel.mock)
 }

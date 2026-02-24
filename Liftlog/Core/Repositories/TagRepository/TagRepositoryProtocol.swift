@@ -5,22 +5,16 @@
 //  Created by Pavel Martynenkov on 19.02.26.
 //
 
+import CoreData
 import Foundation
 
 protocol TagRepositoryProtocol {
     
-    func fetchAll() throws -> [TagModel]
+    func fetchAll() async throws -> [TagModel]
     
-    func create(name: String) throws -> TagModel
+    func create(name: String) async throws -> TagModel
     
-    func update(model: TagModel) throws
+    func update(model: TagModel) async throws
     
-    func delete(_ id: UUID) throws
-}
-
-protocol TagEntityProviderProtocol {
-    
-    func fetchTag(_ id: UUID) throws -> Tag
-    
-    func fetchTags(_ ids: [UUID]) throws -> [Tag]
+    func delete(_ id: UUID) async throws
 }

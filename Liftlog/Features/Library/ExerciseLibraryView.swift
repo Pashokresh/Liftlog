@@ -37,6 +37,24 @@ struct ExerciseLibraryView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: filteredExercises.map { $0.id })
         .environment(\.defaultMinListRowHeight, 80)
+        .overlay {
+            if filteredExercises.isEmpty {
+                if isSearching {
+                    ContentUnavailableView.search
+                } else {
+                    ContentUnavailableView(
+                        String(
+                            localized: "No exercises in the library yet."
+                        ),
+                        systemImage: "dumbbell",
+                        description: Text(
+                            String(localized: "Tap \"+\" to add a new one.")
+                        )
+                    )
+                    .font(.title)
+                }
+            }
+        }
         .navigationLinkIndicatorVisibility(.hidden)
         .navigationTitle(String(
             localized: "Exercise Library"
@@ -101,16 +119,16 @@ struct ExerciseLibraryView: View {
                     description: $1
                 )
             }
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
         .alert(String(localized: "Error"),
                isPresented: Binding(
                 get: { viewModel.error != nil },
-                set: { if !$0 { viewModel.error = nil } }
+                set: { if !$0 { viewModel.nullifyError() } }
                )
         ) {
-            Button("OK") { viewModel.error = nil }
+            Button("OK") { viewModel.nullifyError() }
         } message: {
             Text(viewModel.error?.localizedDescription ?? "")
         }
@@ -121,5 +139,9 @@ struct ExerciseLibraryView: View {
 }
 
 #Preview {
-    ExerciseLibraryView(viewModel: ExerciseLibraryViewModel(repository: MockExerciseRepository()))
+    ExerciseLibraryView(
+        viewModel: ExerciseLibraryViewModel(
+            repository: MockExerciseRepository()
+        )
+    )
 }

@@ -11,26 +11,19 @@ import CoreData
 final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     
     private let context: NSManagedObjectContext
-    private let exerciseRepository: ExerciseEntityProviderProtocol
-    private let tagRepository: TagEntityProviderProtocol
     
-    init(context: NSManagedObjectContext,
-         exerciseRepository: ExerciseEntityProviderProtocol,
-         tagRepository: TagEntityProviderProtocol
-    ) {
+    init(context: NSManagedObjectContext) {
         self.context = context
-        self.exerciseRepository = exerciseRepository
-        self.tagRepository = tagRepository
     }
     
-    func fetchAll() throws -> [WorkoutModel] {
+    func fetchAll() async throws -> [WorkoutModel] {
         let request = Workout.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         
         return try context.fetch(request).map { $0.toDomain() }
     }
     
-    func create(_ workoutModel: WorkoutModel) throws -> WorkoutModel {
+    func create(_ workoutModel: WorkoutModel) async throws -> WorkoutModel {
         let workout = Workout(context: context)
         
         workout.id = UUID()
@@ -43,8 +36,8 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         return workout.toDomain()
     }
     
-    func update(_ model: WorkoutModel) throws {
-        let workout = try fetchWorkout(model.id)
+    func update(_ model: WorkoutModel) async throws {
+        let workout = try await fetchWorkout(model.id)
         
         workout.name = model.name
         workout.date = model.date
@@ -66,22 +59,30 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             .filter { !currentTagIds.contains($0.id) }
             .map(\.id)
         
-        let tagsToAdd = try tagRepository.fetchTags(tagsToAddIDs)
+        let tagsToAddRequest = fetchRequest(for: Tag.self, with: tagsToAddIDs)
+        let tagsToAdd = try context.fetch(tagsToAddRequest)
         tagsToAdd.forEach { workout.addToTags($0) }
         
         try context.save()
     }
     
-    func delete(_ id: UUID) throws {
-        let workout = try fetchWorkout(id)
+    func delete(_ id: UUID) async throws {
+        let workout = try await fetchWorkout(id)
         
         context.delete(workout)
         try context.save()
     }
     
-    func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID) throws {
-        let workout = try fetchWorkout(workoutID)
-        let exercise = try exerciseRepository.fetchExercise(exerciseModel.exercise.id)
+    func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID) async throws {
+        let workout = try await fetchWorkout(workoutID)
+        
+        guard let exercise = try context.fetch(
+            fetchRequest(
+                for: Exercise.self,
+                with: [exerciseModel.exercise.id])
+        ).first else {
+            throw LiftlogError.failure(description: String(localized: "Exercise was not found"))
+        }
         
         let workoutExercise = WorkoutExercise(context: context)
         workoutExercise.id = UUID()
@@ -92,15 +93,15 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         try context.save()
     }
     
-    func deleteExercise(_ id: UUID) throws {
-        let workoutExercise = try fetchWorkoutExercise(id)
+    func deleteExercise(_ id: UUID) async throws {
+        let workoutExercise = try await fetchWorkoutExercise(id)
         
         context.delete(workoutExercise)
         try context.save()
     }
     
-    func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID) throws {
-        let workoutExercise = try fetchWorkoutExercise(workoutExerciseID)
+    func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID) async throws {
+        let workoutExercise = try await fetchWorkoutExercise(workoutExerciseID)
         
         let set = ExerciseSet(context: context)
         set.id = UUID()
@@ -119,8 +120,8 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         try context.save()
     }
     
-    func updateSet(_ model: ExerciseSetModel) throws {
-        let set = try fetchSet(model.id)
+    func updateSet(_ model: ExerciseSetModel) async throws {
+        let set = try await fetchSet(model.id)
         
         set.id = model.id
         set.order = Int16(model.order)
@@ -137,25 +138,35 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         try context.save()
     }
     
-    func deleteSet(_ id: UUID) throws {
-        let set = try fetchSet(id)
+    func deleteSet(_ id: UUID) async throws {
+        let set = try await fetchSet(id)
         
         context.delete(set)
         try context.save()
     }
     
-    func addTag(_ tagModel: TagModel, to workoutID: UUID) throws {
-        let workout = try fetchWorkout(workoutID)
-        let tag = try tagRepository.fetchTag(tagModel.id)
+    func addTag(_ tagModel: TagModel, to workoutID: UUID) async throws {
+        let workout = try await fetchWorkout(workoutID)
+        
+        guard let tag = try context.fetch(fetchRequest(for: Tag.self, with: [tagModel.id])).first else {
+            throw LiftlogError.failure(description: String(localized: "Tag was not found"))
+        }
         
         workout.addToTags(tag)
         
         try context.save()
     }
     
-    func removeTag(_ tagID: UUID, from workoutID: UUID) throws {
-        let workout = try fetchWorkout(workoutID)
-        let tag = try tagRepository.fetchTag(tagID)
+    func removeTag(_ tagID: UUID, from workoutID: UUID) async throws {
+        let request = fetchRequest(for: Workout.self, with: [workoutID])
+        
+        guard let workout = try context.fetch(request).first else {
+            throw LiftlogError.noData(description: String(localized: "Workout was not found"))
+        }
+        
+        guard let tag = try context.fetch(fetchRequest(for: Tag.self, with: [tagID])).first else {
+            throw LiftlogError.failure(description: String(localized: "Tag was not found"))
+        }
         
         workout.removeFromTags(tag)
         
@@ -163,25 +174,9 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
 }
 
-
-extension CoreDataWorkoutRepository: WorkoutEntityProviderProtocol {
-    
-    func fetchWorkout(_ id: UUID) throws -> Workout {
-        let request = Workout.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        
-        guard let workout = try context.fetch(request).first else {
-            throw LiftlogError.noData(description: String(localized: "Workout was not found"))
-        }
-        
-        return workout
-    }
-}
-
 extension CoreDataWorkoutRepository {
-    fileprivate func fetchSet(_ id: UUID) throws -> ExerciseSet {
-        let request = ExerciseSet.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+    fileprivate func fetchSet(_ id: UUID) async throws -> ExerciseSet {
+        let request = fetchRequest(for: ExerciseSet.self, with: [id])
         
         guard let set = try context.fetch(request).first else {
             throw LiftlogError.noData(description: String(localized: "Set was not found"))
@@ -190,14 +185,23 @@ extension CoreDataWorkoutRepository {
         return set
     }
     
-    fileprivate func fetchWorkoutExercise(_ id: UUID) throws -> WorkoutExercise {
-        let request = WorkoutExercise.fetchRequest()
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+    fileprivate func fetchWorkoutExercise(_ id: UUID) async throws -> WorkoutExercise {
+        let request = fetchRequest(for: WorkoutExercise.self, with: [id])
         
         guard let workoutExercise = try context.fetch(request).first else {
             throw LiftlogError.noData(description: String(localized: "Set was not found"))
         }
         
         return workoutExercise
+    }
+    
+    fileprivate func fetchWorkout(_ id: UUID) async throws -> Workout {
+        let request = fetchRequest(for: Workout.self, with: [id])
+        
+        guard let workout = try context.fetch(request).first else {
+            throw LiftlogError.noData(description: String(localized: "Set was not found"))
+        }
+        
+        return workout
     }
 }

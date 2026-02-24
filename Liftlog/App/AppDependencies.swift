@@ -19,11 +19,7 @@ final class AppDependencies {
         
         let exerciseRepository = CoreDataExerciseRepository(context: context)
         let tagRepository = CoreDataTagRepository(context: context)
-        let workoutRepository = CoreDataWorkoutRepository(
-            context: context,
-            exerciseRepository: exerciseRepository,
-            tagRepository: tagRepository
-        )
+        let workoutRepository = CoreDataWorkoutRepository(context: context)
         
         self.exerciseRepository = exerciseRepository
         self.workoutRepository = workoutRepository

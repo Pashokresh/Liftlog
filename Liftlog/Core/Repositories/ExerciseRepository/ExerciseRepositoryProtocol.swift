@@ -6,19 +6,15 @@
 //
 
 import Foundation
+import CoreData
 
 protocol ExerciseRepositoryProtocol {
     
-    func fetchAll() throws -> [ExerciseModel]
+    func fetchAll() async throws -> [ExerciseModel]
     
-    func create(name: String, description: String?) throws -> ExerciseModel
+    func create(name: String, description: String?) async throws -> ExerciseModel
     
-    func update(_ model: ExerciseModel) throws
+    func update(_ model: ExerciseModel) async throws
     
-    func delete(_ id: UUID) throws
-}
-
-protocol ExerciseEntityProviderProtocol {
-    
-    func fetchExercise(_ id: UUID) throws -> Exercise
+    func delete(_ id: UUID) async throws
 }
