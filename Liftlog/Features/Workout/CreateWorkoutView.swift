@@ -21,36 +21,36 @@ struct CreateWorkoutView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField(String(localized: "Workout Name"), text: $name)
-                    DatePicker(String(localized: "Date"), selection: $date, displayedComponents: .date)
-                    TextField(String(localized: "Notes (optional)"), text: $notes, axis: .vertical)
-                        .lineLimit(1...3)
+        Form {
+            Section {
+                TextField(String(localized: "Workout Name"), text: $name)
+                DatePicker(String(localized: "Date"), selection: $date, displayedComponents: .date)
+                TextField(String(localized: "Notes (optional)"), text: $notes, axis: .vertical)
+                    .lineLimit(1...3)
+            }
+        }
+        .navigationTitle(String(localized: "New Workout"))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(id: "create.workout.cancel", placement: .topBarLeading) {
+                Button(role: .cancel) {
+                    dismiss()
                 }
             }
-            .navigationTitle(String(localized: "New Workout"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(id: "create.workout.cancel", placement: .topBarLeading) {
-                    Button(role: .cancel) {
-                        dismiss()
-                    }
+            
+            ToolbarItem(id: "create.workout.create", placement: .topBarTrailing) {
+                Button(role: .confirm) {
+                    onSave(name, date, notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil: notes)
+                    dismiss()
                 }
-                
-                ToolbarItem(id: "create.workout.create", placement: .topBarTrailing) {
-                    Button(role: .confirm) {
-                        onSave(name, date, notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil: notes)
-                        dismiss()
-                    }
-                    .disabled(!isValid)
-                }
+                .disabled(!isValid)
             }
         }
     }
 }
 
 #Preview {
-    CreateWorkoutView(onSave: { _, _, _ in })
+    NavigationStack {
+        CreateWorkoutView(onSave: { _, _, _ in })
+    }
 }

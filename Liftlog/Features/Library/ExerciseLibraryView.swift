@@ -12,9 +12,11 @@ struct ExerciseLibraryView: View {
     @State private var isAddingExercise = false
     @State private var searchText = ""
     @State private var isSearching = false
-    
+        
     init(viewModel: ExerciseLibraryViewModel) {
-        _viewModel = .init(initialValue: viewModel)
+        _viewModel = .init(
+            initialValue: viewModel
+        )
     }
     
     private var filteredExercises: [ExerciseModel] {
@@ -88,23 +90,21 @@ struct ExerciseLibraryView: View {
     
     var body: some View {
         Group {
-            NavigationStack {
-                if isSearching {
-                    navigationContent
-                        .searchable(text: $searchText,
-                                    isPresented: $isSearching,
-                                    prompt: String(
-                                        localized: "Search Exercise"
-                                    )
-                        )
-                        .onSubmit(of: .search) {
-                            withAnimation {
-                                isSearching = false
-                            }
+            if isSearching {
+                navigationContent
+                    .searchable(text: $searchText,
+                                isPresented: $isSearching,
+                                prompt: String(
+                                    localized: "Search Exercise"
+                                )
+                    )
+                    .onSubmit(of: .search) {
+                        withAnimation {
+                            isSearching = false
                         }
-                } else {
-                    navigationContent
-                }
+                    }
+            } else {
+                navigationContent
             }
         }
         .onChange(of: isSearching,{ wasSearching, nowSearching in
@@ -139,9 +139,11 @@ struct ExerciseLibraryView: View {
 }
 
 #Preview {
-    ExerciseLibraryView(
-        viewModel: ExerciseLibraryViewModel(
-            repository: MockExerciseRepository()
+    NavigationStack {
+        ExerciseLibraryView(
+            viewModel: ExerciseLibraryViewModel(
+                repository: MockExerciseRepository()
+            )
         )
-    )
+    }
 }

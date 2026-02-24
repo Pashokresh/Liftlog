@@ -20,48 +20,47 @@ struct AddExerciseView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            Form {
-                Section {
-                    TextField(
-                        String(localized: "Name"),
-                        text: $name
-                    )
-                    TextField(
-                        String(localized: "Description (optional)"),
-                        text: $description,
-                        axis: .vertical
-                    )
-                    .lineLimit(3...6)
-                }
-            }
-            .navigationTitle(String(localized: "New Exercise"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(id: "new.exercise.cancel", placement: .topBarLeading) {
-                    Button(role: .cancel) {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing) {
-                    Button(role: .confirm) {
-                        onSave(
-                            name,
-                            description
-                                .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?
-                            nil : description
-                        )
-                        dismiss()
-                    }
-                    .disabled(!isValid)
-                }
+        Form {
+            Section {
+                TextField(
+                    String(localized: "Name"),
+                    text: $name
+                )
+                TextField(
+                    String(localized: "Description (optional)"),
+                    text: $description,
+                    axis: .vertical
+                )
+                .lineLimit(3...6)
             }
         }
-        
+        .navigationTitle(String(localized: "New Exercise"))
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(id: "new.exercise.cancel", placement: .topBarLeading) {
+                Button(role: .cancel) {
+                    dismiss()
+                }
+            }
+            
+            ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing) {
+                Button(role: .confirm) {
+                    onSave(
+                        name,
+                        description
+                            .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?
+                        nil : description
+                    )
+                    dismiss()
+                }
+                .disabled(!isValid)
+            }
+        }
     }
 }
 
 #Preview {
-    AddExerciseView(onSave: { _, _ in })
+    NavigationStack {
+        AddExerciseView(onSave: { _, _ in })
+    }
 }

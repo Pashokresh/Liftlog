@@ -17,42 +17,50 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
     }
     
     func fetchAll() async throws -> [ExerciseModel] {
-        let request = Exercise.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        return try context.fetch(request).map { $0.toDomain() }
+        try await context.perform {
+            let request = Exercise.fetchRequest()
+            request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+            
+            return try self.context.fetch(request).map { $0.toDomain() }
+        }
     }
     
     func create(name: String, description: String?) async throws -> ExerciseModel {
-        let exercise = Exercise(context: context)
-        exercise.id = UUID()
-        exercise.name = name
-        exercise.exerciseDescription = description
-        
-        try context.save()
-        
-        return exercise.toDomain()
+        try await context.perform {
+            let exercise = Exercise(context: self.context)
+            exercise.id = UUID()
+            exercise.name = name
+            exercise.exerciseDescription = description
+            
+            try self.context.save()
+            
+            return exercise.toDomain()
+        }
     }
     
     func update(_ model: ExerciseModel) async throws {
-        let exercise = try await fetchExercise(model.id)
-        
-        exercise.name = model.name
-        exercise.exerciseDescription = model.description
-        
-        try context.save()
+        try await context.perform {
+            let exercise = try self.fetchExercise(model.id)
+            
+            exercise.name = model.name
+            exercise.exerciseDescription = model.description
+            
+            try self.context.save()
+        }
     }
     
     func delete(_ id: UUID) async throws {
-        let exercise = try await fetchExercise(id)
-        
-        context.delete(exercise)
-        try context.save()
+        try await context.perform {
+            let exercise = try self.fetchExercise(id)
+            
+            self.context.delete(exercise)
+            try self.context.save()
+        }
     }
 }
 
 extension CoreDataExerciseRepository {
-    fileprivate func fetchExercise(_ id: UUID) async throws -> Exercise {
+    fileprivate func fetchExercise(_ id: UUID) throws -> Exercise {
         let request = fetchRequest(for: Exercise.self, with: [id])
         
         guard let exercise = try context.fetch(request).first else {

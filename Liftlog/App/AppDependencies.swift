@@ -10,6 +10,7 @@ import Foundation
 
 @Observable
 final class AppDependencies {
+    
     let exerciseRepository: ExerciseRepositoryProtocol
     let workoutRepository: WorkoutRepositoryProtocol
     let tagRepository: TagRepositoryProtocol

@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct WorkoutListView: View {
-    @State var viewModel: WorkoutListViewModel
-    @State var isCreatingWorkout = false
+    @State private var viewModel: WorkoutListViewModel
+    @State private var isCreatingWorkout = false
     
     init(viewModel: WorkoutListViewModel) {
         _viewModel = .init(initialValue: viewModel)

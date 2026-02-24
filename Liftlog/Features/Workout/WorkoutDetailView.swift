@@ -9,19 +9,23 @@ import SwiftUI
 
 struct WorkoutDetailView: View {
     
-    @State var workout: WorkoutModel
+    @State private var viewModel: WorkoutDetailViewModel
+    private var workoutID: UUID
     
-    init(workout: WorkoutModel) {
-        self.workout = workout
+    init(viewModel: WorkoutDetailViewModel, workoutID: UUID) {
+        _viewModel = .init(initialValue: viewModel)
+        self.workoutID = workoutID
     }
     
     var body: some View {
-        NavigationStack {
-            
-        }
+        
     }
 }
 
 #Preview {
-    WorkoutDetailView(workout: WorkoutModel.mock)
+    WorkoutDetailView(
+        viewModel: WorkoutDetailViewModel(
+            repository: MockWorkoutRepository()
+        ),
+        workoutID: WorkoutModel.mock.id)
 }

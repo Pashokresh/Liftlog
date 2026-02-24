@@ -10,12 +10,14 @@ import CoreData
 
 @main
 struct LiftlogApp: App {
-    @State private var dependencies = AppDependencies()
+    @State private var factory = ViewModelFactory(
+        dependencies: AppDependencies()
+    )
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(dependencies)
+            RootView()
+                .environment(factory)
         }
     }
 }
