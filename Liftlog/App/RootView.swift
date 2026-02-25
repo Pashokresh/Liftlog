@@ -10,7 +10,7 @@ import CoreData
 
 struct RootView: View {
     @Environment(ViewModelFactory.self) private var factory
-    @State private var navigationManager = NavigationManager()
+    @State var navigationManager = NavigationManager()
 
     var body: some View {
         
@@ -18,8 +18,8 @@ struct RootView: View {
             WorkoutListView(viewModel: factory.makeWorkoutListViewModel())
                 .navigationDestination(for: Route.self) { route in
                     switch route {
-                    case .workoutDetailView(workoutId: let workoutID):
-                        WorkoutDetailView(viewModel: factory.makeWorkoutDetailViewModel(), workoutID: workoutID)
+                    case .workoutDetailView(let workout):
+                        WorkoutDetailView(viewModel: factory.makeWorkoutDetailViewModel(workout))
                     case .exerciseLibrary:
                         ExerciseLibraryView(viewModel: factory.makeExerciseLibraryViewModel())
                     }
@@ -31,5 +31,7 @@ struct RootView: View {
 
 #Preview {
     RootView()
-        .environment(AppDependencies.mock)
+        .environment(ViewModelFactory(
+            dependencies: AppDependencies.mock)
+        )
 }

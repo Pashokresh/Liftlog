@@ -7,12 +7,12 @@
 
 import Foundation
 
-enum SetType: Equatable {
+enum SetType: Equatable, Hashable {
     case weighted(reps: Int, weight: Double)
     case timed(duration: Double)
 }
 
-struct ExerciseSetModel: Identifiable, Equatable {
+struct ExerciseSetModel: Identifiable, Equatable, Hashable {
     let id: UUID
     let order: Int
     let note: String?

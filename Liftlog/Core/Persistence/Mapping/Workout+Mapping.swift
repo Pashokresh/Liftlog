@@ -12,9 +12,9 @@ extension Workout {
     
     func toDomain() -> WorkoutModel {
         let tags = (tags as? Set<Tag>)?.map { $0.toDomain() } ?? []
-        let exercises = (exercises as? Set<Exercise>)?
+        let exercises = (exercises as? Set<WorkoutExercise>)?
             .map { $0.toDomain() }
-            .sorted { $0.name < $1.name } ?? []
+            .sorted { $0.order < $1.order } ?? []
         
         return WorkoutModel(
             id: id ?? UUID(),

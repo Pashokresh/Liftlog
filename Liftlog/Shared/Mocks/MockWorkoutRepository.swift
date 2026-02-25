@@ -8,7 +8,7 @@
 import Foundation
 
 final class MockWorkoutRepository: WorkoutRepositoryProtocol {
-    
+        
     private var workouts = WorkoutModel.mocks
     
     func fetchAll() throws -> [WorkoutModel] {
@@ -31,12 +31,14 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
     
     func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID) throws {
         guard let index = getModelIndex(workoutID) else { return }
-        guard let exerciseIndex = workouts[index]
-            .exercises.firstIndex(where: {
-                $0.id == exerciseModel.exercise.id
-            }) else { return
-        }
-        workouts[index].exercises[exerciseIndex].workoutExercises.append(exerciseModel)
+        workouts[index].exercises.append(exerciseModel)
+    }
+    
+    func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID) async throws {
+        guard let index = getModelIndex(workoutID),
+        let workoutExerciseIndex = workouts[index].exercises.firstIndex(where: { $0.id == model.id }) else { return }
+        
+        workouts[index].exercises[workoutExerciseIndex] = model
     }
 
     func deleteExercise(_ id: UUID) throws {
@@ -48,7 +50,7 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
     func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID) throws {
         for workoutIndex in workouts.indices {
             guard let exerciseIndex = workouts[workoutIndex].exercises.firstIndex(where: { $0.id == workoutExerciseID }) else { continue }
-            workouts[workoutIndex].exercises[exerciseIndex].workoutExercises[workoutIndex].sets.append(setModel)
+            workouts[workoutIndex].exercises[exerciseIndex].sets.append(setModel)
             return
         }
     }
@@ -60,7 +62,7 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
     func deleteSet(_ id: UUID) throws {
         for workoutIndex in workouts.indices {
             for exerciseIndex in workouts[workoutIndex].exercises.indices {
-                workouts[workoutIndex].exercises[exerciseIndex].workoutExercises[workoutIndex].sets.removeAll { $0.id == id }
+                workouts[workoutIndex].exercises[exerciseIndex].sets.removeAll { $0.id == id }
             }
         }
     }

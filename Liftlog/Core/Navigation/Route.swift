@@ -8,8 +8,8 @@
 import Foundation
 import SwiftUI
 
-enum Route: Hashable, Codable, Equatable {
-    case workoutDetailView(workoutId: UUID)
+enum Route: Hashable, Equatable {
+    case workoutDetailView(WorkoutModel)
     case exerciseLibrary
 }
 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ExerciseModel: Identifiable, Equatable {
+struct ExerciseModel: Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let description: String?

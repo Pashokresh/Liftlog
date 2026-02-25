@@ -24,8 +24,8 @@ final class ViewModelFactory {
         ExerciseLibraryViewModel(repository: dependencies.exerciseRepository)
     }
     
-    func makeWorkoutDetailViewModel() -> WorkoutDetailViewModel {
-        WorkoutDetailViewModel(repository: dependencies.workoutRepository)
+    func makeWorkoutDetailViewModel(_ workout: WorkoutModel) -> WorkoutDetailViewModel {
+        WorkoutDetailViewModel(workout: workout, repository: dependencies.workoutRepository)
     }
 }
 

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TagModel: Identifiable, Equatable {
+struct TagModel: Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
 }

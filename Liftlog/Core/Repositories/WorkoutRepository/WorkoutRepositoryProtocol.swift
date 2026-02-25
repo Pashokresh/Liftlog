@@ -13,7 +13,7 @@ protocol WorkoutRepositoryProtocol {
     // MARK: - Methods working with Workout
     
     func fetchAll() async throws -> [WorkoutModel]
-    
+        
     func create(_ workoutModel: WorkoutModel) async throws -> WorkoutModel
     
     func update(_ model: WorkoutModel) async throws
@@ -23,6 +23,8 @@ protocol WorkoutRepositoryProtocol {
     // MARK: - Methods working with exercises
     
     func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID) async throws
+    
+    func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID) async throws
     
     func deleteExercise(_ id: UUID) async throws
     

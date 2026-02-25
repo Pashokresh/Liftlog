@@ -82,12 +82,13 @@ extension TagModel {
 }
 
 extension WorkoutModel {
+    
     static let mock = WorkoutModel(
         id: UUID(),
         name: "New Training",
         date: Date.now,
         notes: "Training I need to repeat every week",
-        tags: [TagModel.mock], exercises: ExerciseModel.mocks)
+        tags: [TagModel.mock], exercises: [])
     
     static let mocks = [
         WorkoutModel(
@@ -95,25 +96,25 @@ extension WorkoutModel {
             name: "Training 1",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mock], exercises: ExerciseModel.mocks),
+            tags: [TagModel.mock], exercises: []),
         WorkoutModel(
             id: UUID(),
             name: "Training 2",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mocks[1]], exercises: ExerciseModel.mocks),
+            tags: [TagModel.mocks[1]], exercises: []),
         WorkoutModel(
             id: UUID(),
             name: "Training 3",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mocks[2]], exercises: ExerciseModel.mocks),
+            tags: [TagModel.mocks[2]], exercises: []),
         WorkoutModel(
             id: UUID(),
             name: "Training 4",
             date: Date.now,
             notes: "Training I can skip once in a while",
-            tags: [TagModel.mocks[0]], exercises: ExerciseModel.mocks),
+            tags: [TagModel.mocks[0]], exercises: []),
     ]
 }
 

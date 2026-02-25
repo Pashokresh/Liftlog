@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct WorkoutExerciseModel: Identifiable, Equatable {
+struct WorkoutExerciseModel: Identifiable, Equatable, Hashable {
     let id: UUID
-    let order: Int
+    var order: Int
     let workout: WorkoutModel
     let exercise: ExerciseModel
     var sets: [ExerciseSetModel]

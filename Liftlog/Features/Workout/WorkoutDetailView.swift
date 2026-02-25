@@ -10,22 +10,59 @@ import SwiftUI
 struct WorkoutDetailView: View {
     
     @State private var viewModel: WorkoutDetailViewModel
-    private var workoutID: UUID
-    
-    init(viewModel: WorkoutDetailViewModel, workoutID: UUID) {
+    @State private var isAddingExercise = false
+        
+    init(viewModel: WorkoutDetailViewModel) {
         _viewModel = .init(initialValue: viewModel)
-        self.workoutID = workoutID
     }
     
     var body: some View {
-        
+        List {
+            ForEach(viewModel.workout.exercises) { exercise in
+                Text(exercise.exercise.name)
+            }
+        }
+        .navigationTitle(viewModel.workout.name)
+        .navigationSubtitle(viewModel.workout.date.formatted(date: .abbreviated,time: .omitted))
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                EditButton()
+            }
+            
+            ToolbarItem(placement: .bottomBar) {
+                Button {
+                    isAddingExercise = true
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text(String(localized: "Add Exercise"))
+                    }
+                }
+                .buttonStyle(.glassProminent)
+            }
+        }
+        .overlay {
+            if viewModel.workout.exercises.isEmpty {
+                ContentUnavailableView(
+                    String(localized: "No Exercises yet"),
+                    systemImage: "figure.strengthtraining.traditional",
+                    description: Text(String(localized: "Start by adding exercises here")
+                    )
+                )
+            }
+        }
     }
 }
 
 #Preview {
-    WorkoutDetailView(
-        viewModel: WorkoutDetailViewModel(
-            repository: MockWorkoutRepository()
-        ),
-        workoutID: WorkoutModel.mock.id)
+    NavigationStack {
+        WorkoutDetailView(
+            viewModel: WorkoutDetailViewModel(
+                workout: WorkoutModel.mock,
+                repository: MockWorkoutRepository()
+            ))
+    }
 }

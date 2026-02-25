@@ -103,6 +103,20 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         }
     }
     
+    func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID) async throws {
+        try await context.perform {
+            let request = fetchRequest(for: WorkoutExercise.self, with: [model.id])
+            
+            guard let workoutExercise = try self.context.fetch(request).first else {
+                throw LiftlogError.noData(description: String("Exercise was not found"))
+            }
+            
+            workoutExercise.order = Int16(model.order)
+            
+            try self.context.save()
+        }
+    }
+    
     func deleteExercise(_ id: UUID) async throws {
         try await context.perform {
             let workoutExercise = try self.fetchWorkoutExercise(id)
