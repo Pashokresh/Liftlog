@@ -10,7 +10,7 @@ import SwiftUI
 
 enum Route: Hashable, Equatable {
     case workoutDetailView(WorkoutModel)
-    case exerciseLibrary
+    case exerciseSet(WorkoutExerciseModel)
 }
 
 

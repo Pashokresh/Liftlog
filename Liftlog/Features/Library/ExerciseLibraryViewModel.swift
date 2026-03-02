@@ -29,10 +29,10 @@ final class ExerciseLibraryViewModel {
         }
     }
     
-    func createExercise(name: String, description: String?) {
+    func createExercise(name: String, type: ExerciseType, description: String?) {
         Task {
             do {
-                let exercise = try await repository.create(name: name, description: description)
+                let exercise = try await repository.create(name: name, description: description, type: type)
                 exercises.append(exercise)
             } catch {
                 self.error = error

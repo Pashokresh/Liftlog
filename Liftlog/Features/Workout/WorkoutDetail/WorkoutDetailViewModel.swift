@@ -23,10 +23,14 @@ final class WorkoutDetailViewModel {
     }
     
     func addExercise(_ exercise: ExerciseModel) async {
+        if workout.exercises.contains(where: { $0.exercise.id == exercise.id }) {
+            error = LiftlogError.failure(description: String(localized: "Exercise already added"))
+            return
+        }
+        
         let workoutExercise = WorkoutExerciseModel(
             id: UUID(),
             order: workout.exercises.count,
-            workout: workout,
             exercise: exercise,
             sets: [])
         
@@ -95,5 +99,9 @@ final class WorkoutDetailViewModel {
         } catch {
             self.error = error
         }
+    }
+    
+    func nullifyError() {
+        error = nil
     }
 }

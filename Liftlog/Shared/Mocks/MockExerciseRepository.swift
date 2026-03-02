@@ -15,12 +15,16 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         return exercises
     }
     
-    func create(name: String, description: String?) throws -> ExerciseModel {
+    func fetchHistory(for exerciseID: UUID) async throws -> [WorkoutExerciseModel] {
+        return [WorkoutExerciseModel.mock]
+    }
+    
+    func create(name: String, description: String?, type: ExerciseType) throws -> ExerciseModel {
         let exercise = ExerciseModel(
             id: UUID(),
             name: name,
             description: description,
-            workoutExercises: []
+            type: type
         )
         
         exercises.append(exercise)

@@ -10,7 +10,6 @@ import Foundation
 struct WorkoutExerciseModel: Identifiable, Equatable, Hashable {
     let id: UUID
     var order: Int
-    let workout: WorkoutModel
     let exercise: ExerciseModel
     var sets: [ExerciseSetModel]
 }

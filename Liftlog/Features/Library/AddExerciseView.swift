@@ -9,11 +9,12 @@ import SwiftUI
 
 struct AddExerciseView: View {
     
-    let onSave: (String, String?) -> Void
+    let onSave: (String, ExerciseType, String?) -> Void
     
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
     @State private var description = ""
+    @State private var type: ExerciseType = .reps
     
     private var isValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
@@ -27,6 +28,12 @@ struct AddExerciseView: View {
                         String(localized: "Name"),
                         text: $name
                     )
+                    Picker(String(localized: "Exercise type"), selection: $type) {
+                        ForEach(ExerciseType.allCases, id: \.id) {
+                            Text(String(describing: $0))
+                        }
+                    }
+                    .pickerStyle(.menu)
                     TextField(
                         String(localized: "Description (optional)"),
                         text: $description,
@@ -48,6 +55,7 @@ struct AddExerciseView: View {
                     Button(role: .confirm) {
                         onSave(
                             name,
+                            type,
                             description
                                 .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?
                             nil : description
@@ -62,5 +70,5 @@ struct AddExerciseView: View {
 }
 
 #Preview {
-    AddExerciseView(onSave: { _, _ in })
+    AddExerciseView(onSave: { _, _, _ in })
 }

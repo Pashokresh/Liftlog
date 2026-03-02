@@ -27,6 +27,14 @@ final class ViewModelFactory {
     func makeWorkoutDetailViewModel(_ workout: WorkoutModel) -> WorkoutDetailViewModel {
         WorkoutDetailViewModel(workout: workout, repository: dependencies.workoutRepository)
     }
+    
+    func makeExerciseSetViewModel(workoutExercise: WorkoutExerciseModel) -> ExerciseSetViewModel {
+        ExerciseSetViewModel(
+            workoutExercise: workoutExercise,
+            workoutRepository: dependencies.workoutRepository,
+            exerciseRepository: dependencies.exerciseRepository
+        )
+    }
 }
 
 extension ViewModelFactory {

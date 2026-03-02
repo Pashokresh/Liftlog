@@ -9,7 +9,7 @@ import CoreData
 import Foundation
 
 final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
-    
+        
     private let context: NSManagedObjectContext
     
     init(context: NSManagedObjectContext) {
@@ -25,11 +25,22 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
         }
     }
     
-    func create(name: String, description: String?) async throws -> ExerciseModel {
+    func fetchHistory(for exerciseID: UUID) async throws -> [WorkoutExerciseModel] {
+        try await context.perform {
+            let request = WorkoutExercise.fetchRequest()
+            request.predicate = NSPredicate(format: "exercise.id == %@", exerciseID as CVarArg)
+            request.sortDescriptors = [NSSortDescriptor(key: "workout.date", ascending: true)]
+            
+            return try self.context.fetch(request).map { $0.toDomain() }
+        }
+    }
+    
+    func create(name: String, description: String?, type: ExerciseType) async throws -> ExerciseModel {
         try await context.perform {
             let exercise = Exercise(context: self.context)
             exercise.id = UUID()
             exercise.name = name
+            exercise.type = Int16(type.rawValue)
             exercise.exerciseDescription = description
             
             try self.context.save()

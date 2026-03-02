@@ -12,14 +12,14 @@ extension ExerciseModel {
         id: UUID(),
         name: "Bench Press",
         description: "Classic chest exercise",
-        workoutExercises: []
+        type: .reps
     )
     
     static let mocks = [
-        ExerciseModel(id: UUID(), name: "Bench Press", description: "Chest exercise", workoutExercises: []),
-        ExerciseModel(id: UUID(), name: "Squat", description: "Leg exercise", workoutExercises: []),
-        ExerciseModel(id: UUID(), name: "Pull Up", description: "Back exercise", workoutExercises: []),
-        ExerciseModel(id: UUID(), name: "Plank", description: "Core exercise",workoutExercises: [])
+        ExerciseModel(id: UUID(), name: "Bench Press", description: "Chest exercise", type: .time),
+        ExerciseModel(id: UUID(), name: "Squat", description: "Leg exercise", type: .reps),
+        ExerciseModel(id: UUID(), name: "Pull Up", description: "Back exercise", type: .reps),
+        ExerciseModel(id: UUID(), name: "Plank", description: "Core exercise", type: .reps)
     ]
 }
 
@@ -122,7 +122,6 @@ extension WorkoutExerciseModel {
     static let mock = WorkoutExerciseModel(
         id: UUID(),
         order: 0,
-        workout: WorkoutModel.mock,
         exercise: ExerciseModel.mock,
         sets: ExerciseSetModel.mocks
     )
@@ -131,21 +130,18 @@ extension WorkoutExerciseModel {
         WorkoutExerciseModel(
             id: UUID(),
             order: 0,
-            workout: WorkoutModel.mock,
             exercise: ExerciseModel.mock,
             sets: ExerciseSetModel.mocks
         ),
         WorkoutExerciseModel(
             id: UUID(),
             order: 1,
-            workout: WorkoutModel.mocks[2],
             exercise: ExerciseModel.mocks[1],
             sets: ExerciseSetModel.mocks
         ),
         WorkoutExerciseModel(
             id: UUID(),
             order: 2,
-            workout: WorkoutModel.mocks[1],
             exercise: ExerciseModel.mocks[2],
             sets: ExerciseSetModel.mocks
         ),

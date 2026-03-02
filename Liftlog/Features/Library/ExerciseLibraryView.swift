@@ -9,14 +9,17 @@ import SwiftUI
 
 struct ExerciseLibraryView: View {
     @State private var viewModel: ExerciseLibraryViewModel
+    let onSelect: ((ExerciseModel) -> Void)?
+    
     @State private var isAddingExercise = false
     @State private var searchText = ""
-    @State private var isSearching = false
         
-    init(viewModel: ExerciseLibraryViewModel) {
+    init(viewModel: ExerciseLibraryViewModel, onSelect: ((ExerciseModel) -> Void)?) {
         _viewModel = .init(
             initialValue: viewModel
         )
+        
+        self.onSelect = onSelect
     }
     
     private var filteredExercises: [ExerciseModel] {
@@ -30,6 +33,10 @@ struct ExerciseLibraryView: View {
         List {
             ForEach(filteredExercises) { exercise in
                 ExerciseRowView(exercise: exercise)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        onSelect?(exercise)
+                    }
             }
             .onDelete { indexSet in
                 indexSet.forEach {
@@ -41,7 +48,7 @@ struct ExerciseLibraryView: View {
         .environment(\.defaultMinListRowHeight, 80)
         .overlay {
             if filteredExercises.isEmpty {
-                if isSearching {
+                if !searchText.isEmpty {
                     ContentUnavailableView.search
                 } else {
                     ContentUnavailableView(
@@ -61,19 +68,8 @@ struct ExerciseLibraryView: View {
         .navigationTitle(String(
             localized: "Exercise Library"
         ))
+    // TODO: Fix white navigation bar background on search
         .toolbar {
-            ToolbarItem(id: "exercise.library.search", placement: .automatic) {
-                Button {
-                    withAnimation {
-                        isSearching = true
-                    }
-                } label: {
-                    Image(systemName: "magnifyingglass")
-                        .font(.headline)
-                }
-                .glassEffect(.identity)
-            }
-            
             ToolbarItem(id: "exercise.library.add.new", placement: .automatic) {
                 Button {
                     isAddingExercise = true
@@ -85,65 +81,53 @@ struct ExerciseLibraryView: View {
                 .buttonStyle(.glassProminent)
             }
         }
-            
+        .searchable(text: $searchText,
+                    prompt: String(
+                        localized: "Search Exercise"
+                    )
+        )
+        .sheet(isPresented: $isAddingExercise) {
+                AddExerciseView {
+                    viewModel.createExercise(
+                        name: $0,
+                        type: $1,
+                        description: $2
+                    )
+                }
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+            }
+            .alert(String(localized: "Error"),
+                   isPresented: Binding(
+                    get: { viewModel.error != nil },
+                    set: { if !$0 { viewModel.nullifyError() } }
+                   )
+            ) {
+                Button("OK") { viewModel.nullifyError() }
+            } message: {
+                Text(viewModel.error?.localizedDescription ?? "")
+            }
+            .onAppear {
+                viewModel.loadExercises()
+            }
     }
     
     var body: some View {
-        Group {
-            if isSearching {
-                navigationContent
-                    .searchable(text: $searchText,
-                                isPresented: $isSearching,
-                                prompt: String(
-                                    localized: "Search Exercise"
-                                )
-                    )
-                    .onSubmit(of: .search) {
-                        withAnimation {
-                            isSearching = false
-                        }
-                    }
-            } else {
+        if onSelect != nil {
+            NavigationStack {
                 navigationContent
             }
-        }
-        .onChange(of: isSearching,{ wasSearching, nowSearching in
-            if wasSearching && !nowSearching {
-                searchText = ""
-            }
-        })
-        .sheet(isPresented: $isAddingExercise) {
-            AddExerciseView {
-                viewModel.createExercise(
-                    name: $0,
-                    description: $1
-                )
-            }
-            .presentationDetents([.medium])
-            .presentationDragIndicator(.visible)
-        }
-        .alert(String(localized: "Error"),
-               isPresented: Binding(
-                get: { viewModel.error != nil },
-                set: { if !$0 { viewModel.nullifyError() } }
-               )
-        ) {
-            Button("OK") { viewModel.nullifyError() }
-        } message: {
-            Text(viewModel.error?.localizedDescription ?? "")
-        }
-        .onAppear {
-            viewModel.loadExercises()
+        } else {
+            navigationContent
         }
     }
 }
 
 #Preview {
-    NavigationStack {
-        ExerciseLibraryView(
-            viewModel: ExerciseLibraryViewModel(
-                repository: MockExerciseRepository()
-            )
-        )
-    }
+    ExerciseLibraryView(
+        viewModel: ExerciseLibraryViewModel(
+            repository: MockExerciseRepository()
+        ),
+        onSelect: { _ in }
+    )
 }

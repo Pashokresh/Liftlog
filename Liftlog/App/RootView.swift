@@ -20,8 +20,9 @@ struct RootView: View {
                     switch route {
                     case .workoutDetailView(let workout):
                         WorkoutDetailView(viewModel: factory.makeWorkoutDetailViewModel(workout))
-                    case .exerciseLibrary:
-                        ExerciseLibraryView(viewModel: factory.makeExerciseLibraryViewModel())
+                    case .exerciseSet(let workoutExercise):
+                        ExerciseSetView(
+                            viewModel: factory.makeExerciseSetViewModel(workoutExercise: workoutExercise))
                     }
                 }
         })
