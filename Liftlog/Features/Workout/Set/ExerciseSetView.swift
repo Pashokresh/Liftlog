@@ -18,7 +18,7 @@ struct ExerciseSetView: View {
     var body: some View {
         List {
             ForEach(viewModel.history) { workoutExercise in
-                Section(header: Text(workoutExercise.)) {
+                Section(header: Text("")) {
                     
                 }
             }
