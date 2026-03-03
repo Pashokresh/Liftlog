@@ -51,16 +51,14 @@ struct ExerciseLibraryView: View {
                 if !searchText.isEmpty {
                     ContentUnavailableView.search
                 } else {
-                    ContentUnavailableView(
-                        String(
+                    UnavailableContentView(
+                        title: String(
                             localized: "No exercises in the library yet."
                         ),
-                        systemImage: "dumbbell",
-                        description: Text(
-                            String(localized: "Tap \"+\" to add a new one.")
+                        message: String(
+                            localized: "Tap \"+\" to add a new one."
                         )
                     )
-                    .font(.title)
                 }
             }
         }
@@ -71,14 +69,9 @@ struct ExerciseLibraryView: View {
     // TODO: Fix white navigation bar background on search
         .toolbar {
             ToolbarItem(id: "exercise.library.add.new", placement: .automatic) {
-                Button {
+                AddTopBarButton {
                     isAddingExercise = true
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.headline)
-                        .foregroundStyle(.white)
                 }
-                .buttonStyle(.glassProminent)
             }
         }
         .searchable(text: $searchText,

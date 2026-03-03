@@ -55,15 +55,10 @@ struct WorkoutDetailView: View {
             }
             
             ToolbarItem(placement: .bottomBar) {
-                Button {
+                AddBottomBarButton(
+                    with: String(localized: "Add Exercise")) {
                     isAddingExercise = true
-                } label: {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                        Text(String(localized: "Add Exercise"))
-                    }
                 }
-                .buttonStyle(.glassProminent)
             }
         }
         .overlay {

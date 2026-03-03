@@ -38,11 +38,9 @@ struct WorkoutListView: View {
         )
         .overlay {
             if viewModel.workouts.isEmpty {
-                ContentUnavailableView(String(localized: "No workouts yet"),
-                                       systemImage: "dumbbell",
-                                       description: Text(
-                                        String(localized: "Create a new workout to get started.")
-                                       )
+                UnavailableContentView(
+                    title: String(localized: "No workouts yet"),
+                    message: String(localized: "Create a new workout to get started.")
                 )
             }
         }
@@ -50,14 +48,9 @@ struct WorkoutListView: View {
             ToolbarItem(id: "workout.list.add",
                         placement: .topBarTrailing)
             {
-                Button(role: .confirm) {
+                AddTopBarButton {
                     isCreatingWorkout = true
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.title2)
-                        .foregroundStyle(.white)
                 }
-                .buttonStyle(.glassProminent)
             }
         }
         .sheet(isPresented: $isCreatingWorkout) {

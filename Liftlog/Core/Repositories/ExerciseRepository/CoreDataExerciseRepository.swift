@@ -25,13 +25,21 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
         }
     }
     
-    func fetchHistory(for exerciseID: UUID) async throws -> [WorkoutExerciseModel] {
+    func fetchHistory(for exerciseID: UUID) async throws -> [ExerciseHistorySection] {
         try await context.perform {
             let request = WorkoutExercise.fetchRequest()
             request.predicate = NSPredicate(format: "exercise.id == %@", exerciseID as CVarArg)
-            request.sortDescriptors = [NSSortDescriptor(key: "workout.date", ascending: true)]
+            request.sortDescriptors = [NSSortDescriptor(key: "workout.date", ascending: false)]
             
-            return try self.context.fetch(request).map { $0.toDomain() }
+            return try self.context.fetch(request).map {
+                ExerciseHistorySection(
+                    id: $0.id ?? UUID(),
+                    date: $0.workout?.date ?? Date.now,
+                    workoutName: $0.workout?.name ?? "Workout",
+                    sets: ($0.sets as? Set<ExerciseSet>)?
+                        .sorted { $0.order < $1.order }
+                        .map { $0.toDomain() } ?? [])
+            }
         }
     }
     

@@ -21,7 +21,7 @@ struct RootView: View {
                     case .workoutDetailView(let workout):
                         WorkoutDetailView(viewModel: factory.makeWorkoutDetailViewModel(workout))
                     case .exerciseSet(let workoutExercise):
-                        ExerciseSetView(
+                        ExerciseSetListView(
                             viewModel: factory.makeExerciseSetViewModel(workoutExercise: workoutExercise))
                     }
                 }

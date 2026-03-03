@@ -13,8 +13,9 @@ import SwiftUI
 final class ExerciseSetViewModel {
     
     private(set) var workoutExercise: WorkoutExerciseModel
-    private(set) var history: [WorkoutExerciseModel] = .init()
+    private(set) var history: [ExerciseHistorySection] = .init()
     private(set) var error: Error?
+    var setToEdit: ExerciseSetModel?
     
     private let workoutRepository: WorkoutRepositoryProtocol
     private let exerciseRepository: ExerciseRepositoryProtocol
@@ -37,18 +38,14 @@ final class ExerciseSetViewModel {
         }
     }
     
-    func addSet(setType: SetType, note: String?) async {
-        let newSet = ExerciseSetModel(
-            id: UUID(),
-            order: workoutExercise.sets.count,
-            note: note,
-            type: setType
-        )
+    func addSet(set: ExerciseSetModel) async {
+        var setWithOrder = set
+        setWithOrder.order = workoutExercise.sets.count
         
         do {
-            try await workoutRepository.addSet(newSet, to: workoutExercise.id)
+            try await workoutRepository.addSet(setWithOrder, to: workoutExercise.id)
             withAnimation {
-                workoutExercise.sets.append(newSet)
+                workoutExercise.sets.append(setWithOrder)
             }
         } catch {
             self.error = error
@@ -67,6 +64,10 @@ final class ExerciseSetViewModel {
     }
     
     func updateSet(_ set: ExerciseSetModel) async {
+        defer {
+            setToEdit = nil
+        }
+        
         do {
             try await workoutRepository.updateSet(set)
             guard let index = workoutExercise.sets.firstIndex(where: { $0.id == set.id }) else {
@@ -74,6 +75,19 @@ final class ExerciseSetViewModel {
                 return
             }
             workoutExercise.sets[index] = set
+        } catch {
+            self.error = error
+        }
+    }
+    
+    func nullifyError() {
+        error = nil
+    }
+    
+    func deleteHistorySet(_ id: UUID) async {
+        do {
+            try await workoutRepository.deleteSet(id)
+            // TODO: Delete set from history
         } catch {
             self.error = error
         }

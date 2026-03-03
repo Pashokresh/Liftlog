@@ -36,7 +36,7 @@ extension ExerciseSetModel {
             id: UUID(),
             order: 0,
             note: nil,
-            type: .timed(duration: 60 * 30)
+            type: .timed(duration: 60 * 30 + 15)
         ),
         ExerciseSetModel(
             id: UUID(),

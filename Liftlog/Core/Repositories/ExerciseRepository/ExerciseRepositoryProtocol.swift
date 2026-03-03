@@ -12,7 +12,7 @@ protocol ExerciseRepositoryProtocol {
     
     func fetchAll() async throws -> [ExerciseModel]
     
-    func fetchHistory(for exerciseID: UUID) async throws -> [WorkoutExerciseModel]
+    func fetchHistory(for exerciseID: UUID) async throws -> [ExerciseHistorySection]
     
     func create(name: String, description: String?, type: ExerciseType) async throws -> ExerciseModel
     
