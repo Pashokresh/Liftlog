@@ -48,7 +48,7 @@ struct WorkoutDetailView: View {
         }
         .environment(\.defaultMinListRowHeight, 80)
         .navigationTitle(viewModel.workout.name)
-        .navigationSubtitle(
+        .adjustableNavigationSubtitle(
             viewModel.workout.date.formatted(date: .abbreviated, time: .omitted)
         )
         .toolbar {

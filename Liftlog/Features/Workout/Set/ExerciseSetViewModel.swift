@@ -57,6 +57,17 @@ final class ExerciseSetViewModel {
             self.error = error
         }
     }
+    
+    func copySet(_ set: ExerciseSetModel) async {
+        let copiedSet = ExerciseSetModel(
+            id: UUID(),
+            order: workoutExercise.sets.count,
+            note: set.note,
+            type: set.type
+        )
+        
+        await addSet(set: copiedSet)
+    }
 
     func deleteSet(_ id: UUID) async {
         do {

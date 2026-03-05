@@ -76,7 +76,6 @@ struct ExerciseLibraryView: View {
                 }
             }
         }
-        .navigationLinkIndicatorVisibility(.hidden)
         .navigationTitle(
             String(
                 localized: "Exercise Library"

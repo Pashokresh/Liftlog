@@ -21,7 +21,11 @@ struct ExerciseSetListView: View {
         Section {
             if !viewModel.workoutExercise.sets.isEmpty {
                 ForEach(viewModel.workoutExercise.sets) { set in
-                    SetRowView(set: set)
+                    SetRowView(set: set, copySet: {
+                        Task {
+                            await viewModel.copySet(set)
+                        }
+                    })
                         .swipeActions {
                             SwipeDeleteButton {
                                 Task {
@@ -46,7 +50,11 @@ struct ExerciseSetListView: View {
         ForEach(viewModel.history) { historyExercise in
             Section {
                 ForEach(historyExercise.sets) { set in
-                    SetRowView(set: set)
+                    SetRowView(set: set, copySet: {
+                        Task {
+                            await viewModel.copySet(set)
+                        }
+                    })
                 }
             } header: {
                 HStack(spacing: 8) {

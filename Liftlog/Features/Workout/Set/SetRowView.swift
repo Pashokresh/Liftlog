@@ -10,6 +10,7 @@ import SwiftUI
 struct SetRowView: View {
 
     let set: ExerciseSetModel
+    let copySet: () -> Void
 
     @ViewBuilder
     private var notes: some View {
@@ -25,22 +26,34 @@ struct SetRowView: View {
         switch set.type {
         case .timed(let duration):
             Text(formattedDuration(duration))
-                .font(.title3)
+                .font(.title2)
         case .weighted(let reps, let weight):
             Text("\(reps) x \(formattedWeight(weight))")
-                .font(.title3)
+                .font(.title2)
         }
     }
 
     var body: some View {
         HStack(spacing: 16) {
-            Image(systemName: set.type.exerciseType.systemImage)
-                .foregroundStyle(.accent)
+            Text("\(set.order + 1).")
+                .font(.title2)
+            
             VStack(alignment: .leading, spacing: 12) {
+
                 setInfo
 
                 notes
             }
+            
+            Spacer()
+            
+            Button {
+               copySet()
+            } label: {
+                Image(systemName: Images.copy)
+                    .foregroundStyle(.accent)
+            }
+            
         }
         .padding(.horizontal)
     }
@@ -56,7 +69,7 @@ struct SetRowView: View {
 
 #Preview {
     VStack {
-        SetRowView(set: ExerciseSetModel.mocks[1])
-        SetRowView(set: ExerciseSetModel.mocks[0])
+        SetRowView(set: ExerciseSetModel.mocks[1]) { }
+        SetRowView(set: ExerciseSetModel.mocks[0]) { }
     }
 }

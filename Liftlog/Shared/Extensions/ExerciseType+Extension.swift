@@ -16,14 +16,3 @@ extension ExerciseType {
         }
     }
 }
-
-extension SetType {
-    var exerciseType: ExerciseType {
-        switch self {
-        case .timed:
-            return .time
-        case .weighted(reps: _, weight: _):
-            return .reps
-        }
-    }
-}

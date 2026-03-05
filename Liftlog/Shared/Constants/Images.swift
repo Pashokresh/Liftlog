@@ -17,4 +17,6 @@ final class Images {
     static let dumbbell = "dumbbell"
     static let repeatSymbol = "repeat"
     static let stopwatch = "stopwatch"
+    static let xmark = "xmark"
+    static let copy = "document.on.document"
 }

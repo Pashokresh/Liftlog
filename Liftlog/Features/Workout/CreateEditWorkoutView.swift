@@ -62,8 +62,16 @@ struct CreateEditWorkoutView: View {
                     id: "create.workout.cancel",
                     placement: .topBarLeading
                 ) {
-                    Button(role: .cancel) {
-                        dismiss()
+                    if #available(iOS 26.0, *) {
+                        Button(role: .cancel) {
+                            dismiss()
+                        }
+                    } else {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Text(String(localized: "Cancel"))
+                        }
                     }
                 }
 
@@ -71,11 +79,20 @@ struct CreateEditWorkoutView: View {
                     id: "create.workout.create",
                     placement: .topBarTrailing
                 ) {
-                    Button(role: .confirm) {
-                        onSave(makeWorkout())
-                        dismiss()
-                    }
-                    .disabled(!isValid)
+                    if #available(iOS 26.0, *) {
+                        Button(role: .confirm) {
+                            onSave(makeWorkout())
+                            dismiss()
+                        }
+                        .disabled(!isValid)
+                    } else {
+                        Button {
+                            onSave(makeWorkout())
+                            dismiss()
+                        } label: {
+                            Text(String(localized: "Save"))
+                        }
+                        .disabled(!isValid)                    }
                 }
             }
         }

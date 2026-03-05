@@ -59,13 +59,13 @@ struct AddEditExerciseView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(id: "new.exercise.cancel", placement: .topBarLeading) {
-                    Button(role: .cancel) {
+                    AdaptiveCancelButton {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing) {
-                    Button(role: .confirm) {
+                    AdaptiveConfirmButton {
                         onSave(makeExercise())
                         dismiss()
                     }

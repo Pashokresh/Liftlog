@@ -17,16 +17,16 @@ struct AddBottomBarButton: View {
     }
     
     var body: some View {
-        Button {
-            action()
-        } label: {
-            HStack {
-                Image(systemName: Images.plusCircle)
-                Text(title)
+            Button {
+                action()
+            } label: {
+                HStack {
+                    Image(systemName: Images.plusCircle)
+                    Text(title)
+                }
             }
-        }
-        .buttonStyle(.glassProminent)
-        .foregroundStyle(.black)
+            .adaptiveGlassProminentButton()
+            .foregroundStyle(.ultraThickMaterial)
     }
 }
 

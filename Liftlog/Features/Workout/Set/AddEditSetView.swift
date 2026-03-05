@@ -95,12 +95,12 @@ struct AddEditSetView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button(role: .cancel) {
+                    AdaptiveCancelButton {
                         dismiss()
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(role: .confirm) {
+                    AdaptiveConfirmButton {
                         onSave(makeSet())
                         dismiss()
                     }

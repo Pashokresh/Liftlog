@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddTopBarButton: View {
     let action: () -> Void
-    
+
     var body: some View {
         Button {
             action()
@@ -18,10 +18,10 @@ struct AddTopBarButton: View {
                 .font(.headline)
                 .foregroundStyle(.ultraThickMaterial)
         }
-        .buttonStyle(.glassProminent)
+        .adaptiveGlassProminentButton()
     }
 }
 
 #Preview {
-    AddTopBarButton() {}
+    AddTopBarButton {}
 }

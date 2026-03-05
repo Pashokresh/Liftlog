@@ -167,7 +167,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             )
 
             let set = ExerciseSet(context: self.context)
-            set.id = UUID()
+            set.id = setModel.id
             set.order = Int16(setModel.order)
             set.note = setModel.note
             set.workoutExercise = workoutExercise
