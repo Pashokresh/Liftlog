@@ -15,7 +15,7 @@ struct UnavailableContentView: View {
     var body: some View {
         ContentUnavailableView(
             title,
-            systemImage: "dumbbell",
+            systemImage: Images.dumbbell,
             description: Text(message)
         )
     }

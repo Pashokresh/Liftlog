@@ -11,39 +11,45 @@ import SwiftUI
 @Observable
 @MainActor
 final class ExerciseSetViewModel {
-    
+
     private(set) var workoutExercise: WorkoutExerciseModel
     private(set) var history: [ExerciseHistorySection] = .init()
     private(set) var error: Error?
     var setToEdit: ExerciseSetModel?
-    
+
     private let workoutRepository: WorkoutRepositoryProtocol
     private let exerciseRepository: ExerciseRepositoryProtocol
-    
-    init(workoutExercise: WorkoutExerciseModel,
-         workoutRepository: WorkoutRepositoryProtocol,
-         exerciseRepository: ExerciseRepositoryProtocol) {
+
+    init(
+        workoutExercise: WorkoutExerciseModel,
+        workoutRepository: WorkoutRepositoryProtocol,
+        exerciseRepository: ExerciseRepositoryProtocol
+    ) {
         self.workoutExercise = workoutExercise
         self.workoutRepository = workoutRepository
         self.exerciseRepository = exerciseRepository
     }
-    
+
     func loadHistory() async {
         do {
             history = try await exerciseRepository.fetchHistory(
-                for: workoutExercise.exercise.id
+                for: workoutExercise.exercise.id,
+                excluding: workoutExercise.id
             )
         } catch {
             self.error = error
         }
     }
-    
+
     func addSet(set: ExerciseSetModel) async {
         var setWithOrder = set
         setWithOrder.order = workoutExercise.sets.count
-        
+
         do {
-            try await workoutRepository.addSet(setWithOrder, to: workoutExercise.id)
+            try await workoutRepository.addSet(
+                setWithOrder,
+                to: workoutExercise.id
+            )
             withAnimation {
                 workoutExercise.sets.append(setWithOrder)
             }
@@ -51,7 +57,7 @@ final class ExerciseSetViewModel {
             self.error = error
         }
     }
-    
+
     func deleteSet(_ id: UUID) async {
         do {
             try await workoutRepository.deleteSet(id)
@@ -62,16 +68,18 @@ final class ExerciseSetViewModel {
             self.error = error
         }
     }
-    
+
     func updateSet(_ set: ExerciseSetModel) async {
-        defer {
-            setToEdit = nil
-        }
-        
         do {
             try await workoutRepository.updateSet(set)
-            guard let index = workoutExercise.sets.firstIndex(where: { $0.id == set.id }) else {
-                self.error = LiftlogError.failure(description: String(localized: "Set not found"))
+            guard
+                let index = workoutExercise.sets.firstIndex(where: {
+                    $0.id == set.id
+                })
+            else {
+                self.error = LiftlogError.failure(
+                    description: String(localized: "Set not found")
+                )
                 return
             }
             workoutExercise.sets[index] = set
@@ -79,11 +87,11 @@ final class ExerciseSetViewModel {
             self.error = error
         }
     }
-    
+
     func nullifyError() {
         error = nil
     }
-    
+
     func deleteHistorySet(_ id: UUID) async {
         do {
             try await workoutRepository.deleteSet(id)

@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct WorkoutDetailView: View {
-    
+
     @Environment(ViewModelFactory.self) private var viewModelFactory
-    
+
     @State private var viewModel: WorkoutDetailViewModel
     @State private var isAddingExercise = false
-        
+
     init(viewModel: WorkoutDetailViewModel) {
         _viewModel = .init(initialValue: viewModel)
     }
-    
+
     var body: some View {
         List {
             ForEach(viewModel.workout.exercises) { exercise in
@@ -25,7 +25,8 @@ struct WorkoutDetailView: View {
                     value: Route.exerciseSet(exercise),
                     label: {
                         WorkoutDetailRow(workoutExercise: exercise)
-                    })
+                    }
+                )
             }
             .onDelete { indexSet in
                 indexSet.forEach { index in
@@ -37,26 +38,30 @@ struct WorkoutDetailView: View {
                 }
             }
             .onMove { source, destination in
-                Task { await viewModel.moveExercise(
-                    fromSource: source,
-                    to: destination
-                )}
+                Task {
+                    await viewModel.moveExercise(
+                        fromSource: source,
+                        to: destination
+                    )
+                }
             }
         }
         .environment(\.defaultMinListRowHeight, 80)
         .navigationTitle(viewModel.workout.name)
-        .navigationSubtitle(viewModel.workout.date.formatted(date: .abbreviated,time: .omitted))
+        .navigationSubtitle(
+            viewModel.workout.date.formatted(date: .abbreviated, time: .omitted)
+        )
         .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                
+            if !viewModel.workout.exercises.isEmpty {
+                ToolbarItem(placement: .topBarTrailing) {
+                    EditButton()
+                }
             }
-            ToolbarItem(placement: .topBarTrailing) {
-                EditButton()
-            }
-            
+
             ToolbarItem(placement: .bottomBar) {
                 AddBottomBarButton(
-                    with: String(localized: "Add Exercise")) {
+                    with: String(localized: "Add Exercise")
+                ) {
                     isAddingExercise = true
                 }
             }
@@ -65,8 +70,9 @@ struct WorkoutDetailView: View {
             if viewModel.workout.exercises.isEmpty {
                 ContentUnavailableView(
                     String(localized: "No Exercises yet"),
-                    systemImage: "figure.strengthtraining.traditional",
-                    description: Text(String(localized: "Start by adding exercises here")
+                    systemImage: Images.figureStrengthTraining,
+                    description: Text(
+                        String(localized: "Start by adding exercises here")
                     )
                 )
             }
@@ -82,17 +88,24 @@ struct WorkoutDetailView: View {
                 }
             )
         }
-        .alert(String(localized: "Error"),
-               isPresented: Binding(
+        .alert(
+            String(localized: "Error"),
+            isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
-               )) {
-                   Button("OK") {
-                       viewModel.nullifyError()
-                   }
-               } message: {
-                   Text(viewModel.error?.localizedDescription ?? "")
-               }
+            )
+        ) {
+            Button("OK") {
+                viewModel.nullifyError()
+            }
+        } message: {
+            Text(viewModel.error?.localizedDescription ?? "")
+        }
+        .onAppear {
+            Task {
+                await viewModel.reloadWorkout()
+            }
+        }
     }
 }
 
@@ -102,9 +115,12 @@ struct WorkoutDetailView: View {
             viewModel: WorkoutDetailViewModel(
                 workout: WorkoutModel.mock,
                 repository: MockWorkoutRepository()
-            ))
+            )
+        )
     }
-    .environment(ViewModelFactory(
-        dependencies: AppDependencies.mock)
+    .environment(
+        ViewModelFactory(
+            dependencies: AppDependencies.mock
+        )
     )
 }

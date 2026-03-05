@@ -8,7 +8,7 @@
 import Foundation
 
 extension Tag {
-    
+
     func toDomain() -> TagModel {
         TagModel(
             id: id ?? UUID(),

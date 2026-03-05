@@ -11,16 +11,16 @@ import SwiftUI
 @Observable
 final class NavigationManager {
     var path = NavigationPath()
-    
+
     func push(_ route: Route) {
         path.append(route)
     }
-    
+
     func pop() {
         guard !path.isEmpty else { return }
         path.removeLast()
     }
-    
+
     func toRoot() {
         path = NavigationPath()
     }

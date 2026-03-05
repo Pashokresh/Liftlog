@@ -15,6 +15,8 @@ final class ExerciseLibraryViewModel {
     
     private let repository: ExerciseRepositoryProtocol
     
+    var editingExercise: ExerciseModel?
+    
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository
     }
@@ -34,6 +36,18 @@ final class ExerciseLibraryViewModel {
             do {
                 let exercise = try await repository.create(name: name, description: description, type: type)
                 exercises.append(exercise)
+            } catch {
+                self.error = error
+            }
+        }
+    }
+    
+    func updateExercise(_ exercise: ExerciseModel) {
+        Task {
+            do {
+                try await repository.update(exercise)
+                guard let index = exercises.firstIndex(where: { $0.id == exercise.id }) else { return }
+                exercises[index] = exercise
             } catch {
                 self.error = error
             }

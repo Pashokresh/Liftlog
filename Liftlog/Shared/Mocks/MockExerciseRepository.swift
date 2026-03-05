@@ -15,7 +15,7 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         return exercises
     }
     
-    func fetchHistory(for exerciseID: UUID) async throws -> [ExerciseHistorySection] {
+    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySection] {
         let timeIntervalDay: TimeInterval = 86_400
         let dateYesterday = Date.now.addingTimeInterval(-timeIntervalDay)
         let dateDayBeforeYesterday = Date.now.addingTimeInterval(-timeIntervalDay * 2)

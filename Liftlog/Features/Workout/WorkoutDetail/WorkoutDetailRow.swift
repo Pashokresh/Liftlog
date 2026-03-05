@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct WorkoutDetailRow: View {
-    
+
     let workoutExercise: WorkoutExerciseModel
-    
+
     private var isComplete: Bool {
         !workoutExercise.sets.isEmpty
     }
-    
+
     var body: some View {
         HStack {
             Image(
-                systemName: isComplete ?  "checkmark.circle.fill" : "circle")
+                systemName: isComplete
+                ? Images.checkmarkCircle : Images.emptyCircle
+            )
             .font(.title2)
             .animation(.easeInOut) {
                 $0

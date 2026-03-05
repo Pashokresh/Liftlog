@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct WorkoutRowView: View {
-    
+
     let workout: WorkoutModel
-    
+
     private var formattedDate: String {
         workout.date.formatted(date: .abbreviated, time: .omitted)
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text(workout.name)
@@ -23,11 +23,13 @@ struct WorkoutRowView: View {
                 Text(formattedDate)
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                if !workout.exercises.isEmpty {
+                if !workout.tags.isEmpty {
                     Text("·")
-                    Text(workout.tags
-                        .map { $0.name }
-                        .joined(separator: " "))
+                    Text(
+                        workout.tags
+                            .map { $0.name }
+                            .joined(separator: " ")
+                    )
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)

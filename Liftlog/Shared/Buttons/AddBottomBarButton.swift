@@ -21,11 +21,12 @@ struct AddBottomBarButton: View {
             action()
         } label: {
             HStack {
-                Image(systemName: "plus.circle.fill")
+                Image(systemName: Images.plusCircle)
                 Text(title)
             }
         }
         .buttonStyle(.glassProminent)
+        .foregroundStyle(.black)
     }
 }
 

@@ -15,6 +15,13 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
         workouts
     }
     
+    func fetch(_ id: UUID) async throws -> WorkoutModel {
+        guard let workout = workouts.first(where: { $0.id == id }) else {
+            throw LiftlogError.failure(description: String(localized: "Workout not found"))
+        }
+        return workout
+    }
+    
     func create(_ workoutModel: WorkoutModel) throws -> WorkoutModel {
         workouts.append(workoutModel)
         return workoutModel

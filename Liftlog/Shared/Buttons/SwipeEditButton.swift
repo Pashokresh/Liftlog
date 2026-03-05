@@ -9,12 +9,15 @@ import SwiftUI
 
 struct SwipeEditButton: View {
     let action: () -> Void
-    
+
     var body: some View {
         Button {
             action()
         } label: {
-            Label(String(localized: "Edit"), systemImage: "pencil")
+            Label(
+                String(localized: "Edit"),
+                systemImage: Images.pencil
+            )
         }
         .tint(.blue)
     }

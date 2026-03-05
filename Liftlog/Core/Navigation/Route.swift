@@ -9,8 +9,7 @@ import Foundation
 import SwiftUI
 
 enum Route: Hashable, Equatable {
+    case exerciseLibrary
     case workoutDetailView(WorkoutModel)
     case exerciseSet(WorkoutExerciseModel)
 }
-
-

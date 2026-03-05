@@ -1,5 +1,5 @@
 //
-//  AddExerciseView.swift
+//  AddEditExerciseView.swift
 //  Liftlog
 //
 //  Created by Pavel Martynenkov on 20.02.26.
@@ -7,14 +7,26 @@
 
 import SwiftUI
 
-struct AddExerciseView: View {
+struct AddEditExerciseView: View {
     
-    let onSave: (String, ExerciseType, String?) -> Void
+    let onSave: (ExerciseModel) -> Void
+    let exercise: ExerciseModel?
     
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
     @State private var description = ""
     @State private var type: ExerciseType = .reps
+    
+    init(exercise: ExerciseModel? = nil, onSave: @escaping (ExerciseModel) -> Void) {
+        self.onSave = onSave
+        self.exercise = exercise
+        
+        guard let exercise = exercise else { return }
+        
+        _name = .init(initialValue: exercise.name)
+        _description = .init(initialValue: exercise.description ?? "")
+        _type = .init(initialValue: type)
+    }
     
     private var isValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
@@ -41,8 +53,9 @@ struct AddExerciseView: View {
                     )
                     .lineLimit(3...6)
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
-            .navigationTitle(String(localized: "New Exercise"))
+            .navigationTitle(exercise != nil ? String(localized: "Edit Exercise") : String(localized: "Add Exercise"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(id: "new.exercise.cancel", placement: .topBarLeading) {
@@ -53,13 +66,7 @@ struct AddExerciseView: View {
                 
                 ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing) {
                     Button(role: .confirm) {
-                        onSave(
-                            name,
-                            type,
-                            description
-                                .trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?
-                            nil : description
-                        )
+                        onSave(makeExercise())
                         dismiss()
                     }
                     .disabled(!isValid)
@@ -67,8 +74,20 @@ struct AddExerciseView: View {
             }
         }
     }
+    
+    private func makeExercise() -> ExerciseModel {
+        ExerciseModel(
+            id: exercise?.id ?? UUID(),
+            name: name,
+            description: description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : description,
+            type: type
+        )
+    }
 }
 
 #Preview {
-    AddExerciseView(onSave: { _, _, _ in })
+    AddEditExerciseView(
+        exercise: ExerciseModel.mock,
+        onSave: { _ in }
+    )
 }

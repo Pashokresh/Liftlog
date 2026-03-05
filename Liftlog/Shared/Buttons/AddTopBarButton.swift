@@ -14,9 +14,9 @@ struct AddTopBarButton: View {
         Button {
             action()
         } label: {
-            Image(systemName: "plus")
+            Image(systemName: Images.plus)
                 .font(.headline)
-                .foregroundStyle(.white)
+                .foregroundStyle(.ultraThickMaterial)
         }
         .buttonStyle(.glassProminent)
     }

@@ -11,21 +11,26 @@ struct WorkoutListView: View {
     @State private var viewModel: WorkoutListViewModel
     @State private var isCreatingWorkout = false
     
-    
+    @Environment(NavigationManager.self) var navigationManager
+
     init(viewModel: WorkoutListViewModel) {
         _viewModel = .init(initialValue: viewModel)
     }
-    
+
     var body: some View {
         List {
             ForEach(viewModel.workouts) { workout in
                 NavigationLink(value: Route.workoutDetailView(workout)) {
-                    WorkoutRowView(workout:  workout)
+                    WorkoutRowView(workout: workout)
                 }
-            }
-            .onDelete { indexSet in
-                indexSet.forEach {
-                    viewModel.deleteWorkout(viewModel.workouts[$0].id)
+                .swipeActions {
+                    SwipeDeleteButton {
+                        viewModel.deleteWorkout(workout.id)
+                    }
+                    
+                    SwipeEditButton {
+                        viewModel.editingWorkout = workout
+                    }
                 }
             }
         }
@@ -40,25 +45,51 @@ struct WorkoutListView: View {
             if viewModel.workouts.isEmpty {
                 UnavailableContentView(
                     title: String(localized: "No workouts yet"),
-                    message: String(localized: "Create a new workout to get started.")
+                    message: String(
+                        localized: "Create a new workout to get started."
+                    )
                 )
             }
         }
         .toolbar {
-            ToolbarItem(id: "workout.list.add",
-                        placement: .topBarTrailing)
-            {
+            ToolbarItem(
+                id: "workout.list.add",
+                placement: .topBarTrailing
+            ) {
                 AddTopBarButton {
                     isCreatingWorkout = true
                 }
             }
+            ToolbarItem(
+                id: "exercise.library.add",
+                placement: .topBarLeading
+            ) {
+                Button {
+                    navigationManager.push(Route.exerciseLibrary)
+                } label: {
+                    Image(systemName:
+                            Images.figureStrengthTraining
+                    )
+                }
+            }
         }
         .sheet(isPresented: $isCreatingWorkout) {
-            CreateWorkoutView(onSave: { name, date, notes in
-                viewModel.createWorkout(name: name, date: date, notes: notes)
-            })
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
+            CreateEditWorkoutView(
+                onSave: { workout in
+                    viewModel.createWorkout(
+                        name: workout.name,
+                        date: workout.date,
+                        notes: workout.notes
+                    )
+                },
+            )
+            .presentationDetents([.medium])
+        }
+        .sheet(item: $viewModel.editingWorkout) {
+            CreateEditWorkoutView(workout: $0) { updatedWorkout in
+                viewModel.updateWorkout(updatedWorkout)
+            }
+            .presentationDetents([.medium])
         }
         .alert(
             isPresented: Binding(
@@ -85,5 +116,5 @@ struct WorkoutListView: View {
                 repository: MockWorkoutRepository()
             )
         )
-    }
+    }.environment(NavigationManager())
 }

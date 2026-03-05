@@ -5,17 +5,18 @@
 //  Created by Pavel Martynenkov on 19.02.26.
 //
 
-import Foundation
 import CoreData
+import Foundation
 
 extension Workout {
-    
+
     func toDomain() -> WorkoutModel {
         let tags = (tags as? Set<Tag>)?.map { $0.toDomain() } ?? []
-        let exercises = (exercises as? Set<WorkoutExercise>)?
+        let exercises =
+            (exercises as? Set<WorkoutExercise>)?
             .map { $0.toDomain() }
             .sorted { $0.order < $1.order } ?? []
-        
+
         return WorkoutModel(
             id: id ?? UUID(),
             name: name ?? "",

@@ -45,13 +45,8 @@ struct ExerciseSetListView: View {
     var historyWorkoutSection: some View {
         ForEach(viewModel.history) { historyExercise in
             Section {
-                ForEach(historyExercise.sets) {
-                    SetRowView(set: $0)
-                        .swipeActions {
-                            SwipeDeleteButton {
-                                // TODO: Call history set deletion
-                            }
-                        }
+                ForEach(historyExercise.sets) { set in
+                    SetRowView(set: set)
                 }
             } header: {
                 HStack(spacing: 8) {
@@ -83,6 +78,7 @@ struct ExerciseSetListView: View {
             // History sets
             historyWorkoutSection
         }
+        .scrollDismissesKeyboard(.interactively)
         .environment(\.defaultMinListRowHeight, 80)
         .navigationTitle(viewModel.workoutExercise.exercise.name)
         .toolbar {
@@ -92,13 +88,6 @@ struct ExerciseSetListView: View {
                 ) {
                     isAddingNewSet = true
                 }
-            }
-        }
-        .overlay {
-            if viewModel.workoutExercise.sets.isEmpty
-                && viewModel.history.isEmpty
-            {
-                noSetsPlaceholder
             }
         }
         .sheet(isPresented: $isAddingNewSet) {
@@ -111,7 +100,7 @@ struct ExerciseSetListView: View {
                     }
                 }
             )
-            .presentationDetents([.medium, .large])
+            .presentationDetents([.fraction(2 / 3)])
             .presentationDragIndicator(.visible)
         }
         .sheet(item: $viewModel.setToEdit) { set in
