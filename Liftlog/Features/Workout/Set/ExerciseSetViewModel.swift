@@ -57,7 +57,7 @@ final class ExerciseSetViewModel {
             self.error = error
         }
     }
-    
+
     func copySet(_ set: ExerciseSetModel) async {
         let copiedSet = ExerciseSetModel(
             id: UUID(),
@@ -65,13 +65,14 @@ final class ExerciseSetViewModel {
             note: set.note,
             type: set.type
         )
-        
+
         await addSet(set: copiedSet)
     }
 
     func deleteSet(_ id: UUID) async {
         do {
             try await workoutRepository.deleteSet(id)
+
             withAnimation {
                 workoutExercise.sets.removeAll(where: { $0.id == id })
             }

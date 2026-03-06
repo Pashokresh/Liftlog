@@ -37,9 +37,7 @@ struct ExerciseLibraryView: View {
         List {
             ForEach(filteredExercises) { exercise in
                ExerciseRowView(exercise: exercise)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
+                    .onRowTap {
                         if let onSelect = onSelect {
                             onSelect(exercise)
                         } else {

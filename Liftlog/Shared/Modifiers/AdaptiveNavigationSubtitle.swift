@@ -1,5 +1,5 @@
 //
-//  AdjustableNavigationSubtitle.swift
+//  AdaptiveNavigationSubtitle.swift
 //  Liftlog
 //
 //  Created by Pavel Martynenkov on 05.03.26.

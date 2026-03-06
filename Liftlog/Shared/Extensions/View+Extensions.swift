@@ -9,8 +9,8 @@ import SwiftUI
 
 extension View {
     
-    func adjustableNavigationSubtitle(_ subtitle: String) -> some View {
-        modifier(AdjustableNavigationSubtitle(subtitle: subtitle))
+    func adaptiveNavigationSubtitle(_ subtitle: String) -> some View {
+        modifier(AdaptiveNavigationSubtitle(subtitle: subtitle))
     }
     
     @ViewBuilder
@@ -20,5 +20,14 @@ extension View {
         } else {
             self.buttonStyle(.borderedProminent)
         }
+    }
+    
+    func onRowTap(_ action: @escaping () -> Void) -> some View {
+        self
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                action()
+            }
     }
 }

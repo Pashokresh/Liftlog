@@ -20,23 +20,33 @@ struct ExerciseSetListView: View {
     var currentWorkoutSection: some View {
         Section {
             if !viewModel.workoutExercise.sets.isEmpty {
-                ForEach(viewModel.workoutExercise.sets) { set in
-                    SetRowView(set: set, copySet: {
-                        Task {
-                            await viewModel.copySet(set)
-                        }
-                    })
-                        .swipeActions {
-                            SwipeDeleteButton {
-                                Task {
-                                    await viewModel.deleteSet(set.id)
-                                }
+                ForEach(
+                    Array(viewModel.workoutExercise.sets.enumerated()),
+                    id: \.element.id
+                ) { index, set in
+                    SetRowView(
+                        set: set,
+                        number: index + 1,
+                        copySet: {
+                            Task {
+                                await viewModel.copySet(set)
                             }
+                        }
+                    )
+                    .onRowTap {
+                        viewModel.setToEdit = set
+                    }
+                    .swipeActions {
+                        SwipeDeleteButton {
+                            Task {
+                                await viewModel.deleteSet(set.id)
+                            }
+                        }
 
-                            SwipeEditButton {
-                                viewModel.setToEdit = set
-                            }
+                        SwipeEditButton {
+                            viewModel.setToEdit = set
                         }
+                    }
                 }
             } else {
                 noSetsPlaceholder
@@ -49,12 +59,19 @@ struct ExerciseSetListView: View {
     var historyWorkoutSection: some View {
         ForEach(viewModel.history) { historyExercise in
             Section {
-                ForEach(historyExercise.sets) { set in
-                    SetRowView(set: set, copySet: {
-                        Task {
-                            await viewModel.copySet(set)
+                ForEach(
+                    Array(historyExercise.sets.enumerated()),
+                    id: \.element.id
+                ) { index, set in
+                    SetRowView(
+                        set: set,
+                        number: index + 1,
+                        copySet: {
+                            Task {
+                                await viewModel.copySet(set)
+                            }
                         }
-                    })
+                    )
                 }
             } header: {
                 HStack(spacing: 8) {
