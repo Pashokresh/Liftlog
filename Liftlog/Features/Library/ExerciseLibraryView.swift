@@ -115,7 +115,7 @@ struct ExerciseLibraryView: View {
         .sheet(item: $viewModel.editingExercise) {
             AddEditExerciseView(exercise: $0) {
                 viewModel.updateExercise($0)
-            }
+            } 
             .presentationDetents([.fraction(2/3)])
         }
         .alert(

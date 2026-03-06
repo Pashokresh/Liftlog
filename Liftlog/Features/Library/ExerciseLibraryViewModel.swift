@@ -12,15 +12,15 @@ import Foundation
 final class ExerciseLibraryViewModel {
     private(set) var exercises: [ExerciseModel] = []
     private(set) var error: Error?
-    
+
     private let repository: ExerciseRepositoryProtocol
-    
+
     var editingExercise: ExerciseModel?
-    
+
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository
     }
-    
+
     func loadExercises() {
         Task {
             do {
@@ -30,30 +30,39 @@ final class ExerciseLibraryViewModel {
             }
         }
     }
-    
-    func createExercise(name: String, type: ExerciseType, description: String?) {
+
+    func createExercise(name: String, type: ExerciseType, description: String?)
+    {
         Task {
             do {
-                let exercise = try await repository.create(name: name, description: description, type: type)
+                let exercise = try await repository.create(
+                    name: name,
+                    description: description,
+                    type: type
+                )
                 exercises.append(exercise)
             } catch {
                 self.error = error
             }
         }
     }
-    
+
     func updateExercise(_ exercise: ExerciseModel) {
         Task {
             do {
                 try await repository.update(exercise)
-                guard let index = exercises.firstIndex(where: { $0.id == exercise.id }) else { return }
+                guard
+                    let index = exercises.firstIndex(where: {
+                        $0.id == exercise.id
+                    })
+                else { return }
                 exercises[index] = exercise
             } catch {
                 self.error = error
             }
         }
     }
-    
+
     func deleteExercise(_ id: UUID) {
         Task {
             do {
@@ -64,7 +73,7 @@ final class ExerciseLibraryViewModel {
             }
         }
     }
-    
+
     func nullifyError() {
         self.error = nil
     }
