@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct AdjustableNavigationSubtitle: ViewModifier {
+struct AdaptiveNavigationSubtitle: ViewModifier {
 
     var subtitle: String
 
