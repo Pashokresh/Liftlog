@@ -40,7 +40,11 @@ struct ExerciseLibraryView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        onSelect?(exercise)
+                        if let onSelect = onSelect {
+                            onSelect(exercise)
+                        } else {
+                            viewModel.editingExercise = exercise
+                        }
                     }
                 .swipeActions {
                     if onSelect == nil {

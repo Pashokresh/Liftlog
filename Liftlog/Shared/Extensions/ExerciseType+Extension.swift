@@ -10,7 +10,7 @@ extension ExerciseType {
     var systemImage: String {
         switch self {
         case.reps:
-            return Images.repeatSymbol
+            return Images.dumbbell
         case .time:
             return Images.stopwatch
         }

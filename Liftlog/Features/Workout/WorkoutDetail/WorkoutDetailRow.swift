@@ -24,7 +24,7 @@ struct WorkoutDetailRow: View {
             .font(.title2)
             .animation(.easeInOut) {
                 $0
-                    .foregroundStyle(isComplete ? .green : .gray)
+                    .foregroundStyle(isComplete ? .accent : .gray)
                     .rotationEffect(.degrees(isComplete ? 360 : 270))
             }
             Text(workoutExercise.exercise.name)
