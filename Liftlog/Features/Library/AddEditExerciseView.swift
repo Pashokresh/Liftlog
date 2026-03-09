@@ -28,7 +28,7 @@ struct AddEditExerciseView: View {
 
         _name = .init(initialValue: exercise.name)
         _description = .init(initialValue: exercise.description ?? "")
-        _type = .init(initialValue: type)
+        _type = .init(initialValue: exercise.type)
     }
 
     private var isValid: Bool {

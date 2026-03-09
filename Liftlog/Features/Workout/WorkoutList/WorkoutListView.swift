@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct WorkoutListView: View {
+    
     @State private var viewModel: WorkoutListViewModel
     @State private var isCreatingWorkout = false
     
     @Environment(NavigationManager.self) var navigationManager
+    @Environment(ViewModelFactory.self) var viewModelFactory
 
     init(viewModel: WorkoutListViewModel) {
         _viewModel = .init(initialValue: viewModel)
@@ -74,7 +76,8 @@ struct WorkoutListView: View {
             }
         }
         .sheet(isPresented: $isCreatingWorkout) {
-            CreateEditWorkoutView(
+            AddEditWorkoutView(
+                viewModel: viewModelFactory.makeAddEditWorkoutViewModel(),
                 onSave: { workout in
                     viewModel.createWorkout(
                         name: workout.name,
@@ -83,13 +86,15 @@ struct WorkoutListView: View {
                     )
                 },
             )
-            .presentationDetents([.medium])
+            .presentationDetents([.large])
         }
-        .sheet(item: $viewModel.editingWorkout) {
-            CreateEditWorkoutView(workout: $0) { updatedWorkout in
+        .sheet(item: $viewModel.editingWorkout) { workout in
+            AddEditWorkoutView(
+                viewModel: viewModelFactory.makeAddEditWorkoutViewModel(
+                    workout: workout)) { updatedWorkout in
                 viewModel.updateWorkout(updatedWorkout)
             }
-            .presentationDetents([.medium])
+            .presentationDetents([.large])
         }
         .alert(
             isPresented: Binding(
@@ -116,5 +121,7 @@ struct WorkoutListView: View {
                 repository: MockWorkoutRepository()
             )
         )
-    }.environment(NavigationManager())
+    }
+    .environment(NavigationManager())
+    .environment(ViewModelFactory(dependencies: AppDependencies.mock))
 }

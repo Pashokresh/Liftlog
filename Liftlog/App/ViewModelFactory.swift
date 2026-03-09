@@ -35,6 +35,13 @@ final class ViewModelFactory {
             exerciseRepository: dependencies.exerciseRepository
         )
     }
+    
+    func makeAddEditWorkoutViewModel(workout: WorkoutModel? = nil) -> AddEditWorkoutViewModel {
+        AddEditWorkoutViewModel(
+            tagRepository: dependencies.tagRepository,
+            workout: workout
+        )
+    }
 }
 
 extension ViewModelFactory {
