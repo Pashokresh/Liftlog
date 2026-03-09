@@ -12,30 +12,41 @@ import SwiftUI
 @MainActor
 final class WorkoutListViewModel {
     private(set) var workouts: [WorkoutModel] = []
+    private(set) var availableTags: [TagModel] = []
     private(set) var error: Error?
+    var selectedTagIDs: Set<UUID> = .init()
 
-    private var repository: WorkoutRepositoryProtocol
+    private var workoutRepository: WorkoutRepositoryProtocol
+    private var tagRepository: TagRepositoryProtocol
 
     var editingWorkout: WorkoutModel?
 
-    init(repository: WorkoutRepositoryProtocol) {
-        self.repository = repository
+    init(workoutRepository: WorkoutRepositoryProtocol, tagRepository: TagRepositoryProtocol) {
+        self.workoutRepository = workoutRepository
+        self.tagRepository = tagRepository
+    }
+    
+    // MARK: - Workout
+    
+    var filteredWorkouts: [WorkoutModel] {
+        guard !selectedTagIDs.isEmpty else { return workouts }
+        return workouts.filter { workout in
+            workout.tags.contains { selectedTagIDs.contains($0.id) }
+        }
     }
 
-    func loadWorkouts() {
-        Task {
-            do {
-                workouts = try await repository.fetchAll()
-            } catch {
-                self.error = error
-            }
+    func loadWorkouts() async {
+        do {
+            workouts = try await workoutRepository.fetchAll()
+        } catch {
+            self.error = error
         }
     }
 
     func deleteWorkout(_ id: UUID) {
         Task {
             do {
-                try await repository.delete(id)
+                try await workoutRepository.delete(id)
 
                 withAnimation {
                     workouts.removeAll { $0.id == id }
@@ -46,19 +57,10 @@ final class WorkoutListViewModel {
         }
     }
 
-    func createWorkout(name: String, date: Date, notes: String?) {
+    func createWorkout(_ model: WorkoutModel) {
         Task {
-            let model = WorkoutModel(
-                id: UUID(),
-                name: name,
-                date: date,
-                notes: notes,
-                tags: [],
-                exercises: [],
-            )
-
             do {
-                let createdModel = try await repository.create(model)
+                let createdModel = try await workoutRepository.create(model)
 
                 withAnimation {
                     workouts.append(createdModel)
@@ -72,7 +74,7 @@ final class WorkoutListViewModel {
     func updateWorkout(_ updatedWorkout: WorkoutModel) {
         Task {
             do {
-                try await repository.update(updatedWorkout)
+                try await workoutRepository.update(updatedWorkout)
                 guard
                     let index = workouts.firstIndex(where: {
                         $0.id == updatedWorkout.id
@@ -84,6 +86,30 @@ final class WorkoutListViewModel {
             }
         }
     }
+    
+    // MARK: - Work with Tags
+    
+    func loadTags() async {
+        do {
+            availableTags = try await tagRepository.fetchAll()
+        } catch {
+            self.error = error
+        }
+    }
+    
+    func toggleTag(_ tag: TagModel) {
+        if isTagSelected(tag) {
+            selectedTagIDs.remove(tag.id)
+        } else {
+            selectedTagIDs.insert(tag.id)
+        }
+    }
+    
+    func isTagSelected(_ tag: TagModel) -> Bool {
+        selectedTagIDs.contains(tag.id)
+    }
+    
+    // MARK: - Work with errors
 
     func nullifyError() {
         error = nil

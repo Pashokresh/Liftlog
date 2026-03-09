@@ -15,7 +15,7 @@ final class AddEditWorkoutViewModel {
     var name: String
     var date: Date
     var notes: String
-    var selectedTags: [TagModel]
+    var selectedTagIDs: Set<UUID> = .init()
     var newTagName: String = ""
     
     private(set) var availableTags: [TagModel] = []
@@ -29,6 +29,10 @@ final class AddEditWorkoutViewModel {
     
     var isValid: Bool { !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     
+    var selectedTags: [TagModel] { availableTags.filter { selectedTagIDs.contains($0.id) } }
+    
+    var unselectedTags: [TagModel] { availableTags.filter { !selectedTagIDs.contains($0.id) }  }
+    
     init(tagRepository: TagRepositoryProtocol, workout: WorkoutModel? = nil) {
         self.tagRepository = tagRepository
         self.workout = workout
@@ -36,7 +40,7 @@ final class AddEditWorkoutViewModel {
         self.name = workout?.name ?? ""
         self.date = workout?.date ?? Date.now
         self.notes = workout?.notes ?? ""
-        self.selectedTags = workout?.tags ?? []
+        workout?.tags.forEach { self.selectedTagIDs.insert($0.id) }
     }
     
     func loadTags() async {
@@ -54,7 +58,7 @@ final class AddEditWorkoutViewModel {
         do {
             let tag = try await tagRepository.create(name: trimmedTag)
             availableTags.append(tag)
-            selectedTags.append(tag)
+            selectedTagIDs.insert(tag.id)
             newTagName = ""
         } catch {
             self.error = error
@@ -62,10 +66,10 @@ final class AddEditWorkoutViewModel {
     }
     
     func toggleTag(_ tag: TagModel) {
-        if selectedTags.contains(where: { $0.id == tag.id }) {
-            selectedTags.removeAll(where: { $0.id == tag.id })
+        if selectedTagIDs.contains(tag.id) {
+            selectedTagIDs.remove(tag.id)
         } else {
-            selectedTags.append(tag)
+            selectedTagIDs.insert(tag.id)
         }
     }
     
@@ -76,7 +80,7 @@ final class AddEditWorkoutViewModel {
             date: date,
             notes: notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                 ? nil : notes,
-            tags: selectedTags,
+            tags: availableTags.filter { selectedTagIDs.contains($0.id) },
             exercises: workout?.exercises ?? []
         )
     }

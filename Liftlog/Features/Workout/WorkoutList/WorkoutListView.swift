@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct WorkoutListView: View {
-    
+
     @State private var viewModel: WorkoutListViewModel
     @State private var isCreatingWorkout = false
-    
+
     @Environment(NavigationManager.self) var navigationManager
     @Environment(ViewModelFactory.self) var viewModelFactory
 
@@ -21,7 +21,7 @@ struct WorkoutListView: View {
 
     var body: some View {
         List {
-            ForEach(viewModel.workouts) { workout in
+            ForEach(viewModel.filteredWorkouts) { workout in
                 NavigationLink(value: Route.workoutDetailView(workout)) {
                     WorkoutRowView(workout: workout)
                 }
@@ -29,7 +29,7 @@ struct WorkoutListView: View {
                     SwipeDeleteButton {
                         viewModel.deleteWorkout(workout.id)
                     }
-                    
+
                     SwipeEditButton {
                         viewModel.editingWorkout = workout
                     }
@@ -43,14 +43,19 @@ struct WorkoutListView: View {
                 String(localized: "Workouts")
             )
         )
+        .navigationBarTitleDisplayMode(.inline)
         .overlay {
-            if viewModel.workouts.isEmpty {
-                UnavailableContentView(
-                    title: String(localized: "No workouts yet"),
-                    message: String(
-                        localized: "Create a new workout to get started."
+            if viewModel.filteredWorkouts.isEmpty {
+                if viewModel.workouts.isEmpty {
+                    UnavailableContentView(
+                        title: String(localized: "No workouts yet"),
+                        message: String(
+                            localized: "Create a new workout to get started."
+                        )
                     )
-                )
+                } else {
+                    ContentUnavailableView.search
+                }
             }
         }
         .toolbar {
@@ -69,21 +74,37 @@ struct WorkoutListView: View {
                 Button {
                     navigationManager.push(Route.exerciseLibrary)
                 } label: {
-                    Image(systemName:
+                    Image(
+                        systemName:
                             Images.figureStrengthTraining
                     )
                 }
+            }
+        }
+        .safeAreaInset(edge: .top) {
+            if !viewModel.availableTags.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(viewModel.availableTags) { tag in
+                            let isSelected = viewModel.isTagSelected(tag)
+                            TagSortButton(isSelected: isSelected, tag: tag) {
+                                withAnimation {
+                                    viewModel.toggleTag(tag)
+                                }
+                            }
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+                .background(.bar)
             }
         }
         .sheet(isPresented: $isCreatingWorkout) {
             AddEditWorkoutView(
                 viewModel: viewModelFactory.makeAddEditWorkoutViewModel(),
                 onSave: { workout in
-                    viewModel.createWorkout(
-                        name: workout.name,
-                        date: workout.date,
-                        notes: workout.notes
-                    )
+                    viewModel.createWorkout(workout)
                 },
             )
             .presentationDetents([.large])
@@ -91,7 +112,9 @@ struct WorkoutListView: View {
         .sheet(item: $viewModel.editingWorkout) { workout in
             AddEditWorkoutView(
                 viewModel: viewModelFactory.makeAddEditWorkoutViewModel(
-                    workout: workout)) { updatedWorkout in
+                    workout: workout
+                )
+            ) { updatedWorkout in
                 viewModel.updateWorkout(updatedWorkout)
             }
             .presentationDetents([.large])
@@ -109,7 +132,10 @@ struct WorkoutListView: View {
             )
         }
         .onAppear {
-            viewModel.loadWorkouts()
+            Task {
+                await viewModel.loadTags()
+                await viewModel.loadWorkouts()
+            }
         }
     }
 }
@@ -118,7 +144,8 @@ struct WorkoutListView: View {
     NavigationStack {
         WorkoutListView(
             viewModel: WorkoutListViewModel(
-                repository: MockWorkoutRepository()
+                workoutRepository: MockWorkoutRepository(),
+                tagRepository: MockTagRepository()
             )
         )
     }

@@ -73,16 +73,6 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
             }
         }
     }
-
-    func addTag(_ tagModel: TagModel, to workoutID: UUID) throws {
-        guard let index = getModelIndex(workoutID) else { return }
-        workouts[index].tags.append(tagModel)
-    }
-
-    func removeTag(_ tagID: UUID, from workoutID: UUID) throws {
-        guard let index = getModelIndex(workoutID) else { return }
-        workouts[index].tags.removeAll { $0.id == tagID }
-    }
     
     private func getModelIndex(_ id: UUID) -> Int? {
         workouts.firstIndex(where: { $0.id == id })

@@ -40,10 +40,4 @@ protocol WorkoutRepositoryProtocol {
     func updateSet(_ model: ExerciseSetModel) async throws
 
     func deleteSet(_ id: UUID) async throws
-
-    // MARK: - Methods working with tags
-
-    func addTag(_ tagModel: TagModel, to workoutID: UUID) async throws
-
-    func removeTag(_ tagID: UUID, from workoutID: UUID) async throws
 }

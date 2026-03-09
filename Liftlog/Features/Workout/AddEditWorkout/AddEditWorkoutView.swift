@@ -59,11 +59,11 @@ struct AddEditWorkoutView: View {
                 }
 
                 Section(String(localized: "Tags")) {
-                    if !viewModel.selectedTags.isEmpty {
+                    if !viewModel.selectedTagIDs.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
                                 ForEach(
-                                    Array(viewModel.selectedTags),
+                                    viewModel.selectedTags,
                                     id: \.self
                                 ) { tag in
                                     TagChipView(
@@ -77,16 +77,11 @@ struct AddEditWorkoutView: View {
                         }
                     }
 
-                    let unselected = Array(
-                        viewModel.availableTags.filter { tag in
-                            !viewModel.selectedTags.contains { $0.id == tag.id }
-                        }
-                    )
-
-                    if !unselected.isEmpty {
+                    if !viewModel.unselectedTags.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
-                                ForEach(unselected, id: \.self) { tag in
+                                ForEach(viewModel.unselectedTags, id: \.self) {
+                                    tag in
                                     TagChipView(
                                         tag: tag,
                                         isSelected: false,

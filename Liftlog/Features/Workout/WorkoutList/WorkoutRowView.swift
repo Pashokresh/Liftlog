@@ -25,14 +25,17 @@ struct WorkoutRowView: View {
                     .foregroundStyle(.secondary)
                 if !workout.tags.isEmpty {
                     Text("·")
-                    Text(
-                        workout.tags
-                            .map { $0.name }
-                            .joined(separator: " ")
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    HStack {
+                        ForEach(workout.tags, id: \.id) {
+                            Text($0.name)
+                                .font(.caption)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.accentColor.opacity(0.8))
+                                .foregroundStyle(.white)
+                                .clipShape(.capsule)
+                        }
+                    }
                 }
             }
         }

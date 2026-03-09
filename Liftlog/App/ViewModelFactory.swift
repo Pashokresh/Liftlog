@@ -9,34 +9,46 @@ import Foundation
 
 @Observable
 final class ViewModelFactory {
-    
+
     private let dependencies: AppDependencies
-    
+
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
     }
-    
+
     func makeWorkoutListViewModel() -> WorkoutListViewModel {
-        WorkoutListViewModel(repository: dependencies.workoutRepository)
+        WorkoutListViewModel(
+            workoutRepository: dependencies.workoutRepository,
+            tagRepository: dependencies.tagRepository
+        )
     }
-    
+
     func makeExerciseLibraryViewModel() -> ExerciseLibraryViewModel {
         ExerciseLibraryViewModel(repository: dependencies.exerciseRepository)
     }
-    
-    func makeWorkoutDetailViewModel(_ workout: WorkoutModel) -> WorkoutDetailViewModel {
-        WorkoutDetailViewModel(workout: workout, repository: dependencies.workoutRepository)
+
+    func makeWorkoutDetailViewModel(_ workout: WorkoutModel)
+        -> WorkoutDetailViewModel
+    {
+        WorkoutDetailViewModel(
+            workout: workout,
+            repository: dependencies.workoutRepository
+        )
     }
-    
-    func makeExerciseSetViewModel(workoutExercise: WorkoutExerciseModel) -> ExerciseSetViewModel {
+
+    func makeExerciseSetViewModel(workoutExercise: WorkoutExerciseModel)
+        -> ExerciseSetViewModel
+    {
         ExerciseSetViewModel(
             workoutExercise: workoutExercise,
             workoutRepository: dependencies.workoutRepository,
             exerciseRepository: dependencies.exerciseRepository
         )
     }
-    
-    func makeAddEditWorkoutViewModel(workout: WorkoutModel? = nil) -> AddEditWorkoutViewModel {
+
+    func makeAddEditWorkoutViewModel(workout: WorkoutModel? = nil)
+        -> AddEditWorkoutViewModel
+    {
         AddEditWorkoutViewModel(
             tagRepository: dependencies.tagRepository,
             workout: workout

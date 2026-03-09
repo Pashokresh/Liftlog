@@ -43,11 +43,23 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         try await context.perform {
             let workout = Workout(context: self.context)
 
-            workout.id = UUID()
+            workout.id = workoutModel.id
             workout.name = workoutModel.name
             workout.date = workoutModel.date
             workout.notes = workoutModel.notes
-
+            
+            if !workoutModel.tags.isEmpty {
+                let tagsToAddRequest = fetchRequest(
+                    for: Tag.self,
+                    with: workoutModel.tags.map { $0.id }
+                )
+                let tagsToAdd = try self.context.fetch(tagsToAddRequest)
+                
+                tagsToAdd.forEach {
+                    workout.addToTags($0)
+                }
+            }
+            
             try self.context.save()
 
             return workout.toDomain()
@@ -209,52 +221,6 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             let set = try self.fetchSet(id)
 
             self.context.delete(set)
-            try self.context.save()
-        }
-    }
-
-    func addTag(_ tagModel: TagModel, to workoutID: UUID) async throws {
-        try await context.perform {
-            let workout = try self.fetchWorkout(workoutID)
-
-            guard
-                let tag = try self.context.fetch(
-                    fetchRequest(for: Tag.self, with: [tagModel.id])
-                ).first
-            else {
-                throw LiftlogError.failure(
-                    description: String(localized: "Tag was not found")
-                )
-            }
-
-            workout.addToTags(tag)
-
-            try self.context.save()
-        }
-    }
-
-    func removeTag(_ tagID: UUID, from workoutID: UUID) async throws {
-        try await context.perform {
-            let request = fetchRequest(for: Workout.self, with: [workoutID])
-
-            guard let workout = try self.context.fetch(request).first else {
-                throw LiftlogError.noData(
-                    description: String(localized: "Workout was not found")
-                )
-            }
-
-            guard
-                let tag = try self.context.fetch(
-                    fetchRequest(for: Tag.self, with: [tagID])
-                ).first
-            else {
-                throw LiftlogError.failure(
-                    description: String(localized: "Tag was not found")
-                )
-            }
-
-            workout.removeFromTags(tag)
-
             try self.context.save()
         }
     }
