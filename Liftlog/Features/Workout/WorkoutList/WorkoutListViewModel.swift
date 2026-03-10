@@ -15,11 +15,11 @@ final class WorkoutListViewModel {
     private(set) var availableTags: [TagModel] = []
     private(set) var error: Error?
     var selectedTagIDs: Set<UUID> = .init()
+    
+    var editingWorkout: WorkoutModel?
 
     private var workoutRepository: WorkoutRepositoryProtocol
     private var tagRepository: TagRepositoryProtocol
-
-    var editingWorkout: WorkoutModel?
 
     init(workoutRepository: WorkoutRepositoryProtocol, tagRepository: TagRepositoryProtocol) {
         self.workoutRepository = workoutRepository

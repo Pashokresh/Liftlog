@@ -22,6 +22,7 @@ final class AddEditWorkoutViewModel {
     private(set) var error: Error?
     
     private let workout: WorkoutModel?
+    
     private let tagRepository: TagRepositoryProtocol
     
     

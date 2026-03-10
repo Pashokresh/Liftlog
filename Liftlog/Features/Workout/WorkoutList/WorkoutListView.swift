@@ -105,6 +105,7 @@ struct WorkoutListView: View {
                 viewModel: viewModelFactory.makeAddEditWorkoutViewModel(),
                 onSave: { workout in
                     viewModel.createWorkout(workout)
+                    updateTagsList()
                 },
             )
             .presentationDetents([.large])
@@ -116,6 +117,7 @@ struct WorkoutListView: View {
                 )
             ) { updatedWorkout in
                 viewModel.updateWorkout(updatedWorkout)
+                updateTagsList()
             }
             .presentationDetents([.large])
         }
@@ -132,10 +134,17 @@ struct WorkoutListView: View {
             )
         }
         .onAppear {
+            updateTagsList()
+            
             Task {
-                await viewModel.loadTags()
                 await viewModel.loadWorkouts()
             }
+        }
+    }
+    
+    private func updateTagsList() {
+        Task {
+            await viewModel.loadTags()
         }
     }
 }
