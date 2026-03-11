@@ -76,7 +76,7 @@ struct WorkoutListView: View {
                 } label: {
                     Image(
                         systemName:
-                            Images.figureStrengthTraining
+                            Images.bookPages
                     )
                 }
             }

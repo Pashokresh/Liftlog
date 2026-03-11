@@ -15,6 +15,7 @@ struct ExerciseRowView: View {
             Image(systemName: exercise.type.systemImage)
                 .font(.title)
                 .foregroundStyle(.accent)
+                .frame(width: 40, height: 40, alignment: .center)
             
             VStack(alignment: .leading) {
                 Text(exercise.name)
@@ -33,4 +34,7 @@ struct ExerciseRowView: View {
 
 #Preview {
     ExerciseRowView(exercise: ExerciseModel.mock)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    ExerciseRowView(exercise: ExerciseModel.mocks[0])
+        .frame(maxWidth: .infinity, alignment: .leading)
 }

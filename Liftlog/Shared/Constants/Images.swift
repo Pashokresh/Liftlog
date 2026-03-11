@@ -12,6 +12,7 @@ final class Images {
     static let plusCircle = "plus.circle.fill"
     static let plus = "plus"
     static let figureStrengthTraining = "figure.strengthtraining.traditional"
+    static let bookPages = "book.pages.fill"
     static let trash = "trash"
     static let pencil = "pencil"
     static let dumbbell = "dumbbell"
