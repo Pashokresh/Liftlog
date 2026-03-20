@@ -1,0 +1,115 @@
+# Liftlog
+
+A native iOS workout tracking app built with SwiftUI and CoreData. Log your training sessions, manage a custom exercise library, and track set history over time.
+
+Built as a portfolio project to demonstrate native iOS development practices — clean architecture, testable code, and modern SwiftUI patterns.
+
+---
+
+## Screenshots
+
+> _Coming soon_
+
+---
+
+## Features
+
+- **Exercise Library** — Create, edit, and delete custom exercises with muscle group categorization
+- **Workout Logging** — Log workouts with date, tags, and notes; filter the workout list by tag
+- **Set Tracking** — Record sets with weight and reps; view full history per exercise across sessions
+- **Workout Detail** — Review all exercises and sets within a completed session
+- **Tag Filtering** — Filter workout history by custom tags for quick navigation
+
+---
+
+## Architecture
+
+The project follows **MVVM** with a clean separation between data, domain, and presentation layers.
+
+```
+Liftlog/
+├── App/
+│   └── LiftlogApp.swift
+├── Core/
+│   ├── DI/                    # ViewModelFactory — dependency injection container
+│   ├── Navigation/            # NavigationManager + Route enum
+│   └── Persistence/           # CoreData stack (PersistenceController)
+├── Data/
+│   ├── Models/                # CoreData NSManagedObject subclasses
+│   └── Repositories/          # Concrete repository implementations
+├── Domain/
+│   ├── Models/                # Pure Swift domain models (Workout, Exercise, WorkoutSet)
+│   └── Repositories/          # Repository protocols
+└── Presentation/
+    ├── Exercises/             # Exercise library views + ViewModels
+    ├── Workouts/              # Workout list, detail, add/edit views + ViewModels
+    └── Sets/                  # Set tracking views + ViewModels
+```
+
+### Key design decisions
+
+| Concern | Solution |
+|---|---|
+| Dependency injection | `ViewModelFactory` — single factory passed through the environment |
+| State management | `@Observable` macro (iOS 17+) |
+| Data persistence | CoreData with cascade delete rules |
+| Domain isolation | Separate domain models mapped from CoreData entities |
+| Repository pattern | Protocol-based repositories for testability |
+| Navigation | `NavigationManager` with a `Route` enum over `NavigationStack` |
+| Testing | Swift Testing framework (`@Suite`, `@Test`, `#expect`, mock repositories) |
+
+---
+
+## Requirements
+
+- iOS 18.0+
+- Xcode 16+
+- Swift 6
+
+> Liquid Glass UI elements (iOS 26) are conditionally applied behind `#available` checks and degrade gracefully on earlier versions.
+
+---
+
+## Getting Started
+
+```bash
+git clone https://github.com/Pashokresh/Liftlog.git
+cd Liftlog
+open Liftlog.xcodeproj
+```
+
+No external dependencies — build and run directly in Xcode.
+
+---
+
+## Testing
+
+Unit tests use the **Swift Testing** framework with mock repository implementations to test ViewModels in isolation.
+
+```bash
+# Run tests via Xcode (⌘U) or xcodebuild
+xcodebuild test -scheme Liftlog -destination 'platform=iOS Simulator,name=iPhone 16'
+```
+
+---
+
+## Roadmap
+
+- [ ] Charts & progress visualization (Swift Charts)
+- [ ] Rest timer
+- [ ] Workout templates
+- [ ] iCloud sync
+- [ ] App Store release
+
+---
+
+## Author
+
+**Pavel Martynenkov** — iOS Developer  
+[GitHub](https://github.com/Pashokresh) · [LinkedIn](https://www.linkedin.com/in/pavel-m-392374181/)
+
+---
+
+## License
+
+MIT
