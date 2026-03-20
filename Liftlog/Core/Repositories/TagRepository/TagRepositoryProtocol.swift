@@ -8,7 +8,7 @@
 import CoreData
 import Foundation
 
-protocol TagRepositoryProtocol {
+protocol TagRepositoryProtocol: AnyObject {
 
     func fetchAll() async throws -> [TagModel]
 

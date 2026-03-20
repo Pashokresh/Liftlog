@@ -8,7 +8,7 @@
 import CoreData
 import Foundation
 
-protocol WorkoutRepositoryProtocol {
+protocol WorkoutRepositoryProtocol: AnyObject {
 
     // MARK: - Methods working with Workout
 

@@ -159,5 +159,5 @@ struct WorkoutListView: View {
         )
     }
     .environment(NavigationManager())
-    .environment(ViewModelFactory(dependencies: AppDependencies.mock))
+    .environment(ViewModelFactory(dependencies: .mock))
 }

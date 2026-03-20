@@ -16,7 +16,6 @@ struct DurationInputView: View {
 
     var body: some View {
         HStack {
-            Spacer()
 
             HStack(spacing: 8) {
                 Picker("", selection: $minutes) {
@@ -30,8 +29,8 @@ struct DurationInputView: View {
 
                 Text(String(localized: "min"))
             }
+            .frame(maxWidth: .infinity, alignment: .center)
 
-            Spacer()
 
             HStack(spacing: 8) {
                 Picker("", selection: $seconds) {
@@ -45,8 +44,7 @@ struct DurationInputView: View {
 
                 Text(String(localized: "sec"))
             }
-
-            Spacer()
+            .frame(maxWidth: .infinity, alignment: .center)
         }
         .onChange(of: minutes) { updateBinding() }
         .onChange(of: seconds) { updateBinding() }

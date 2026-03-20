@@ -17,7 +17,7 @@ struct WeightInputView: View {
 
     var body: some View {
         HStack {
-            HStack(spacing: 4) {
+            HStack {
                 Picker("", selection: $reps) {
                     ForEach(1...99, id: \.self) { Text("\($0)") }
                 }
@@ -27,8 +27,9 @@ struct WeightInputView: View {
 
                 Text(String(localized: "reps"))
             }
+            .frame(maxWidth: .infinity, alignment: .center)
 
-            HStack(spacing: 4) {
+            HStack {
                 Picker("", selection: $kg) {
                     ForEach(0...300, id: \.self) {
                         Text("\($0)")
@@ -41,8 +42,9 @@ struct WeightInputView: View {
                 Text(String(localized: "kg"))
                     .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, alignment: .center)
 
-            HStack(spacing: 4) {
+            HStack {
                 Picker("", selection: $grams) {
                     ForEach(
                         Array(stride(from: 0, to: 1000, by: 50)),
@@ -58,6 +60,7 @@ struct WeightInputView: View {
                 Text(String(localized: "g"))
                     .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity, alignment: .center)
         }
         .onChange(of: kg) { updateBinding() }
         .onChange(of: grams) { updateBinding() }
