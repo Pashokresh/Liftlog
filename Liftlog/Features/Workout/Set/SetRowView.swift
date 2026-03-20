@@ -35,19 +35,20 @@ struct SetRowView: View {
     }
 
     var body: some View {
-        HStack(spacing: 16) {
-            Text("\(number).")
-                .font(.title2)
-            
-            VStack(alignment: .leading, spacing: 12) {
-
-                setInfo
-
-                notes
+        HStack {
+            HStack(spacing: 16)  {
+                Text("\(number).")
+                    .font(.title2)
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    
+                    setInfo
+                    
+                    notes
+                }
             }
-            
-            Spacer()
-            
+            .frame(maxWidth: .infinity, alignment: .leading)
+                        
             Button {
                copySet()
             } label: {

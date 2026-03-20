@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-protocol ExerciseRepositoryProtocol {
+protocol ExerciseRepositoryProtocol: AnyObject {
     
     func fetchAll() async throws -> [ExerciseModel]
     

@@ -57,5 +57,5 @@ final class ViewModelFactory {
 }
 
 extension ViewModelFactory {
-    static let mock = ViewModelFactory(dependencies: AppDependencies.mock)
+    static let mock = ViewModelFactory(dependencies: .mock)
 }

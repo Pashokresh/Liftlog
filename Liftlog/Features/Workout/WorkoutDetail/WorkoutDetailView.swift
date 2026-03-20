@@ -120,7 +120,7 @@ struct WorkoutDetailView: View {
     }
     .environment(
         ViewModelFactory(
-            dependencies: AppDependencies.mock
+            dependencies: .mock
         )
     )
 }

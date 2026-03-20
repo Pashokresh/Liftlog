@@ -51,7 +51,7 @@ struct RootView: View {
     RootView()
         .environment(
             ViewModelFactory(
-                dependencies: AppDependencies.mock
+                dependencies: .mock
             )
         )
 }
