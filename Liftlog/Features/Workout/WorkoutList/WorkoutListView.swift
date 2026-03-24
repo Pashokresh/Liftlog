@@ -18,6 +18,90 @@ struct WorkoutListView: View {
     init(viewModel: WorkoutListViewModel) {
         _viewModel = .init(initialValue: viewModel)
     }
+    
+    @ViewBuilder
+    private var emptyState: some View {
+        if viewModel.filteredWorkouts.isEmpty {
+            if viewModel.workouts.isEmpty {
+                UnavailableContentView(
+                    title: String(localized: "No workouts yet"),
+                    message: String(
+                        localized: "Create a new workout to get started."
+                    )
+                )
+            } else {
+                ContentUnavailableView.search
+            }
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(
+            id: "workout.list.add",
+            placement: .topBarTrailing
+        ) {
+            AddTopBarButton {
+                isCreatingWorkout = true
+            }
+        }
+        ToolbarItem(
+            id: "exercise.library.add",
+            placement: .topBarLeading
+        ) {
+            Button {
+                navigationManager.push(Route.exerciseLibrary)
+            } label: {
+                Image(
+                    systemName:
+                        Images.bookPages
+                )
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var tagsPanel: some View {
+        if !viewModel.availableTags.isEmpty {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(viewModel.availableTags) { tag in
+                        let isSelected = viewModel.isTagSelected(tag)
+                        TagSortButton(isSelected: isSelected, tag: tag) {
+                            withAnimation {
+                                viewModel.toggleTag(tag)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+            }
+            .background(.bar)
+        }
+    }
+    
+    @ViewBuilder
+    private var addWorkoutSheet: some View {
+        AddEditWorkoutView(
+            viewModel: viewModelFactory.makeAddEditWorkoutViewModel(),
+            onSave: { workout in
+                viewModel.createWorkout(workout)
+            }
+        )
+        .presentationDetents([.large])
+    }
+    
+    private func editWorkoutSheet(_ workout: WorkoutModel) -> some View {
+        AddEditWorkoutView(
+            viewModel: viewModelFactory.makeAddEditWorkoutViewModel(
+                workout: workout
+            )
+        ) { updatedWorkout in
+            viewModel.updateWorkout(updatedWorkout)
+        }
+        .presentationDetents([.large])
+    }
 
     var body: some View {
         List {
@@ -44,83 +128,11 @@ struct WorkoutListView: View {
             )
         )
         .navigationBarTitleDisplayMode(.inline)
-        .overlay {
-            if viewModel.filteredWorkouts.isEmpty {
-                if viewModel.workouts.isEmpty {
-                    UnavailableContentView(
-                        title: String(localized: "No workouts yet"),
-                        message: String(
-                            localized: "Create a new workout to get started."
-                        )
-                    )
-                } else {
-                    ContentUnavailableView.search
-                }
-            }
-        }
-        .toolbar {
-            ToolbarItem(
-                id: "workout.list.add",
-                placement: .topBarTrailing
-            ) {
-                AddTopBarButton {
-                    isCreatingWorkout = true
-                }
-            }
-            ToolbarItem(
-                id: "exercise.library.add",
-                placement: .topBarLeading
-            ) {
-                Button {
-                    navigationManager.push(Route.exerciseLibrary)
-                } label: {
-                    Image(
-                        systemName:
-                            Images.bookPages
-                    )
-                }
-            }
-        }
-        .safeAreaInset(edge: .top) {
-            if !viewModel.availableTags.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(viewModel.availableTags) { tag in
-                            let isSelected = viewModel.isTagSelected(tag)
-                            TagSortButton(isSelected: isSelected, tag: tag) {
-                                withAnimation {
-                                    viewModel.toggleTag(tag)
-                                }
-                            }
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                }
-                .background(.bar)
-            }
-        }
-        .sheet(isPresented: $isCreatingWorkout) {
-            AddEditWorkoutView(
-                viewModel: viewModelFactory.makeAddEditWorkoutViewModel(),
-                onSave: { workout in
-                    viewModel.createWorkout(workout)
-                    updateTagsList()
-                },
-            )
-            .presentationDetents([.large])
-        }
-        .sheet(item: $viewModel.editingWorkout) { workout in
-            AddEditWorkoutView(
-                viewModel: viewModelFactory.makeAddEditWorkoutViewModel(
-                    workout: workout
-                )
-            ) { updatedWorkout in
-                viewModel.updateWorkout(updatedWorkout)
-                updateTagsList()
-            }
-            .presentationDetents([.large])
-        }
+        .overlay { emptyState }
+        .toolbar { toolbarContent }
+        .safeAreaInset(edge: .top) { tagsPanel }
+        .sheet(isPresented: $isCreatingWorkout) { addWorkoutSheet }
+        .sheet(item: $viewModel.editingWorkout) { editWorkoutSheet($0) }
         .alert(
             isPresented: Binding(
                 get: { viewModel.error != nil },
@@ -133,19 +145,24 @@ struct WorkoutListView: View {
                 dismissButton: .default(Text(String(localized: "OK")))
             )
         }
-        .onAppear {
-            updateTagsList()
-            
-            Task {
-                await viewModel.loadWorkouts()
+        .onChange(of: isCreatingWorkout, { _, isPresented in
+            if !isPresented {
+                updateTags()
             }
+        })
+        .onChange(of: viewModel.editingWorkout, { _, workout in
+            if workout == nil {
+                updateTags()
+            }
+        })
+        .task {
+            await viewModel.loadWorkouts()
+            await viewModel.loadTags()
         }
     }
     
-    private func updateTagsList() {
-        Task {
-            await viewModel.loadTags()
-        }
+    private func updateTags() {
+        Task { await viewModel.loadTags() }
     }
 }
 

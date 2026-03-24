@@ -59,31 +59,9 @@ struct AddEditExerciseView: View {
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
-            .navigationTitle(
-                exercise != nil
-                    ? String(localized: "Edit Exercise")
-                    : String(localized: "Add Exercise")
-            )
+            .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(
-                    id: "new.exercise.cancel",
-                    placement: .topBarLeading
-                ) {
-                    AdaptiveCancelButton {
-                        dismiss()
-                    }
-                }
-
-                ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing)
-                {
-                    AdaptiveConfirmButton {
-                        onSave(makeExercise())
-                        dismiss()
-                    }
-                    .disabled(!isValid)
-                }
-            }
+            .toolbar { addEditToolbarContent }
         }
     }
 
@@ -96,6 +74,33 @@ struct AddEditExerciseView: View {
             ).isEmpty ? nil : description,
             type: type
         )
+    }
+    
+    private var navTitle: String {
+        exercise != nil
+            ? String(localized: "Edit Exercise")
+            : String(localized: "Add Exercise")
+    }
+    
+    @ToolbarContentBuilder
+    private var addEditToolbarContent: some ToolbarContent {
+        ToolbarItem(
+            id: "new.exercise.cancel",
+            placement: .topBarLeading
+        ) {
+            AdaptiveCancelButton {
+                dismiss()
+            }
+        }
+
+        ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing)
+        {
+            AdaptiveConfirmButton {
+                onSave(makeExercise())
+                dismiss()
+            }
+            .disabled(!isValid)
+        }
     }
 }
 

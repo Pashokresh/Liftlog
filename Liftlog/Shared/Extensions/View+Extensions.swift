@@ -8,11 +8,11 @@
 import SwiftUI
 
 extension View {
-    
+
     func adaptiveNavigationSubtitle(_ subtitle: String) -> some View {
         modifier(AdaptiveNavigationSubtitle(subtitle: subtitle))
     }
-    
+
     @ViewBuilder
     func adaptiveGlassProminentButton() -> some View {
         if #available(iOS 26.0, *) {
@@ -21,7 +21,7 @@ extension View {
             self.buttonStyle(.borderedProminent)
         }
     }
-    
+
     func onRowTap(_ action: @escaping () -> Void) -> some View {
         self
             .frame(maxWidth: .infinity, alignment: .leading)
