@@ -12,6 +12,7 @@ struct ExerciseLibraryView: View {
 
     @State private var isAddingExercise = false
     @State private var searchText = ""
+    @State private var exerciseToDelete: ExerciseModel?
 
     let onSelect: ((ExerciseModel) -> Void)?
 
@@ -92,14 +93,17 @@ struct ExerciseLibraryView: View {
         .swipeActions {
             if onSelect == nil {
                 SwipeDeleteButton {
-                    Task {
-                        await viewModel.deleteExercise(exercise.id)
-                    }
+                    exerciseToDelete = exercise
                 }
 
                 SwipeEditButton {
                     viewModel.editingExercise = exercise
                 }
+            }
+        }
+        .deleteConfirmation(item: $exerciseToDelete) { exercise in
+            Task {
+                await viewModel.deleteExercise(exercise.id)
             }
         }
     }
@@ -174,6 +178,6 @@ struct ExerciseLibraryView: View {
         viewModel: ExerciseLibraryViewModel(
             repository: MockExerciseRepository()
         ),
-        onSelect: { _ in }
+        onSelect: nil
     )
 }

@@ -16,7 +16,7 @@ struct SwipeDeleteButton: View {
     }
 
     var body: some View {
-        Button(role: .destructive) {
+        Button {
             action()
         } label: {
             Label(
@@ -24,6 +24,7 @@ struct SwipeDeleteButton: View {
                 systemImage: Images.trash
             )
         }
+        .tint(.red)
     }
 }
 

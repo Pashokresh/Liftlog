@@ -9,8 +9,9 @@ import SwiftUI
 
 struct ExerciseSetListView: View {
 
-    @State var viewModel: ExerciseSetViewModel
-    @State var isAddingNewSet = false
+    @State private var viewModel: ExerciseSetViewModel
+    @State private var isAddingNewSet = false
+    @State private var setToDelete: ExerciseSetModel?
 
     init(viewModel: ExerciseSetViewModel) {
         _viewModel = .init(initialValue: viewModel)
@@ -38,9 +39,7 @@ struct ExerciseSetListView: View {
                     }
                     .swipeActions {
                         SwipeDeleteButton {
-                            Task {
-                                await viewModel.deleteSet(set.id)
-                            }
+                            setToDelete = set
                         }
 
                         SwipeEditButton {
@@ -145,6 +144,11 @@ struct ExerciseSetListView: View {
         }
         .sheet(isPresented: $isAddingNewSet) { addSetSheet }
         .sheet(item: $viewModel.setToEdit) { editSetSheet($0) }
+        .deleteConfirmation(item: $setToDelete) { set in
+            Task {
+                await viewModel.deleteSet(set.id)
+            }
+        }
         .alert(
             String(localized: "Error"),
             isPresented: Binding(

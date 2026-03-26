@@ -30,4 +30,31 @@ extension View {
                 action()
             }
     }
+
+
+    func deleteConfirmation<T: Identifiable>(
+        item: Binding<T?>,
+        title: String = String(localized: "Delete?"),
+        message: String = String(localized: "This action cannot be undone."),
+        action: @escaping (T) -> Void
+    ) -> some View {
+        self.alert(
+            title,
+            isPresented: Binding(
+                get: { item.wrappedValue != nil },
+                set: { if !$0 { item.wrappedValue = nil } }
+            ),
+            presenting: item.wrappedValue
+        ) { itemToDelete in
+            Button(String(localized: "Delete"), role: .destructive) {
+                action(itemToDelete)
+                item.wrappedValue = nil
+            }
+            Button(String(localized: "Cancel"), role: .cancel) {
+                item.wrappedValue = nil
+            }
+        } message: { _ in
+            Text(message)
+        }
+    }
 }

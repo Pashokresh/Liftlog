@@ -11,6 +11,7 @@ struct WorkoutListView: View {
 
     @State private var viewModel: WorkoutListViewModel
     @State private var isCreatingWorkout = false
+    @State private var workoutToDelete: WorkoutModel?
 
     @Environment(NavigationManager.self) var navigationManager
     @Environment(ViewModelFactory.self) var viewModelFactory
@@ -18,7 +19,7 @@ struct WorkoutListView: View {
     init(viewModel: WorkoutListViewModel) {
         _viewModel = .init(initialValue: viewModel)
     }
-    
+
     @ViewBuilder
     private var emptyState: some View {
         if viewModel.filteredWorkouts.isEmpty {
@@ -34,7 +35,7 @@ struct WorkoutListView: View {
             }
         }
     }
-    
+
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(
@@ -59,7 +60,7 @@ struct WorkoutListView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var tagsPanel: some View {
         if !viewModel.availableTags.isEmpty {
@@ -80,7 +81,7 @@ struct WorkoutListView: View {
             .background(.bar)
         }
     }
-    
+
     @ViewBuilder
     private var addWorkoutSheet: some View {
         AddEditWorkoutView(
@@ -91,7 +92,7 @@ struct WorkoutListView: View {
         )
         .presentationDetents([.large])
     }
-    
+
     private func editWorkoutSheet(_ workout: WorkoutModel) -> some View {
         AddEditWorkoutView(
             viewModel: viewModelFactory.makeAddEditWorkoutViewModel(
@@ -111,7 +112,7 @@ struct WorkoutListView: View {
                 }
                 .swipeActions {
                     SwipeDeleteButton {
-                        viewModel.deleteWorkout(workout.id)
+                        workoutToDelete = workout
                     }
 
                     SwipeEditButton {
@@ -131,6 +132,7 @@ struct WorkoutListView: View {
         .overlay { emptyState }
         .toolbar { toolbarContent }
         .safeAreaInset(edge: .top) { tagsPanel }
+        .deleteConfirmation(item: $workoutToDelete, action: { viewModel.deleteWorkout($0.id) })
         .sheet(isPresented: $isCreatingWorkout) { addWorkoutSheet }
         .sheet(item: $viewModel.editingWorkout) { editWorkoutSheet($0) }
         .alert(
@@ -145,22 +147,28 @@ struct WorkoutListView: View {
                 dismissButton: .default(Text(String(localized: "OK")))
             )
         }
-        .onChange(of: isCreatingWorkout, { _, isPresented in
-            if !isPresented {
-                updateTags()
+        .onChange(
+            of: isCreatingWorkout,
+            { _, isPresented in
+                if !isPresented {
+                    updateTags()
+                }
             }
-        })
-        .onChange(of: viewModel.editingWorkout, { _, workout in
-            if workout == nil {
-                updateTags()
+        )
+        .onChange(
+            of: viewModel.editingWorkout,
+            { _, workout in
+                if workout == nil {
+                    updateTags()
+                }
             }
-        })
+        )
         .task {
             await viewModel.loadWorkouts()
             await viewModel.loadTags()
         }
     }
-    
+
     private func updateTags() {
         Task { await viewModel.loadTags() }
     }
