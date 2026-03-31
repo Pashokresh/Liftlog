@@ -132,7 +132,10 @@ struct WorkoutListView: View {
         .overlay { emptyState }
         .toolbar { toolbarContent }
         .safeAreaInset(edge: .top) { tagsPanel }
-        .deleteConfirmation(item: $workoutToDelete, action: { viewModel.deleteWorkout($0.id) })
+        .deleteConfirmation(
+            item: $workoutToDelete,
+            action: { viewModel.deleteWorkout($0.id) }
+        )
         .sheet(isPresented: $isCreatingWorkout) { addWorkoutSheet }
         .sheet(item: $viewModel.editingWorkout) { editWorkoutSheet($0) }
         .alert(
