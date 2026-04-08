@@ -10,6 +10,7 @@ import CoreData
 @testable import Liftlog
 
 @Suite("CoreDataExerciseRepository")
+@MainActor
 struct CoreDataExerciseRepositoryTests {
     
     var repository: CoreDataExerciseRepository
@@ -27,8 +28,8 @@ struct CoreDataExerciseRepositoryTests {
         
         let all = try await repository.fetchAll()
         #expect(all.count == 1)
-        #expect(await all.first?.name == name)
-        #expect(await all.first?.id == exercise.id)
+        #expect(all.first?.name == name)
+        #expect(all.first?.id == exercise.id)
     }
     
     @Test("fetchAll returns all saved exercises")
@@ -45,7 +46,7 @@ struct CoreDataExerciseRepositoryTests {
     func deleteExercise() async throws {
         let exercise = try await repository.create(name: "Bench Press", description: nil, type: .reps)
         
-        try await repository.delete(await exercise.id)
+        try await repository.delete(exercise.id)
         
         let all = try await repository.fetchAll()
         #expect(all.isEmpty)
@@ -59,7 +60,7 @@ struct CoreDataExerciseRepositoryTests {
         let exercise = try await repository.create(name: "Bench Press", description: nil, type: .reps)
         
         let updated = ExerciseModel(
-            id: await exercise.id,
+            id: exercise.id,
             name: newName,
             description: newDescription,
             type: .reps
@@ -67,8 +68,8 @@ struct CoreDataExerciseRepositoryTests {
         
         try await repository.update(updated)
         let all = try await repository.fetchAll()
-        #expect(await all.first?.name == newName)
-        #expect(await all.first?.description == newDescription)
+        #expect(all.first?.name == newName)
+        #expect(all.first?.description == newDescription)
     }
     
     @Test("delete non-existent exercise doesn't throw an error")

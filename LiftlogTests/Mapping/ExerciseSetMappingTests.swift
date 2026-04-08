@@ -10,6 +10,7 @@ import CoreData
 @testable import Liftlog
 
 @Suite("ExerciseSet Mapping")
+@MainActor
 struct ExerciseSetMappingTests {
     
     var context: NSManagedObjectContext
@@ -29,7 +30,7 @@ struct ExerciseSetMappingTests {
         
         let domain = set.toDomain()
         
-        if case .weighted(let reps, let weight) = await domain.type {
+        if case .weighted(let reps, let weight) = domain.type {
             #expect(reps == 10)
             #expect(weight == 50.0)
         } else {
@@ -48,7 +49,7 @@ struct ExerciseSetMappingTests {
         
         let domain = set.toDomain()
         
-        if case .timed(let duration) = await domain.type {
+        if case .timed(let duration) = domain.type {
             #expect(duration == 30.0)
         } else {
             Issue.record("Timed type expected")
@@ -80,6 +81,6 @@ struct ExerciseSetMappingTests {
         
         let domain = set.toDomain()
         
-        #expect(await domain.id != UUID())
+        #expect(domain.id != UUID())
     }
 }

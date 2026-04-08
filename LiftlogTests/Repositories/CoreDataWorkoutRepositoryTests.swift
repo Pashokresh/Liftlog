@@ -10,6 +10,7 @@ import CoreData
 @testable import Liftlog
 
 @Suite("CoreDataWorkoutRepositoryTests")
+@MainActor
 struct CoreDataWorkoutRepositoryTests {
 
     var workoutRepository: CoreDataWorkoutRepository
@@ -26,7 +27,7 @@ struct CoreDataWorkoutRepositoryTests {
         let workout = try await workoutRepository.create(.mock)
         let all = try await workoutRepository.fetchAll()
         #expect(all.count == 1)
-        #expect(await all.first?.id == workout.id)
+        #expect(all.first?.id == workout.id)
     }
     
     @Test("`delete` deletes workout")
@@ -55,8 +56,8 @@ struct CoreDataWorkoutRepositoryTests {
         try await workoutRepository.addExercise(workoutExercise, to: workout.id)
         
         let updated = try await workoutRepository.fetch(workout.id)
-        #expect(await updated.exercises.count == 1)
-        #expect(await updated.exercises.first?.exercise.id == exercise.id)
+        #expect(updated.exercises.count == 1)
+        #expect(updated.exercises.first?.exercise.id == exercise.id)
     }
 
 }
