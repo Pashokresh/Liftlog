@@ -16,15 +16,16 @@ struct PersistenceController {
     init(inMemory: Bool = false) {
         container = NSPersistentContainer(name: "Liftlog")
         if inMemory {
-            container.persistentStoreDescriptions.first!.url = URL(
-                fileURLWithPath: "/dev/null"
-            )
+            guard let storeDescription = container.persistentStoreDescriptions.first else {
+                preconditionFailure("No store description found")
+            }
+            storeDescription.url = URL(fileURLWithPath: "/dev/null")
         }
         container.loadPersistentStores(completionHandler: {
             (storeDescription, error) in
             if let error = error as NSError? {
                 // TODO: Handle an error
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                assertionFailure("Failed to load persistent store: \(error)")
             }
         })
         container.viewContext.automaticallyMergesChangesFromParent = true

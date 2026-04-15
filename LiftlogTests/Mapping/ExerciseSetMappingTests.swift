@@ -20,7 +20,7 @@ struct ExerciseSetMappingTests {
     }
 
     @Test("toDomain returns weighted for reps > 0")
-    func mapsToWeighted() async throws {
+    func mapsToWeighted() throws {
         let set = ExerciseSet(context: context)
         set.id = UUID()
         set.order = 0
@@ -39,7 +39,7 @@ struct ExerciseSetMappingTests {
     }
     
     @Test("toDomain returns timed for duration > 0")
-    func mapsToTimed() async throws {
+    func mapsToTimed() throws {
         let set = ExerciseSet(context: context)
         set.id = UUID()
         set.order = 0
