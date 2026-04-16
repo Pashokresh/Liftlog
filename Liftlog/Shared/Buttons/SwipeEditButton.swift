@@ -11,14 +11,13 @@ struct SwipeEditButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button {
-            action()
-        } label: {
-            Label(
-                String(localized: "Edit"),
-                systemImage: Images.pencil
-            )
-        }
+        Button(
+            String(localized: "Edit"),
+            systemImage: Images.pencil,
+            action: {
+                action()
+            }
+        )
         .tint(.blue)
     }
 }

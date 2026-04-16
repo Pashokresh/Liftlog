@@ -41,9 +41,22 @@ extension Button {
                 }
         }
     }
+    
+    @ViewBuilder
+        func adaptiveGlassProminentButton() -> some View {
+            if #available(iOS 26.0, *) {
+                self
+                    .buttonStyle(.glassProminent)
+                    .glassEffect(.regular.interactive())
+            } else {
+                self
+                    .buttonStyle(.borderedProminent)
+                    .clipShape(.capsule)
+            }
+        }
 
     @ViewBuilder
-    func adaptiveGlassProminentButton() -> some View {
+    func adaptiveGlassProminentIconButton() -> some View {
         if #available(iOS 26.0, *) {
             self
                 .buttonStyle(.glassProminent)
@@ -55,18 +68,6 @@ extension Button {
                 .foregroundStyle(.white)
                 .frame(width: 36, height: 36)
                 .background(.accent, in: Circle())
-        }
-    }
-
-    @ViewBuilder
-    func adaptiveCancelStyle() -> some View {
-        if #available(iOS 26.0, *) {
-            self
-                .buttonStyle(.glassProminent)
-                .buttonBorderShape(.circle)
-                .controlSize(.large)
-        } else {
-            self
         }
     }
 }
