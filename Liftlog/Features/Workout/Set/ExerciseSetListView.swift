@@ -9,8 +9,9 @@ import SwiftUI
 
 struct ExerciseSetListView: View {
 
-    @State var viewModel: ExerciseSetViewModel
-    @State var isAddingNewSet = false
+    @State private var viewModel: ExerciseSetViewModel
+    @State private var isAddingNewSet = false
+    @State private var setToDelete: ExerciseSetModel?
 
     init(viewModel: ExerciseSetViewModel) {
         _viewModel = .init(initialValue: viewModel)
@@ -38,9 +39,7 @@ struct ExerciseSetListView: View {
                     }
                     .swipeActions {
                         SwipeDeleteButton {
-                            Task {
-                                await viewModel.deleteSet(set.id)
-                            }
+                            setToDelete = set
                         }
 
                         SwipeEditButton {
@@ -94,6 +93,34 @@ struct ExerciseSetListView: View {
             message: String(localized: "Start by adding sets here")
         )
     }
+    
+    private var addSetSheet: some View {
+        AddEditSetView(
+            exerciseType: viewModel.workoutExercise.exercise.type,
+            existingSet: nil,
+            onSave: { newSet in
+                Task {
+                    await viewModel.addSet(set: newSet)
+                }
+            }
+        )
+        .presentationDetents([.fraction(CGFloat(2 / 3))])
+        .presentationDragIndicator(.visible)
+    }
+    
+    private func editSetSheet(_ setToEdit: ExerciseSetModel) -> some View {
+        AddEditSetView(
+            exerciseType: viewModel.workoutExercise.exercise.type,
+            existingSet: setToEdit,
+            onSave: { updatedSet in
+                Task {
+                    await viewModel.updateSet(updatedSet)
+                }
+            }
+        )
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+    }
 
     var body: some View {
         List {
@@ -115,31 +142,12 @@ struct ExerciseSetListView: View {
                 }
             }
         }
-        .sheet(isPresented: $isAddingNewSet) {
-            AddEditSetView(
-                exerciseType: viewModel.workoutExercise.exercise.type,
-                existingSet: nil,
-                onSave: { newSet in
-                    Task {
-                        await viewModel.addSet(set: newSet)
-                    }
-                }
-            )
-            .presentationDetents([.fraction(2 / 3)])
-            .presentationDragIndicator(.visible)
-        }
-        .sheet(item: $viewModel.setToEdit) { set in
-            AddEditSetView(
-                exerciseType: viewModel.workoutExercise.exercise.type,
-                existingSet: set,
-                onSave: { updatedSet in
-                    Task {
-                        await viewModel.updateSet(updatedSet)
-                    }
-                }
-            )
-            .presentationDetents([.medium, .large])
-            .presentationDragIndicator(.visible)
+        .sheet(isPresented: $isAddingNewSet) { addSetSheet }
+        .sheet(item: $viewModel.setToEdit) { editSetSheet($0) }
+        .deleteConfirmation(item: $setToDelete) { set in
+            Task {
+                await viewModel.deleteSet(set.id)
+            }
         }
         .alert(
             String(localized: "Error"),

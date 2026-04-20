@@ -18,6 +18,48 @@ struct WorkoutDetailView: View {
         _viewModel = .init(initialValue: viewModel)
     }
 
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        if !viewModel.workout.exercises.isEmpty {
+            ToolbarItem(placement: .topBarTrailing) {
+                EditButton()
+            }
+        }
+
+        ToolbarItem(placement: .bottomBar) {
+            AddBottomBarButton(
+                with: String(localized: "Add Exercise")
+            ) {
+                isAddingExercise = true
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        if viewModel.workout.exercises.isEmpty {
+            ContentUnavailableView(
+                String(localized: "No Exercises yet"),
+                systemImage: Images.figureStrengthTraining,
+                description: Text(
+                    String(localized: "Start by adding exercises here")
+                )
+            )
+        }
+    }
+
+    private var exerciseLibrarySheet: some View {
+        ExerciseLibraryView(
+            viewModel: viewModelFactory.makeExerciseLibraryViewModel(),
+            onSelect: { exercise in
+                Task {
+                    await viewModel.addExercise(exercise)
+                }
+                isAddingExercise = false
+            }
+        )
+    }
+
     var body: some View {
         List {
             ForEach(viewModel.workout.exercises) { exercise in
@@ -51,43 +93,9 @@ struct WorkoutDetailView: View {
         .adaptiveNavigationSubtitle(
             viewModel.workout.date.formatted(date: .abbreviated, time: .omitted)
         )
-        .toolbar {
-            if !viewModel.workout.exercises.isEmpty {
-                ToolbarItem(placement: .topBarTrailing) {
-                    EditButton()
-                }
-            }
-
-            ToolbarItem(placement: .bottomBar) {
-                AddBottomBarButton(
-                    with: String(localized: "Add Exercise")
-                ) {
-                    isAddingExercise = true
-                }
-            }
-        }
-        .overlay {
-            if viewModel.workout.exercises.isEmpty {
-                ContentUnavailableView(
-                    String(localized: "No Exercises yet"),
-                    systemImage: Images.figureStrengthTraining,
-                    description: Text(
-                        String(localized: "Start by adding exercises here")
-                    )
-                )
-            }
-        }
-        .sheet(isPresented: $isAddingExercise) {
-            ExerciseLibraryView(
-                viewModel: viewModelFactory.makeExerciseLibraryViewModel(),
-                onSelect: { exercise in
-                    Task {
-                        await viewModel.addExercise(exercise)
-                    }
-                    isAddingExercise = false
-                }
-            )
-        }
+        .toolbar { toolbarContent }
+        .overlay { emptyState }
+        .sheet(isPresented: $isAddingExercise) { exerciseLibrarySheet }
         .alert(
             String(localized: "Error"),
             isPresented: Binding(

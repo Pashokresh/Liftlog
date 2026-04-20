@@ -10,12 +10,17 @@ import Foundation
 final class MockExerciseRepository: ExerciseRepositoryProtocol {
     
     private var exercises = ExerciseModel.mocks
+    var shouldThrow = false
     
     func fetchAll() throws -> [ExerciseModel] {
+        try checkThrow()
+        
         return exercises
     }
     
     func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySection] {
+        try checkThrow()
+        
         let timeIntervalDay: TimeInterval = 86_400
         let dateYesterday = Date.now.addingTimeInterval(-timeIntervalDay)
         let dateDayBeforeYesterday = Date.now.addingTimeInterval(-timeIntervalDay * 2)
@@ -35,6 +40,8 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
     }
     
     func create(name: String, description: String?, type: ExerciseType) throws -> ExerciseModel {
+        try checkThrow()
+        
         let exercise = ExerciseModel(
             id: UUID(),
             name: name,
@@ -48,13 +55,25 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
     }
     
     func update(_ model: ExerciseModel) throws {
+        try checkThrow()
+        
         guard let index = exercises.firstIndex(where: { $0.id == model.id }) else { return }
         exercises[index] = model
     }
     
     func delete(_ id: UUID) throws {
+        try checkThrow()
+        
         exercises.removeAll { $0.id == id }
     }
     
+    private func checkThrow() throws {
+        if shouldThrow {
+            throw LiftlogError.failure(description: "Test error")
+        }
+    }
     
+    static var mock: MockExerciseRepository {
+        MockExerciseRepository()
+    }
 }

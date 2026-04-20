@@ -1,8 +1,6 @@
 # Liftlog
 
-A native iOS workout tracking app built with SwiftUI and CoreData. Log your training sessions, manage a custom exercise library, and track set history over time.
-
-Built as a portfolio project to demonstrate native iOS development practices — clean architecture, testable code, and modern SwiftUI patterns.
+A native iOS workout tracking app built with Swift and SwiftUI. Designed to demonstrate clean architecture, modern Swift concurrency, and thoughtful UI — without any third-party dependencies.
 
 ---
 
@@ -14,102 +12,199 @@ Built as a portfolio project to demonstrate native iOS development practices —
 
 ## Features
 
-- **Exercise Library** — Create, edit, and delete custom exercises with muscle group categorization
-- **Workout Logging** — Log workouts with date, tags, and notes; filter the workout list by tag
-- **Set Tracking** — Record sets with weight and reps; view full history per exercise across sessions
-- **Workout Detail** — Review all exercises and sets within a completed session
-- **Tag Filtering** — Filter workout history by custom tags for quick navigation
+- **Exercise Library** — create and manage your personal exercise database with support for weighted and timed exercises
+- **Workout Tracking** — log workouts, add exercises from your library, and record sets with reps/weight or duration
+- **Set History** — view previous sets for any exercise across all past workouts, right where you need them
+- **Tags** — organize workouts with custom tags and filter your history by tag
+- **Liquid Glass UI** — adaptive interface that takes advantage of iOS 26 Liquid Glass while gracefully falling back to a native iOS 18 design
 
 ---
 
 ## Architecture
 
-The project follows **MVVM** with a clean separation between data, domain, and presentation layers.
+Liftlog is built around a strict separation of concerns across three layers.
+
+### Persistence Layer
+CoreData is used for local persistence. `NSManagedObject` subclasses are never exposed to the UI — all CoreData entities are mapped to plain Swift structs at the repository boundary.
+
+### Domain Layer
+All business logic operates on value types:
+
+```swift
+struct WorkoutModel: Identifiable, Equatable, Hashable, Sendable { ... }
+struct ExerciseSetModel: Identifiable, Equatable, Hashable, Sendable { ... }
+
+enum SetType {
+    case weighted(reps: Int, weight: Double)
+    case timed(duration: TimeInterval)
+}
+```
+
+`SetType` as an enum with associated values means the UI never deals with optional fields — a set is either weighted or timed, and the type system enforces that.
+
+### Repository Layer
+Each repository is defined by a protocol and has a CoreData implementation and a mock implementation for tests and previews:
+
+```swift
+protocol WorkoutRepositoryProtocol: AnyObject {
+    func fetchAll() async throws -> [WorkoutModel]
+    func create(_ model: WorkoutModel) async throws -> WorkoutModel
+    func addExercise(_ model: WorkoutExerciseModel, to workoutID: UUID) async throws
+    func addSet(_ model: ExerciseSetModel, to workoutExerciseID: UUID) async throws
+    // ...
+}
+```
+
+### Dependency Injection
+Dependencies are composed at app launch through `AppDependencies` and surfaced to the view hierarchy via a `ViewModelFactory` injected into SwiftUI's environment:
+
+```swift
+@Observable
+final class ViewModelFactory {
+    func makeWorkoutListViewModel() -> WorkoutListViewModel { ... }
+    func makeWorkoutDetailViewModel(_ workout: WorkoutModel) -> WorkoutDetailViewModel { ... }
+    func makeExerciseSetViewModel(workoutExercise: WorkoutExerciseModel) -> ExerciseSetViewModel { ... }
+}
+```
+
+Views receive a fully constructed ViewModel through `init` — they never instantiate dependencies themselves.
+
+### Navigation
+A centralized `NavigationManager` holds a `NavigationPath` and all routing is handled through a typed `Route` enum. A single `navigationDestination` in `RootView` owns the mapping from route to view:
+
+```swift
+enum Route: Hashable {
+    case workoutDetail(WorkoutModel)
+    case exerciseSet(WorkoutExerciseModel)
+    case exerciseLibrary
+}
+```
+
+---
+
+## Tech Stack
+
+| | |
+|---|---|
+| **Language** | Swift 6 |
+| **UI** | SwiftUI |
+| **Persistence** | CoreData |
+| **Concurrency** | Swift Concurrency (`async/await`, `Task`, `actor`) |
+| **Testing** | Swift Testing (`@Suite`, `@Test`, `#expect`) |
+| **Deployment Target** | iOS 18+ |
+| **Dependencies** | None |
+
+---
+
+## Project Structure
 
 ```
 Liftlog/
 ├── App/
-│   └── LiftlogApp.swift
+│   ├── LiftlogApp.swift
+│   ├── RootView.swift
+│   └── AppDependencies.swift
 ├── Core/
-│   ├── DI/                    # ViewModelFactory — dependency injection container
-│   ├── Navigation/            # NavigationManager + Route enum
-│   └── Persistence/           # CoreData stack (PersistenceController)
-├── Data/
-│   ├── Models/                # CoreData NSManagedObject subclasses
-│   └── Repositories/          # Concrete repository implementations
-├── Domain/
-│   ├── Models/                # Pure Swift domain models (Workout, Exercise, WorkoutSet)
-│   └── Repositories/          # Repository protocols
-└── Presentation/
-    ├── Exercises/             # Exercise library views + ViewModels
-    ├── Workouts/              # Workout list, detail, add/edit views + ViewModels
-    └── Sets/                  # Set tracking views + ViewModels
+│   ├── Domain/              # Pure Swift models and enums
+│   ├── Persistence/         # CoreData stack + NSManagedObject mappings
+│   └── Repositories/        # Protocols + CoreData implementations
+├── Features/
+│   ├── Workout/             # Workout list, detail, create/edit
+│   ├── Library/             # Exercise library
+│   └── Sets/                # Set logging and history
+└── Shared/
+    ├── Components/          # Reusable UI components
+    └── Mocks/               # Mock repositories for tests and previews
 ```
-
-### Key design decisions
-
-| Concern | Solution |
-|---|---|
-| Dependency injection | `ViewModelFactory` — single factory passed through the environment |
-| State management | `@Observable` macro (iOS 17+) |
-| Data persistence | CoreData with cascade delete rules |
-| Domain isolation | Separate domain models mapped from CoreData entities |
-| Repository pattern | Protocol-based repositories for testability |
-| Navigation | `NavigationManager` with a `Route` enum over `NavigationStack` |
-| Testing | Swift Testing framework (`@Suite`, `@Test`, `#expect`, mock repositories) |
-
----
-
-## Requirements
-
-- iOS 18.0+
-- Xcode 16+
-- Swift 6
-
-> Liquid Glass UI elements (iOS 26) are conditionally applied behind `#available` checks and degrade gracefully on earlier versions.
-
----
-
-## Getting Started
-
-```bash
-git clone https://github.com/Pashokresh/Liftlog.git
-cd Liftlog
-open Liftlog.xcodeproj
-```
-
-No external dependencies — build and run directly in Xcode.
 
 ---
 
 ## Testing
 
-Unit tests use the **Swift Testing** framework with mock repository implementations to test ViewModels in isolation.
+Tests are written with Swift Testing and cover three layers:
 
-```bash
-# Run tests via Xcode (⌘U) or xcodebuild
-xcodebuild test -scheme Liftlog -destination 'platform=iOS Simulator,name=iPhone 16'
+**ViewModel tests** use mock repositories to test business logic in isolation:
+
+```swift
+@Suite("WorkoutDetailViewModel")
+@MainActor
+struct WorkoutDetailViewModelTests {
+
+    @Test("Cannot add the same exercise twice")
+    func preventsDuplicateExercise() async {
+        await viewModel.addExercise(ExerciseModel.mock)
+        await viewModel.addExercise(ExerciseModel.mock)
+        #expect(viewModel.workout.exercises.count == 1)
+        #expect(viewModel.error != nil)
+    }
+}
 ```
+
+**Repository tests** use an in-memory CoreData stack to test persistence logic without side effects:
+
+```swift
+init() {
+    let context = PersistenceController(inMemory: true).container.viewContext
+    repository = CoreDataExerciseRepository(context: context)
+}
+```
+
+**Mapping tests** verify that CoreData entities correctly map to domain models, including the `SetType` discrimination logic.
+
+Mock repositories expose `.mock`, `.preview`, and `.unimplemented` static variants — a pattern inspired by Point-Free's approach to dependency management:
+
+```swift
+extension MockExerciseRepository {
+    static var mock: MockExerciseRepository { MockExerciseRepository() }
+    static var preview: MockExerciseRepository { ... }  // pre-populated
+    static var unimplemented: MockExerciseRepository { ... }  // always throws
+}
+```
+
+---
+
+## iOS Version Support
+
+The app targets iOS 18+ with progressive enhancement for iOS 26:
+
+```swift
+extension Button {
+    @ViewBuilder
+    func adaptiveGlassProminentButton() -> some View {
+        if #available(iOS 26.0, *) {
+            self.buttonStyle(.glassProminent)
+                .glassEffect(.regular.interactive())
+        } else {
+            self.buttonStyle(.borderedProminent)
+        }
+    }
+}
+```
+
+All `#available` checks are isolated to dedicated extensions and components — feature Views contain no version branching.
 
 ---
 
 ## Roadmap
 
-- [ ] Charts & progress visualization (Swift Charts)
+- [ ] CloudKit sync across devices
+- [ ] Progress charts with Swift Charts
 - [ ] Rest timer
 - [ ] Workout templates
-- [ ] iCloud sync
+- [ ] Localization
 - [ ] App Store release
+
+---
+
+## Requirements
+
+- Xcode 16+
+- iOS 18.0+
+- No external dependencies — clone and run
 
 ---
 
 ## Author
 
-**Pavel Martynenkov** — iOS Developer  
-[GitHub](https://github.com/Pashokresh) · [LinkedIn](https://www.linkedin.com/in/pavel-m-392374181/)
-
----
-
-## License
-
-MIT
+Pavel Martynenkov — iOS Developer  
+[LinkedIn](https://www.linkedin.com/in/pavel-m-392374181/) · [GitHub](https://github.com/Pashokresh)

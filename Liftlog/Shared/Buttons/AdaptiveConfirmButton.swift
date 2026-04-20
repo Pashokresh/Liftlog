@@ -8,24 +8,22 @@
 import SwiftUI
 
 struct AdaptiveConfirmButton: View {
-    
+
     let action: () -> Void
-    
+
     var body: some View {
         if #available(iOS 26.0, *) {
             Button(role: .confirm) {
                 action()
             }
         } else {
-            Button {
+            Button(String(localized: "Save")) {
                 action()
-            } label: {
-                Text(String(localized: "Save"))
             }
         }
     }
 }
 
 #Preview {
-    AdaptiveConfirmButton { }
+    AdaptiveConfirmButton {}
 }

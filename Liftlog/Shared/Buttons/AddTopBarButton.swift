@@ -16,9 +16,8 @@ struct AddTopBarButton: View {
         } label: {
             Image(systemName: Images.plus)
                 .font(.headline)
-                .foregroundStyle(.ultraThickMaterial)
         }
-        .adaptiveGlassProminentButton()
+        .adaptiveGlassProminentIconButton()
     }
 }
 

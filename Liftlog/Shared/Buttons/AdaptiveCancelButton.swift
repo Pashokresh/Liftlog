@@ -8,24 +8,22 @@
 import SwiftUI
 
 struct AdaptiveCancelButton: View {
-    
+
     let action: () -> Void
-    
+
     var body: some View {
         if #available(iOS 26.0, *) {
             Button(role: .cancel) {
                 action()
             }
         } else {
-            Button {
+            Button(String(localized: "Cancel"), role: .cancel) {
                 action()
-            } label: {
-                Image(systemName: Images.xmark)
             }
         }
     }
 }
 
 #Preview {
-    AdaptiveCancelButton { }
+    AdaptiveCancelButton {}
 }

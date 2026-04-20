@@ -74,6 +74,27 @@ struct AddEditSetView: View {
             .padding()
         }
     }
+    
+    @ToolbarContentBuilder
+    private var addEditToolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            AdaptiveCancelButton {
+                dismiss()
+            }
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            AdaptiveConfirmButton {
+                onSave(makeSet())
+                dismiss()
+            }
+        }
+    }
+    
+    private var navTitle: String {
+        isEditing
+            ? String(localized: "Edit Set")
+            : String(localized: "Add Set")
+    }
 
     var body: some View {
         NavigationStack {
@@ -87,25 +108,9 @@ struct AddEditSetView: View {
 
                 noteSection
             }
-            .navigationTitle(
-                isEditing
-                    ? String(localized: "Edit Set")
-                    : String(localized: "Add Set")
-            )
+            .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    AdaptiveCancelButton {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    AdaptiveConfirmButton {
-                        onSave(makeSet())
-                        dismiss()
-                    }
-                }
-            }
+            .toolbar { addEditToolbarContent }
             .scrollDismissesKeyboard(.interactively)
         }
     }
