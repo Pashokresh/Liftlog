@@ -29,22 +29,9 @@
 		B00480D02F46F76D00EAF81B /* LiftlogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftlogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B0F722092F8FB63900DC846C /* Exceptions for "Liftlog" folder in "Liftlog" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = B00480B32F46F76C00EAF81B /* Liftlog */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B00480B62F46F76C00EAF81B /* Liftlog */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				B0F722092F8FB63900DC846C /* Exceptions for "Liftlog" folder in "Liftlog" target */,
-			);
 			path = Liftlog;
 			sourceTree = "<group>";
 		};
