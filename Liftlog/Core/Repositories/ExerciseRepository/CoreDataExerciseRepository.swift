@@ -75,6 +75,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             let exercise = try self.fetchExercise(model.id)
 
             exercise.name = model.name
+            exercise.type = Int16(model.type.rawValue) 
             exercise.exerciseDescription = model.description
 
             try self.context.save()

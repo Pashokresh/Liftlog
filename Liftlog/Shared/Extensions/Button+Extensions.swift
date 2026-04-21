@@ -47,7 +47,6 @@ extension Button {
             if #available(iOS 26.0, *) {
                 self
                     .buttonStyle(.glassProminent)
-                    .glassEffect(.regular.interactive())
             } else {
                 self
                     .buttonStyle(.borderedProminent)
@@ -60,7 +59,6 @@ extension Button {
         if #available(iOS 26.0, *) {
             self
                 .buttonStyle(.glassProminent)
-                .glassEffect(.regular.interactive())
         } else {
             self
                 .buttonStyle(.plain)

@@ -174,10 +174,12 @@ struct ExerciseLibraryView: View {
 }
 
 #Preview {
-    ExerciseLibraryView(
-        viewModel: ExerciseLibraryViewModel(
-            repository: MockExerciseRepository()
-        ),
-        onSelect: nil
-    )
+    NavigationStack {
+        ExerciseLibraryView(
+            viewModel: ExerciseLibraryViewModel(
+                repository: MockExerciseRepository()
+            ),
+            onSelect: nil
+        )
+    }
 }

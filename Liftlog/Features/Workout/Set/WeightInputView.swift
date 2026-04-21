@@ -22,7 +22,7 @@ struct WeightInputView: View {
                     ForEach(1...99, id: \.self) { Text("\($0)") }
                 }
                 .pickerStyle(.wheel)
-                .frame(width: 80)
+                .frame(width: 70)
                 .clipped()
 
                 Text(String(localized: "reps"))
@@ -36,7 +36,7 @@ struct WeightInputView: View {
                     }
                 }
                 .pickerStyle(.wheel)
-                .frame(width: 80)
+                .frame(width: 70)
                 .clipped()
 
                 Text(String(localized: "kg"))
@@ -54,7 +54,7 @@ struct WeightInputView: View {
                     }
                 }
                 .pickerStyle(.wheel)
-                .frame(width: 80)
+                .frame(width: 70)
                 .clipped()
 
                 Text(String(localized: "g"))
