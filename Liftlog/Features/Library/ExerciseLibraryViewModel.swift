@@ -17,6 +17,15 @@ final class ExerciseLibraryViewModel {
 
     var editingExercise: ExerciseModel?
 
+    var searchText = ""
+
+    var filteredExercises: [ExerciseModel] {
+        guard !searchText.isEmpty else { return exercises }
+        return exercises.filter {
+            $0.name.localizedCaseInsensitiveContains(searchText)
+        }
+    }
+
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository
     }
@@ -33,7 +42,7 @@ final class ExerciseLibraryViewModel {
         async
     {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
-        
+
         do {
             let exercise = try await repository.create(
                 name: name,

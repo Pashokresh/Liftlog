@@ -49,13 +49,10 @@ struct WorkoutDetailView: View {
     }
 
     private var exerciseLibrarySheet: some View {
-        ExerciseLibraryView(
-            viewModel: viewModelFactory.makeExerciseLibraryViewModel(),
-            onSelect: { exercise in
-                Task {
-                    await viewModel.addExercise(exercise)
-                }
-                isAddingExercise = false
+        ExercisePickerView(
+            viewModel: viewModelFactory.makeExercisePickerViewModel(),
+            onAdd: { exercisesToAdd in
+                
             }
         )
     }

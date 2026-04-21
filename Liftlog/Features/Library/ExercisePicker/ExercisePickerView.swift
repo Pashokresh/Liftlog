@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct ExercisePickerView: View {
+    @State private var viewModel: ExercisePickerViewModel
 
     init(
         viewModel: ExercisePickerViewModel,
         onAdd: (OrderedSet<ExerciseModel>) -> Void
     ) {
-
+        _viewModel = .init(initialValue: viewModel)
     }
 
     var body: some View {

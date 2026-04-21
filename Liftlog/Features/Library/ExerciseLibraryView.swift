@@ -11,36 +11,102 @@ struct ExerciseLibraryView: View {
     @State private var viewModel: ExerciseLibraryViewModel
 
     @State private var isAddingExercise = false
-    @State private var searchText = ""
     @State private var exerciseToDelete: ExerciseModel?
 
-    let onSelect: ((ExerciseModel) -> Void)?
-
     init(
-        viewModel: ExerciseLibraryViewModel,
-        onSelect: ((ExerciseModel) -> Void)? = nil
+        viewModel: ExerciseLibraryViewModel
     ) {
         _viewModel = .init(
             initialValue: viewModel
         )
-
-        self.onSelect = onSelect
     }
 
-    private var filteredExercises: [ExerciseModel] {
-        guard !searchText.isEmpty else { return viewModel.exercises }
-        return viewModel.exercises.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
+    @ViewBuilder
+    private func exerciseRow(_ exercise: ExerciseModel) -> some View {
+        ExerciseRowView(
+            exercise: exercise
+        )
+        .onRowTap {
+            viewModel.editingExercise = exercise
+        }
+        .swipeActions {
+            SwipeDeleteButton {
+                exerciseToDelete = exercise
+            }
+
+            SwipeEditButton {
+                viewModel.editingExercise = exercise
+            }
+
+        }
+        .deleteConfirmation(item: $exerciseToDelete) { exercise in
+            Task {
+                await viewModel.deleteExercise(exercise.id)
+            }
         }
     }
 
-    private var navigationContent: some View {
-        List(filteredExercises, id: \.id) {
+    @ViewBuilder
+    private var emptyState: some View {
+        if viewModel.filteredExercises.isEmpty {
+            if !viewModel.searchText.isEmpty {
+                ContentUnavailableView.search
+            } else {
+                UnavailableContentView(
+                    title: String(
+                        localized: "No exercises in the library yet."
+                    ),
+                    message: String(
+                        localized: "Tap \"+\" to add a new one."
+                    )
+                )
+            }
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var listToolbar: some ToolbarContent {
+        ToolbarItem(
+            id: "exercise.library.add.new",
+            placement: .automatic
+        ) {
+            AddTopBarButton {
+                isAddingExercise = true
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var addExerciseSheet: some View {
+        AddEditExerciseView { exercise in
+            Task {
+                await viewModel.createExercise(
+                    name: exercise.name,
+                    type: exercise.type,
+                    description: exercise.description
+                )
+            }
+        }
+        .presentationDetents([.fraction(2 / 3)])
+    }
+
+    @ViewBuilder
+    private func editExerciseSheet(_ exercise: ExerciseModel) -> some View {
+        AddEditExerciseView(exercise: exercise) { updatedExercise in
+            Task {
+                await viewModel.updateExercise(updatedExercise)
+            }
+        }
+        .presentationDetents([.fraction(2 / 3)])
+    }
+
+    var body: some View {
+        List(viewModel.filteredExercises, id: \.id) {
             exerciseRow($0)
         }
         .animation(
             .easeInOut(duration: 0.3),
-            value: filteredExercises.map { $0.id }
+            value: viewModel.filteredExercises.map { $0.id }
         )
         .scrollDismissesKeyboard(.interactively)
         .environment(\.defaultMinListRowHeight, 80)
@@ -53,7 +119,7 @@ struct ExerciseLibraryView: View {
         // TODO: Fix white navigation bar background on search
         .toolbar { listToolbar }
         .searchable(
-            text: $searchText,
+            text: $viewModel.searchText,
             prompt: String(
                 localized: "Search Exercise"
             )
@@ -77,180 +143,14 @@ struct ExerciseLibraryView: View {
             }
         }
     }
-
-    @ViewBuilder
-    private func exerciseRow(_ exercise: ExerciseModel) -> some View {
-        ExerciseRowView(
-            exercise: exercise
-        )
-        .onRowTap {
-            if let onSelect = onSelect {
-                onSelect(exercise)
-            } else {
-                viewModel.editingExercise = exercise
-            }
-        }
-        .swipeActions {
-            if onSelect == nil {
-                SwipeDeleteButton {
-                    exerciseToDelete = exercise
-                }
-
-                SwipeEditButton {
-                    viewModel.editingExercise = exercise
-                }
-            }
-<<<<<<< HEAD
-        }
-        .deleteConfirmation(item: $exerciseToDelete) { exercise in
-            Task {
-                await viewModel.deleteExercise(exercise.id)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var emptyState: some View {
-        if filteredExercises.isEmpty {
-            if !searchText.isEmpty {
-                ContentUnavailableView.search
-            } else {
-                UnavailableContentView(
-                    title: String(
-                        localized: "No exercises in the library yet."
-                    ),
-                    message: String(
-                        localized: "Tap \"+\" to add a new one."
-                    )
-                )
-            }
-        }
-    }
-
-    @ToolbarContentBuilder
-    private var listToolbar: some ToolbarContent {
-        ToolbarItem(
-            id: "exercise.library.add.new",
-            placement: .automatic
-        ) {
-            AddTopBarButton {
-                isAddingExercise = true
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var addExerciseSheet: some View {
-        AddEditExerciseView { exercise in
-            Task {
-                await viewModel.createExercise(
-                    name: exercise.name,
-                    type: exercise.type,
-                    description: exercise.description
-                )
-            }
-        }
-        .presentationDetents([.fraction(2 / 3)])
-    }
-
-    @ViewBuilder
-    private func editExerciseSheet(_ exercise: ExerciseModel) -> some View {
-        AddEditExerciseView(exercise: exercise) { updatedExercise in
-            Task {
-                await viewModel.updateExercise(updatedExercise)
-            }
-        }
-=======
-        }
-        .deleteConfirmation(item: $exerciseToDelete) { exercise in
-            Task {
-                await viewModel.deleteExercise(exercise.id)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var emptyState: some View {
-        if filteredExercises.isEmpty {
-            if !searchText.isEmpty {
-                ContentUnavailableView.search
-            } else {
-                UnavailableContentView(
-                    title: String(
-                        localized: "No exercises in the library yet."
-                    ),
-                    message: String(
-                        localized: "Tap \"+\" to add a new one."
-                    )
-                )
-            }
-        }
-    }
-
-    @ToolbarContentBuilder
-    private var listToolbar: some ToolbarContent {
-        ToolbarItem(
-            id: "exercise.library.add.new",
-            placement: .automatic
-        ) {
-            AddTopBarButton {
-                isAddingExercise = true
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var addExerciseSheet: some View {
-        AddEditExerciseView { exercise in
-            Task {
-                await viewModel.createExercise(
-                    name: exercise.name,
-                    type: exercise.type,
-                    description: exercise.description
-                )
-            }
-        }
-        .presentationDetents([.fraction(2 / 3)])
-    }
-
-    @ViewBuilder
-    private func editExerciseSheet(_ exercise: ExerciseModel) -> some View {
-        AddEditExerciseView(exercise: exercise) { updatedExercise in
-            Task {
-                await viewModel.updateExercise(updatedExercise)
-            }
-        }
->>>>>>> main
-        .presentationDetents([.fraction(2 / 3)])
-    }
-
-    var body: some View {
-        if onSelect != nil {
-            NavigationStack {
-                navigationContent
-            }
-        } else {
-            navigationContent
-        }
-    }
 }
 
 #Preview {
-<<<<<<< HEAD
-    ExerciseLibraryView(
-        viewModel: ExerciseLibraryViewModel(
-            repository: MockExerciseRepository()
-        ),
-        onSelect: nil
-    )
-=======
     NavigationStack {
         ExerciseLibraryView(
             viewModel: ExerciseLibraryViewModel(
                 repository: MockExerciseRepository()
-            ),
-            onSelect: nil
+            )
         )
     }
->>>>>>> main
 }
