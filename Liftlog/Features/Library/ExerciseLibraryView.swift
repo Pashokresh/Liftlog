@@ -100,6 +100,7 @@ struct ExerciseLibraryView: View {
                     viewModel.editingExercise = exercise
                 }
             }
+<<<<<<< HEAD
         }
         .deleteConfirmation(item: $exerciseToDelete) { exercise in
             Task {
@@ -159,6 +160,67 @@ struct ExerciseLibraryView: View {
                 await viewModel.updateExercise(updatedExercise)
             }
         }
+=======
+        }
+        .deleteConfirmation(item: $exerciseToDelete) { exercise in
+            Task {
+                await viewModel.deleteExercise(exercise.id)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var emptyState: some View {
+        if filteredExercises.isEmpty {
+            if !searchText.isEmpty {
+                ContentUnavailableView.search
+            } else {
+                UnavailableContentView(
+                    title: String(
+                        localized: "No exercises in the library yet."
+                    ),
+                    message: String(
+                        localized: "Tap \"+\" to add a new one."
+                    )
+                )
+            }
+        }
+    }
+
+    @ToolbarContentBuilder
+    private var listToolbar: some ToolbarContent {
+        ToolbarItem(
+            id: "exercise.library.add.new",
+            placement: .automatic
+        ) {
+            AddTopBarButton {
+                isAddingExercise = true
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var addExerciseSheet: some View {
+        AddEditExerciseView { exercise in
+            Task {
+                await viewModel.createExercise(
+                    name: exercise.name,
+                    type: exercise.type,
+                    description: exercise.description
+                )
+            }
+        }
+        .presentationDetents([.fraction(2 / 3)])
+    }
+
+    @ViewBuilder
+    private func editExerciseSheet(_ exercise: ExerciseModel) -> some View {
+        AddEditExerciseView(exercise: exercise) { updatedExercise in
+            Task {
+                await viewModel.updateExercise(updatedExercise)
+            }
+        }
+>>>>>>> main
         .presentationDetents([.fraction(2 / 3)])
     }
 
@@ -174,10 +236,21 @@ struct ExerciseLibraryView: View {
 }
 
 #Preview {
+<<<<<<< HEAD
     ExerciseLibraryView(
         viewModel: ExerciseLibraryViewModel(
             repository: MockExerciseRepository()
         ),
         onSelect: nil
     )
+=======
+    NavigationStack {
+        ExerciseLibraryView(
+            viewModel: ExerciseLibraryViewModel(
+                repository: MockExerciseRepository()
+            ),
+            onSelect: nil
+        )
+    }
+>>>>>>> main
 }

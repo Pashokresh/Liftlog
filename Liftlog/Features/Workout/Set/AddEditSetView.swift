@@ -130,7 +130,7 @@ struct AddEditSetView: View {
 
 #Preview {
     AddEditSetView(
-        exerciseType: .time,
+        exerciseType: .reps,
         existingSet: nil,
         onSave: { _ in }
     )

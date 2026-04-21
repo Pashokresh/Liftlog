@@ -104,7 +104,11 @@ struct ExerciseSetListView: View {
                 }
             }
         )
+<<<<<<< HEAD
         .presentationDetents([.fraction(CGFloat(2 / 3))])
+=======
+        .presentationDetents([.medium, .large])
+>>>>>>> main
         .presentationDragIndicator(.visible)
     }
     
