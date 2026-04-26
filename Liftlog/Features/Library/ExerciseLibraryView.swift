@@ -52,14 +52,7 @@ struct ExerciseLibraryView: View {
             if !viewModel.searchText.isEmpty {
                 ContentUnavailableView.search
             } else {
-                UnavailableContentView(
-                    title: String(
-                        localized: "No exercises in the library yet."
-                    ),
-                    message: String(
-                        localized: "Tap \"+\" to add a new one."
-                    )
-                )
+                ExerciseLibraryEmptyView()
             }
         }
     }
