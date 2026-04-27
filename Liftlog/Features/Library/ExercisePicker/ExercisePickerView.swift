@@ -22,8 +22,9 @@ struct ExercisePickerView: View {
 
     @ViewBuilder
     private func exerciseRow(_ exercise: ExerciseModel) -> some View {
-        ExerciseRowView(
-            exercise: exercise
+        ExercisePickerRowView(
+            exercise: exercise,
+            order: viewModel.selectedOrder(exercise)
         )
         .onRowTap {
             viewModel.toggle(exercise)
@@ -75,18 +76,23 @@ struct ExercisePickerView: View {
             AdaptiveConfirmButton {
                 //TODO: implement selection confirmation
             }
+            .disabled(viewModel.selectedExercises.isEmpty)
         }
+    }
+    
+    var content: some View {
+        List(viewModel.filteredExercises, id: \.id) {
+            exerciseRow($0)
+        }
+        .animation(
+            .easeInOut(duration: 0.3),
+            value: viewModel.filteredExercises.map { $0.id }
+        )
     }
 
     var body: some View {
         NavigationStack {
-            List(viewModel.filteredExercises, id: \.id) {
-                exerciseRow($0)
-            }
-            .animation(
-                .easeInOut(duration: 0.3),
-                value: viewModel.filteredExercises.map { $0.id }
-            )
+            content
             .scrollDismissesKeyboard(.interactively)
             .environment(\.defaultMinListRowHeight, 80)
             .overlay { emptyState }
@@ -96,15 +102,17 @@ struct ExercisePickerView: View {
                 text: $viewModel.searchText,
                 prompt: AppLocalization.searchExercise
             )
-            .sheet(item: $isAddingNewExercise) { addExerciseSheet }
+            .sheet(isPresented: $isAddingNewExercise) {
+                addExerciseSheet
+            }
             .alert(
                 AppLocalization.error,
                 isPresented: Binding(
                     get: { viewModel.error != nil },
-                    set: { if !$0 { viewModel.nullifyError() } }
+                    set: { if !$0 { viewModel.clearError() } }
                 )
             ) {
-                Button(AppLocalization.ok) { viewModel.nullifyError() }
+                Button(AppLocalization.ok) { viewModel.clearError() }
             } message: {
                 Text(viewModel.error?.localizedDescription ?? "")
             }

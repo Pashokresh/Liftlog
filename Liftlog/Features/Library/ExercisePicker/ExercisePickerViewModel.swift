@@ -39,8 +39,12 @@ final class ExercisePickerViewModel {
         }
     }
 
-    func isSelected(_ exercise: ExerciseModel) -> Bool {
-        selectedExercises.contains(exercise)
+    func selectedOrder(_ exercise: ExerciseModel) -> Int? {
+        if selectedExercises.contains(exercise) {
+            return (selectedExercises.firstIndex(of: exercise) ?? 0) + 1
+        }
+        
+        return nil
     }
 
     func loadExercises() async {
@@ -60,6 +64,12 @@ final class ExercisePickerViewModel {
             selectedExercises.insert(created)
         } catch {
             self.error = error
+        }
+    }
+    
+    func clearError() {
+        Task { @MainActor in
+            self.error = nil
         }
     }
 }
