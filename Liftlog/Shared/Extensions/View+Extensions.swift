@@ -25,8 +25,8 @@ extension View {
 
     func deleteConfirmation<T: Identifiable>(
         item: Binding<T?>,
-        title: String = String(localized: "Delete?"),
-        message: String = String(localized: "This action cannot be undone."),
+        title: String = AppLocalization.deleteConfirmationTitle,
+        message: String = AppLocalization.deleteConfirmationMessage,
         action: @escaping (T) -> Void
     ) -> some View {
         self.alert(
@@ -37,11 +37,11 @@ extension View {
             ),
             presenting: item.wrappedValue
         ) { itemToDelete in
-            Button(String(localized: "Delete"), role: .destructive) {
+            Button(AppLocalization.delete, role: .destructive) {
                 action(itemToDelete)
                 item.wrappedValue = nil
             }
-            Button(String(localized: "Cancel"), role: .cancel) {
+            Button(AppLocalization.cancel, role: .cancel) {
                 item.wrappedValue = nil
             }
         } message: { _ in

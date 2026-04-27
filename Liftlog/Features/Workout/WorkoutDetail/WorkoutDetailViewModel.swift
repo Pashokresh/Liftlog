@@ -37,7 +37,7 @@ final class WorkoutDetailViewModel {
         if workout.exercises.contains(where: { $0.exercise.id == exercise.id })
         {
             error = LiftlogError.failure(
-                description: String(localized: "Exercise already added")
+                description: AppLocalization.exerciseAlreadyAdded
             )
             return
         }

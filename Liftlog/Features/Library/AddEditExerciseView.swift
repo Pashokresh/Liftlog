@@ -40,10 +40,10 @@ struct AddEditExerciseView: View {
             Form {
                 Section {
                     TextField(
-                        String(localized: "Name"),
+                        AppLocalization.name,
                         text: $name
                     )
-                    Picker(String(localized: "Exercise type"), selection: $type)
+                    Picker(AppLocalization.exerciseType, selection: $type)
                     {
                         ForEach(ExerciseType.allCases, id: \.id) {
                             Text(String(describing: $0))
@@ -51,7 +51,7 @@ struct AddEditExerciseView: View {
                     }
                     .pickerStyle(.menu)
                     TextField(
-                        String(localized: "Description (optional)"),
+                        AppLocalization.descriptionOptional,
                         text: $description,
                         axis: .vertical
                     )
@@ -78,8 +78,8 @@ struct AddEditExerciseView: View {
     
     private var navTitle: String {
         exercise != nil
-            ? String(localized: "Edit Exercise")
-            : String(localized: "Add Exercise")
+            ? AppLocalization.editExercise
+            : AppLocalization.addExercise
     }
     
     @ToolbarContentBuilder

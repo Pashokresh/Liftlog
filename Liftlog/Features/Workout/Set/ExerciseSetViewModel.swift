@@ -90,7 +90,7 @@ final class ExerciseSetViewModel {
                 })
             else {
                 self.error = LiftlogError.failure(
-                    description: String(localized: "Set not found")
+                    description: AppLocalization.setNotFound
                 )
                 return
             }

@@ -17,7 +17,7 @@ struct AdaptiveCancelButton: View {
                 action()
             }
         } else {
-            Button(String(localized: "Cancel"), role: .cancel) {
+            Button(AppLocalization.cancel, role: .cancel) {
                 action()
             }
         }

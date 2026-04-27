@@ -11,13 +11,15 @@ struct ExercisePickerView: View {
     @State private var viewModel: ExercisePickerViewModel
     @Environment(\.dismiss) private var dismiss
 
+    @State private var isAddingNewExercise: Bool = false
+
     init(
         viewModel: ExercisePickerViewModel,
         onAdd: (OrderedSet<ExerciseModel>) -> Void
     ) {
         _viewModel = .init(initialValue: viewModel)
     }
-    
+
     @ViewBuilder
     private func exerciseRow(_ exercise: ExerciseModel) -> some View {
         ExerciseRowView(
@@ -39,8 +41,24 @@ struct ExercisePickerView: View {
         }
     }
 
+    @ViewBuilder
+    private var addExerciseSheet: some View {
+        AddEditExerciseView { exercise in
+            Task {
+                await viewModel.createAndSelectExercise(exercise)
+            }
+        }
+        .presentationDetents([.fraction(2 / 3)])
+    }
+
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
+        ToolbarItem(id: "exercise.library.pick.add", placement: .bottomBar) {
+            AddBottomBarButton(with: AppLocalization.addExercise) {
+                isAddingNewExercise = true
+            }
+        }
+
         ToolbarItem(
             id: "exercise.library.pick.cancel",
             placement: .topBarLeading
@@ -49,7 +67,7 @@ struct ExercisePickerView: View {
                 dismiss()
             }
         }
-        
+
         ToolbarItem(
             id: "exercise.library.pick.done",
             placement: .topBarTrailing
@@ -72,26 +90,21 @@ struct ExercisePickerView: View {
             .scrollDismissesKeyboard(.interactively)
             .environment(\.defaultMinListRowHeight, 80)
             .overlay { emptyState }
-            .navigationTitle(
-                String(
-                    localized: "Pick Exercise from the Library"
-                )
-            )
+            .navigationTitle(AppLocalization.pickExerciseFromLibrary)
             .toolbar { toolbar }
             .searchable(
                 text: $viewModel.searchText,
-                prompt: String(
-                    localized: "Search Exercise"
-                )
+                prompt: AppLocalization.searchExercise
             )
+            .sheet(item: $isAddingNewExercise) { addExerciseSheet }
             .alert(
-                String(localized: "Error"),
+                AppLocalization.error,
                 isPresented: Binding(
                     get: { viewModel.error != nil },
                     set: { if !$0 { viewModel.nullifyError() } }
                 )
             ) {
-                Button("OK") { viewModel.nullifyError() }
+                Button(AppLocalization.ok) { viewModel.nullifyError() }
             } message: {
                 Text(viewModel.error?.localizedDescription ?? "")
             }

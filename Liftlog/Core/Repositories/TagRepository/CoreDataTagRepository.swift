@@ -67,7 +67,7 @@ extension CoreDataTagRepository {
 
         guard let tag = try context.fetch(request).first else {
             throw LiftlogError.noData(
-                description: String(localized: "Tag was not found")
+                description: AppLocalization.tagWasNotFound
             )
         }
 

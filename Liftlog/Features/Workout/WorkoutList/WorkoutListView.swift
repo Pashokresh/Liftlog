@@ -25,10 +25,8 @@ struct WorkoutListView: View {
         if viewModel.filteredWorkouts.isEmpty {
             if viewModel.workouts.isEmpty {
                 UnavailableContentView(
-                    title: String(localized: "No workouts yet"),
-                    message: String(
-                        localized: "Create a new workout to get started."
-                    )
+                    title: AppLocalization.noWorkoutsYet,
+                    message: AppLocalization.createNewWorkoutToGetStarted
                 )
             } else {
                 ContentUnavailableView.search
@@ -123,11 +121,7 @@ struct WorkoutListView: View {
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.workouts)
         .environment(\.defaultMinListRowHeight, 80)
-        .navigationTitle(
-            Text(
-                String(localized: "Workouts")
-            )
-        )
+        .navigationTitle(Text(AppLocalization.workouts))
         .navigationBarTitleDisplayMode(.inline)
         .overlay { emptyState }
         .toolbar { toolbarContent }
@@ -145,9 +139,9 @@ struct WorkoutListView: View {
             )
         ) {
             Alert(
-                title: Text(String(localized: "Error")),
+                title: Text(AppLocalization.error),
                 message: Text(viewModel.error!.localizedDescription),
-                dismissButton: .default(Text(String(localized: "OK")))
+                dismissButton: .default(Text(AppLocalization.ok))
             )
         }
         .onChange(

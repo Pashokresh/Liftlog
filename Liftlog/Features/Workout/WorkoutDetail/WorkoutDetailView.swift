@@ -28,7 +28,7 @@ struct WorkoutDetailView: View {
 
         ToolbarItem(placement: .bottomBar) {
             AddBottomBarButton(
-                with: String(localized: "Add Exercise")
+                with: AppLocalization.addExercise
             ) {
                 isAddingExercise = true
             }
@@ -39,11 +39,9 @@ struct WorkoutDetailView: View {
     private var emptyState: some View {
         if viewModel.workout.exercises.isEmpty {
             ContentUnavailableView(
-                String(localized: "No Exercises yet"),
+                AppLocalization.noExercisesYet,
                 systemImage: Images.figureStrengthTraining,
-                description: Text(
-                    String(localized: "Start by adding exercises here")
-                )
+                description: Text(AppLocalization.startByAddingExercisesHere)
             )
         }
     }
@@ -94,13 +92,13 @@ struct WorkoutDetailView: View {
         .overlay { emptyState }
         .sheet(isPresented: $isAddingExercise) { exerciseLibrarySheet }
         .alert(
-            String(localized: "Error"),
+            AppLocalization.error,
             isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button("OK") {
+            Button(AppLocalization.ok) {
                 viewModel.nullifyError()
             }
         } message: {

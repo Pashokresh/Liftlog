@@ -50,23 +50,23 @@ struct AddEditSetView: View {
     }
 
     var repSection: some View {
-        Section(String(localized: "Reps and Weight")) {
+        Section(AppLocalization.repsAndWeight) {
             WeightInputView(reps: $reps, weight: $weight)
                 .frame(maxHeight: 180)
         }
     }
 
     var durationSection: some View {
-        Section(String(localized: "Duration")) {
+        Section(AppLocalization.duration) {
             DurationInputView(duration: $duration)
                 .frame(maxHeight: 180)
         }
     }
 
     var noteSection: some View {
-        Section(String(localized: "Notes")) {
+        Section(AppLocalization.notes) {
             TextField(
-                String(localized: "Optional"),
+                AppLocalization.optional,
                 text: $note,
                 axis: .vertical
             )
@@ -92,8 +92,8 @@ struct AddEditSetView: View {
     
     private var navTitle: String {
         isEditing
-            ? String(localized: "Edit Set")
-            : String(localized: "Add Set")
+            ? AppLocalization.editSet
+            : AppLocalization.addSetTitle
     }
 
     var body: some View {

@@ -17,9 +17,9 @@ enum ExerciseType: Int, CaseIterable, Identifiable, CustomStringConvertible {
     var description: String {
         switch self {
         case .reps:
-            return String(localized: "Reps")
+            return AppLocalization.reps
         case .time:
-            return String(localized: "Time")
+            return AppLocalization.time
         }
     }
 }

@@ -51,7 +51,7 @@ struct ExerciseSetListView: View {
                 noSetsPlaceholder
             }
         } header: {
-            Text(String(localized: "Current workout"))
+            Text(AppLocalization.currentWorkout)
         }
     }
 
@@ -89,8 +89,8 @@ struct ExerciseSetListView: View {
 
     var noSetsPlaceholder: some View {
         UnavailableContentView(
-            title: String(localized: "No Sets yet"),
-            message: String(localized: "Start by adding sets here")
+            title: AppLocalization.noSetsYet,
+            message: AppLocalization.startByAddingSetsHere
         )
     }
     
@@ -136,7 +136,7 @@ struct ExerciseSetListView: View {
         .toolbar {
             ToolbarItem(placement: .bottomBar) {
                 AddBottomBarButton(
-                    with: String(localized: "Add set")
+                    with: AppLocalization.addSet
                 ) {
                     isAddingNewSet = true
                 }
@@ -150,13 +150,13 @@ struct ExerciseSetListView: View {
             }
         }
         .alert(
-            String(localized: "Error"),
+            AppLocalization.error,
             isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button("OK") {
+            Button(AppLocalization.ok) {
                 viewModel.nullifyError()
             }
         } message: {

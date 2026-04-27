@@ -98,7 +98,7 @@ extension CoreDataExerciseRepository {
 
         guard let exercise = try context.fetch(request).first else {
             throw LiftlogError.noData(
-                description: String(localized: "Exercise was not found")
+                description: AppLocalization.exerciseWasNotFound
             )
         }
 

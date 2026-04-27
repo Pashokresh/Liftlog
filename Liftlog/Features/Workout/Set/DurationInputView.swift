@@ -27,7 +27,7 @@ struct DurationInputView: View {
                 .frame(width: 80)
                 .clipped()
 
-                Text(String(localized: "min"))
+                Text(AppLocalization.min)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -42,7 +42,7 @@ struct DurationInputView: View {
                 .frame(width: 80)
                 .clipped()
 
-                Text(String(localized: "sec"))
+                Text(AppLocalization.sec)
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }

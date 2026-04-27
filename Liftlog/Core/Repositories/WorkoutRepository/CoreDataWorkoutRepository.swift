@@ -32,7 +32,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             let request = fetchRequest(for: Workout.self, with: [id])
             
             guard let workout = try self.context.fetch(request).first else {
-                throw LiftlogError.failure(description: String(localized: "Workout not found"))
+                throw LiftlogError.failure(description: AppLocalization.workoutNotFound)
             }
             
             return workout.toDomain()
@@ -125,7 +125,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
                 ).first
             else {
                 throw LiftlogError.failure(
-                    description: String(localized: "Exercise was not found")
+                    description: AppLocalization.exerciseWasNotFound
                 )
             }
 
@@ -232,7 +232,7 @@ extension CoreDataWorkoutRepository {
 
         guard let set = try context.fetch(request).first else {
             throw LiftlogError.noData(
-                description: String(localized: "Set was not found")
+                description: AppLocalization.setWasNotFound
             )
         }
 
@@ -245,7 +245,7 @@ extension CoreDataWorkoutRepository {
 
         guard let workoutExercise = try context.fetch(request).first else {
             throw LiftlogError.noData(
-                description: String(localized: "Set was not found")
+                description: AppLocalization.setWasNotFound
             )
         }
 
@@ -257,7 +257,7 @@ extension CoreDataWorkoutRepository {
 
         guard let workout = try context.fetch(request).first else {
             throw LiftlogError.noData(
-                description: String(localized: "Set was not found")
+                description: AppLocalization.setWasNotFound
             )
         }
 

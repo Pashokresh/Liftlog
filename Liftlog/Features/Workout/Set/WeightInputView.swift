@@ -25,7 +25,7 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(String(localized: "reps"))
+                Text(AppLocalization.repsLowercase)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -39,7 +39,7 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(String(localized: "kg"))
+                Text(AppLocalization.kg)
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)
@@ -57,7 +57,7 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(String(localized: "g"))
+                Text(AppLocalization.g)
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)

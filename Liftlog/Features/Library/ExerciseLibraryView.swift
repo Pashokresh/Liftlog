@@ -120,13 +120,13 @@ struct ExerciseLibraryView: View {
         .sheet(isPresented: $isAddingExercise) { addExerciseSheet }
         .sheet(item: $viewModel.editingExercise) { editExerciseSheet($0) }
         .alert(
-            String(localized: "Error"),
+            AppLocalization.error,
             isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button("OK") { viewModel.nullifyError() }
+            Button(AppLocalization.ok) { viewModel.nullifyError() }
         } message: {
             Text(viewModel.error?.localizedDescription ?? "")
         }

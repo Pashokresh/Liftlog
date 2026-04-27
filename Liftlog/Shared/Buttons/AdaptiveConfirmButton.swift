@@ -17,7 +17,7 @@ struct AdaptiveConfirmButton: View {
                 action()
             }
         } else {
-            Button(String(localized: "Save")) {
+            Button(AppLocalization.save) {
                 action()
             }
         }

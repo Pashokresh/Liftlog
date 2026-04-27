@@ -25,7 +25,7 @@ struct AddEditWorkoutView: View {
     private var workoutDetailsSection: some View {
         Section {
             TextField(
-                String(localized: "Workout Name"),
+                AppLocalization.workoutName,
                 text: Binding.init(
                     get: {
                         viewModel.name
@@ -34,7 +34,7 @@ struct AddEditWorkoutView: View {
                 )
             )
             DatePicker(
-                String(localized: "Date"),
+                AppLocalization.date,
                 selection: Binding.init(
                     get: {
                         viewModel.date
@@ -44,7 +44,7 @@ struct AddEditWorkoutView: View {
                 displayedComponents: .date
             )
             TextField(
-                String(localized: "Notes (optional)"),
+                AppLocalization.notesOptional,
                 text: Binding.init(
                     get: {
                         viewModel.notes
@@ -100,7 +100,7 @@ struct AddEditWorkoutView: View {
     private var tagCreation: some View {
         HStack {
             TextField(
-                String(localized: "New tag"),
+                AppLocalization.newTag,
                 text:
                     Binding.init(
                         get: { viewModel.newTagName },
@@ -123,8 +123,8 @@ struct AddEditWorkoutView: View {
     
     private var navTitle: String {
         viewModel.isEditing
-            ? String(localized: "Edit Workout")
-            : String(localized: "Create Workout")
+            ? AppLocalization.editWorkout
+            : AppLocalization.createWorkout
     }
     
     @ToolbarContentBuilder
@@ -155,7 +155,7 @@ struct AddEditWorkoutView: View {
             Form {
                 workoutDetailsSection
 
-                Section(String(localized: "Tags")) {
+                Section(AppLocalization.tags) {
                     selectedTags
 
                     unselectedTags
