@@ -22,7 +22,7 @@ final class WorkoutDetailViewModel {
     }
 
     private var workoutExerciseIds: Set<UUID> {
-        Set.init(workout.exercises.map(\.id))
+        Set.init(workout.exercises.map(\.exercise.id))
     }
 
     func reloadWorkout() async {
@@ -36,24 +36,40 @@ final class WorkoutDetailViewModel {
         }
     }
 
-    func addExercise(_ exercise: ExerciseModel) async {
-        if workout.exercises.contains(where: { $0.exercise.id == exercise.id }) {
-            error = LiftlogError.failure(
-                description: AppLocalization.exerciseAlreadyAdded
-            )
+    func addExercises(_ exercises: [ExerciseModel]) async {
+        var exercisesToAdd: [WorkoutExerciseModel] = []
+        var currentWorkoutExerciseIds = workoutExerciseIds
+        var errorToDisplay: Error?
+
+        var exerciseOrder = (workout.exercises.last?.order ?? 0) + 1
+        for exercise in exercises {
+            if !currentWorkoutExerciseIds.contains(exercise.id) {
+                let workoutExercise = WorkoutExerciseModel(
+                    id: UUID(),
+                    order: exerciseOrder,
+                    exercise: exercise,
+                    sets: []
+                )
+                exercisesToAdd.append(workoutExercise)
+                currentWorkoutExerciseIds.insert(exercise.id)  // Fixed: use exercise.id
+                exerciseOrder += 1
+            } else {
+                errorToDisplay = LiftlogError.failure(
+                    description: AppLocalization.exerciseAlreadyAdded
+                )
+            }
+        }
+
+        guard !exercisesToAdd.isEmpty else {
+            if let errorToDisplay {
+                self.error = errorToDisplay
+            }
             return
         }
 
-        let workoutExercise = WorkoutExerciseModel(
-            id: UUID(),
-            order: workout.exercises.count,
-            exercise: exercise,
-            sets: []
-        )
-
         do {
-            try await repository.addExercise(workoutExercise, to: workout.id)
-            workout.exercises.append(workoutExercise)
+            try await repository.addExercises(exercisesToAdd, to: workout.id)
+            workout.exercises.append(contentsOf: exercisesToAdd)
         } catch {
             self.error = error
         }

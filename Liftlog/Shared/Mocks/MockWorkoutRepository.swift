@@ -9,10 +9,11 @@ import Foundation
 
 final class MockWorkoutRepository: WorkoutRepositoryProtocol {
     var shouldThrow = false
-    private var workouts = WorkoutModel.mocks
+    private var workouts: [WorkoutModel] = []
 
-    func fetchAll() throws -> [WorkoutModel] {
-        workouts
+    func fetchAll() async throws -> [WorkoutModel] {
+        try checkThrow()
+        return workouts
     }
 
     func fetch(_ id: UUID) async throws -> WorkoutModel {
@@ -24,31 +25,31 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
         return workout
     }
 
-    func create(_ workoutModel: WorkoutModel) throws -> WorkoutModel {
+    func create(_ workoutModel: WorkoutModel) async throws -> WorkoutModel {
         try checkThrow()
 
         workouts.append(workoutModel)
         return workoutModel
     }
 
-    func update(_ model: WorkoutModel) throws {
+    func update(_ model: WorkoutModel) async throws {
         try checkThrow()
 
         guard let index = getModelIndex(model.id) else { return }
         workouts[index] = model
     }
 
-    func delete(_ id: UUID) throws {
+    func delete(_ id: UUID) async throws {
         try checkThrow()
 
         workouts.removeAll { $0.id == id }
     }
 
-    func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID) throws {
+    func addExercises(_ exerciseModels: [WorkoutExerciseModel], to workoutID: UUID) async throws {
         try checkThrow()
 
         guard let index = getModelIndex(workoutID) else { return }
-        workouts[index].exercises.append(exerciseModel)
+        workouts[index].exercises.append(contentsOf: exerciseModels)
     }
 
     func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID) async throws {
@@ -60,7 +61,7 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
         workouts[index].exercises[workoutExerciseIndex] = model
     }
 
-    func deleteExercise(_ id: UUID) throws {
+    func deleteExercise(_ id: UUID) async throws {
         try checkThrow()
 
         for index in workouts.indices {
@@ -68,7 +69,7 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
         }
     }
 
-    func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID) throws {
+    func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID) async throws {
         try checkThrow()
 
         for workoutIndex in workouts.indices {
@@ -81,11 +82,11 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
         }
     }
 
-    func updateSet(_ model: ExerciseSetModel) throws {
+    func updateSet(_ model: ExerciseSetModel) async throws {
         try checkThrow()
     }
 
-    func deleteSet(_ id: UUID) throws {
+    func deleteSet(_ id: UUID) async throws {
         try checkThrow()
 
         for workoutIndex in workouts.indices {
@@ -103,5 +104,10 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
         if shouldThrow {
             throw LiftlogError.failure(description: "Test error")
         }
+    }
+
+    // Test helper method to add workout directly without async
+    func addWorkoutDirectly(_ workout: WorkoutModel) {
+        workouts.append(workout)
     }
 }

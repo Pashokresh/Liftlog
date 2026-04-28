@@ -102,13 +102,4 @@ final class ExerciseSetViewModel {
     func nullifyError() {
         error = nil
     }
-
-    func deleteHistorySet(_ id: UUID) async {
-        do {
-            try await workoutRepository.deleteSet(id)
-            // TODO: Delete set from history
-        } catch {
-            self.error = error
-        }
-    }
 }

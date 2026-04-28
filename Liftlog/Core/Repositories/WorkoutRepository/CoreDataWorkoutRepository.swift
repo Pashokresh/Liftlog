@@ -31,7 +31,9 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             let request = try fetchRequest(for: Workout.self, with: [id])
 
             guard let workout = try self.context.fetch(request).first else {
-                throw LiftlogError.failure(description: AppLocalization.workoutNotFound)
+                throw LiftlogError.failure(
+                    description: AppLocalization.workoutNotFound
+                )
             }
 
             return workout.toDomain()
@@ -109,29 +111,42 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
         }
     }
 
-    func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID)
+    func addExercises(
+        _ exerciseModels: [WorkoutExerciseModel],
+        to workoutID: UUID
+    )
         async throws {
         try await context.perform {
             let workout = try self.fetchWorkout(workoutID)
+            let exerciseIds = exerciseModels.map { $0.exercise.id }
 
-            guard
-                let exercise = try self.context.fetch(
-                    fetchRequest(
-                        for: Exercise.self,
-                        with: [exerciseModel.exercise.id]
-                    )
-                ).first
-            else {
+            let exercises = try self.context.fetch(
+                fetchRequest(for: Exercise.self, with: exerciseIds)
+            )
+
+            guard exercises.count == exerciseIds.count else {
                 throw LiftlogError.failure(
                     description: AppLocalization.exerciseWasNotFound
                 )
             }
 
-            let workoutExercise = WorkoutExercise(context: self.context)
-            workoutExercise.id = exerciseModel.id
-            workoutExercise.order = Int16(exerciseModel.order)
-            workoutExercise.workout = workout
-            workoutExercise.exercise = exercise
+            let exerciseMap = Dictionary(
+                uniqueKeysWithValues: exercises.map { ($0.id, $0) }
+            )
+
+            for exerciseModel in exerciseModels {
+                guard let exercise = exerciseMap[exerciseModel.exercise.id]
+                else {
+                    throw LiftlogError.failure(
+                        description: AppLocalization.exerciseWasNotFound
+                    )
+                }
+                let workoutExercise = WorkoutExercise(context: self.context)
+                workoutExercise.id = exerciseModel.id
+                workoutExercise.order = Int16(exerciseModel.order)
+                workoutExercise.workout = workout
+                workoutExercise.exercise = exercise
+            }
 
             try self.context.save()
         }
@@ -160,7 +175,17 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 
     func deleteExercise(_ id: UUID) async throws {
         try await context.perform {
-            let workoutExercise = try self.fetchWorkoutExercise(id)
+            let request = try fetchRequest(
+                for: WorkoutExercise.self,
+                with: [id]
+            )
+
+            guard let workoutExercise = try self.context.fetch(request).first
+            else {
+                throw LiftlogError.noData(
+                    description: AppLocalization.setWasNotFound
+                )
+            }
 
             self.context.delete(workoutExercise)
             try self.context.save()
@@ -170,9 +195,17 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID)
         async throws {
         try await context.perform {
-            let workoutExercise = try self.fetchWorkoutExercise(
-                workoutExerciseID
+            let request = try fetchRequest(
+                for: WorkoutExercise.self,
+                with: [workoutExerciseID]
             )
+
+            guard let workoutExercise = try self.context.fetch(request).first
+            else {
+                throw LiftlogError.noData(
+                    description: AppLocalization.setWasNotFound
+                )
+            }
 
             let set = ExerciseSet(context: self.context)
             set.id = setModel.id
@@ -194,7 +227,13 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 
     func updateSet(_ model: ExerciseSetModel) async throws {
         try await context.perform {
-            let set = try self.fetchSet(model.id)
+            let request = try fetchRequest(for: ExerciseSet.self, with: [model.id])
+
+            guard let set = try self.context.fetch(request).first else {
+                throw LiftlogError.noData(
+                    description: AppLocalization.setWasNotFound
+                )
+            }
 
             set.id = model.id
             set.order = Int16(model.order)
@@ -214,7 +253,13 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 
     func deleteSet(_ id: UUID) async throws {
         try await context.perform {
-            let set = try self.fetchSet(id)
+            let request = try fetchRequest(for: ExerciseSet.self, with: [id])
+
+            guard let set = try self.context.fetch(request).first else {
+                throw LiftlogError.noData(
+                    description: AppLocalization.setWasNotFound
+                )
+            }
 
             self.context.delete(set)
             try self.context.save()
@@ -223,30 +268,6 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 }
 
 extension CoreDataWorkoutRepository {
-    private func fetchSet(_ id: UUID) throws -> ExerciseSet {
-        let request = try fetchRequest(for: ExerciseSet.self, with: [id])
-
-        guard let set = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: AppLocalization.setWasNotFound
-            )
-        }
-
-        return set
-    }
-
-    private func fetchWorkoutExercise(_ id: UUID) throws -> WorkoutExercise {
-        let request = try fetchRequest(for: WorkoutExercise.self, with: [id])
-
-        guard let workoutExercise = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: AppLocalization.setWasNotFound
-            )
-        }
-
-        return workoutExercise
-    }
-
     func fetchWorkout(_ id: UUID) throws -> Workout {
         let request = try fetchRequest(for: Workout.self, with: [id])
 

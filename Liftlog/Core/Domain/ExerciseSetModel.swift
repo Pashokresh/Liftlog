@@ -15,6 +15,6 @@ enum SetType: Equatable, Hashable {
 struct ExerciseSetModel: Identifiable, Equatable, Hashable {
     let id: UUID
     var order: Int
-    let note: String?
-    let type: SetType
+    var note: String?
+    var type: SetType
 }

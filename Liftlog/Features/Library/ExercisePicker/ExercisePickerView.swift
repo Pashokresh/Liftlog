@@ -77,6 +77,7 @@ struct ExercisePickerView: View {
         ) {
             AdaptiveConfirmButton {
                 onAdd(viewModel.selectedExercises)
+                dismiss()
             }
             .disabled(viewModel.selectedExercises.isEmpty)
         }

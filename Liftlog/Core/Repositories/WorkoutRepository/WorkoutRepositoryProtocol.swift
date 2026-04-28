@@ -23,7 +23,7 @@ protocol WorkoutRepositoryProtocol: AnyObject {
 
     // MARK: - Methods working with exercises
 
-    func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID)
+    func addExercises(_ exercisesModel: [WorkoutExerciseModel], to workoutID: UUID)
         async throws
 
     func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID)

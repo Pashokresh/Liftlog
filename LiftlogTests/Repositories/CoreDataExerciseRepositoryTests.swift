@@ -9,7 +9,7 @@ import Testing
 import CoreData
 @testable import Liftlog
 
-@Suite("CoreDataExerciseRepository")
+@Suite("CoreDataExerciseRepository", .serialized)
 @MainActor
 struct CoreDataExerciseRepositoryTests {
     var repository: CoreDataExerciseRepository

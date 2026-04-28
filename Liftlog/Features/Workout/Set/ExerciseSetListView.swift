@@ -72,12 +72,22 @@ struct ExerciseSetListView: View {
                 HStack(spacing: 8) {
                     Text(historyExercise.workoutName)
                     Text("·")
+        
                     Text(
                         historyExercise.date.formatted(
                             date: .abbreviated,
                             time: .omitted
                         )
                     )
+                    Image(
+                        systemName: Images.calendar(
+                            day: Calendar.current.component(
+                                .day,
+                                from: historyExercise.date
+                            )
+                        )
+                    )
+                    .font(.system(size: 24))
                 }
             }
         }

@@ -47,7 +47,8 @@ struct WorkoutDetailView: View {
     private var exerciseLibrarySheet: some View {
         ExercisePickerView(
             viewModel: viewModelFactory.makeExercisePickerViewModel()
-        ) { _ in
+        ) { newExercises in
+            Task { await viewModel.addExercises(newExercises.elements) }
         }
     }
 
