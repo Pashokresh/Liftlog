@@ -72,13 +72,12 @@ struct ExerciseSetListView: View {
                 HStack(spacing: 8) {
                     Text(historyExercise.workoutName)
                     Text("·")
-                    Image(systemName:Images.calendar(
+                    Image(systemName: Images.calendar(
                         day: Calendar.current.component(
                             .day,
                             from: historyExercise.date
                         )))
                     Text("\(historyExercise.date.formatted(date: .abbreviated, time: .omitted))")
-
                 }
             }
         }
