@@ -18,30 +18,30 @@
 ///
 /// print(exercises.elements) // ["Squat", "Bench Press"]
 /// ```
-struct OrderedSet<T: Hashable> {
+struct OrderedSet<T: Hashable>: Equatable, Hashable {
     private var array: [T] = []
     private var set: Set<T> = []
-    
+
     /// All the elements in the order they were added.
     var elements: [T] {
         array
     }
-    
+
     /// How many elements are in the collection.
     var count: Int {
         array.count
     }
-    
+
     /// The first element, or `nil` if empty.
     var first: T? {
         array.first
     }
-    
+
     /// The last element, or `nil` if empty.
     var last: T? {
         array.last
     }
-    
+
     /// Adds an element to the collection.
     ///
     /// If the element is already in there, nothing happens.
@@ -51,7 +51,7 @@ struct OrderedSet<T: Hashable> {
         array.append(value)
         set.insert(value)
     }
-    
+
     /// Removes an element from the collection.
     ///
     /// If the element isn't in there, nothing happens.
@@ -60,7 +60,7 @@ struct OrderedSet<T: Hashable> {
         set.remove(value)
         array.removeAll { $0 == value }
     }
-    
+
     /// Checks if an element is in the collection.
     func contains(_ value: T) -> Bool {
         set.contains(value)
@@ -70,19 +70,18 @@ struct OrderedSet<T: Hashable> {
 // MARK: - Collection
 
 extension OrderedSet: Collection {
-    
     var startIndex: Int {
         array.startIndex
     }
-    
+
     var endIndex: Int {
         array.endIndex
     }
-    
+
     subscript(position: Int) -> T {
         array[position]
     }
-    
+
     func index(after i: Int) -> Int {
         array.index(after: i)
     }

@@ -8,7 +8,6 @@
 import CoreData
 
 struct PersistenceController {
-    
     static let shared = PersistenceController()
 
     let container: NSPersistentContainer
@@ -21,13 +20,11 @@ struct PersistenceController {
             }
             storeDescription.url = URL(fileURLWithPath: "/dev/null")
         }
-        container.loadPersistentStores(completionHandler: {
-            (storeDescription, error) in
+        container.loadPersistentStores {_, error in
             if let error = error as NSError? {
-                // TODO: Handle an error
                 assertionFailure("Failed to load persistent store: \(error)")
             }
-        })
+        }
         container.viewContext.automaticallyMergesChangesFromParent = true
     }
 }

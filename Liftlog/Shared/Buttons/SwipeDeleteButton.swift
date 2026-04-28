@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SwipeDeleteButton: View {
-
     let action: () -> Void
 
     init(_ action: @escaping () -> Void) {
@@ -16,9 +15,9 @@ struct SwipeDeleteButton: View {
     }
 
     var body: some View {
-        Button(AppLocalization.delete, systemImage: Images.trash, action: {
+        Button(AppLocalization.delete, systemImage: Images.trash) {
             action()
-        })
+        }
         .tint(.red)
     }
 }

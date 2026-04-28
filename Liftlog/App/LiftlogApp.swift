@@ -13,7 +13,7 @@ struct LiftlogApp: App {
     @State private var factory = ViewModelFactory(
         dependencies: AppDependencies()
     )
-    
+
     var body: some Scene {
         WindowGroup {
             RootView()

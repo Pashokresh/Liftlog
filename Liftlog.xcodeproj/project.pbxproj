@@ -106,6 +106,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B0BC52412FA0A9F700F936C2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B00480B62F46F76C00EAF81B /* Liftlog */,
@@ -196,6 +197,9 @@
 			);
 			mainGroup = B00480AB2F46F76C00EAF81B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B0BC523F2FA0A9B900F936C2 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B00480B52F46F76C00EAF81B /* Products */;
 			projectDirPath = "";
@@ -266,6 +270,10 @@
 			isa = PBXTargetDependency;
 			target = B00480B32F46F76C00EAF81B /* Liftlog */;
 			targetProxy = B00480D12F46F76D00EAF81B /* PBXContainerItemProxy */;
+		};
+		B0BC52412FA0A9F700F936C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = B0BC52402FA0A9F700F936C2 /* SwiftLintBuildTool */;
 		};
 /* End PBXTargetDependency section */
 
@@ -641,6 +649,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B0BC523F2FA0A9B900F936C2 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GayleDunham/SwiftLintPlugin";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B0BC52402FA0A9F700F936C2 /* SwiftLintBuildTool */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0BC523F2FA0A9B900F936C2 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */;
+			productName = "plugin:SwiftLintBuildTool";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B00480AC2F46F76C00EAF81B /* Project object */;
 }

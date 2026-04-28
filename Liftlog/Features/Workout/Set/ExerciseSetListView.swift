@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ExerciseSetListView: View {
-
     @State private var viewModel: ExerciseSetViewModel
     @State private var isAddingNewSet = false
     @State private var setToDelete: ExerciseSetModel?
@@ -17,8 +16,7 @@ struct ExerciseSetListView: View {
         _viewModel = .init(initialValue: viewModel)
     }
 
-    @ViewBuilder
-    var currentWorkoutSection: some View {
+    @ViewBuilder var currentWorkoutSection: some View {
         Section {
             if !viewModel.workoutExercise.sets.isEmpty {
                 ForEach(
@@ -27,13 +25,12 @@ struct ExerciseSetListView: View {
                 ) { index, set in
                     SetRowView(
                         set: set,
-                        number: index + 1,
-                        copySet: {
-                            Task {
-                                await viewModel.copySet(set)
-                            }
+                        number: index + 1
+                    ) {
+                        Task {
+                            await viewModel.copySet(set)
                         }
-                    )
+                    }
                     .onRowTap {
                         viewModel.setToEdit = set
                     }
@@ -64,13 +61,12 @@ struct ExerciseSetListView: View {
                 ) { index, set in
                     SetRowView(
                         set: set,
-                        number: index + 1,
-                        copySet: {
-                            Task {
-                                await viewModel.copySet(set)
-                            }
+                        number: index + 1
+                    ) {
+                        Task {
+                            await viewModel.copySet(set)
                         }
-                    )
+                    }
                 }
             } header: {
                 HStack(spacing: 8) {
@@ -93,31 +89,29 @@ struct ExerciseSetListView: View {
             message: AppLocalization.startByAddingSetsHere
         )
     }
-    
+
     private var addSetSheet: some View {
         AddEditSetView(
             exerciseType: viewModel.workoutExercise.exercise.type,
-            existingSet: nil,
-            onSave: { newSet in
-                Task {
-                    await viewModel.addSet(set: newSet)
-                }
+            existingSet: nil
+        ) { newSet in
+            Task {
+                await viewModel.addSet(set: newSet)
             }
-        )
+        }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
     }
-    
+
     private func editSetSheet(_ setToEdit: ExerciseSetModel) -> some View {
         AddEditSetView(
             exerciseType: viewModel.workoutExercise.exercise.type,
-            existingSet: setToEdit,
-            onSave: { updatedSet in
-                Task {
-                    await viewModel.updateSet(updatedSet)
-                }
+            existingSet: setToEdit
+        ) { updatedSet in
+            Task {
+                await viewModel.updateSet(updatedSet)
             }
-        )
+        }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
     }
@@ -156,7 +150,7 @@ struct ExerciseSetListView: View {
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button(AppLocalization.ok) {
+            Button(AppLocalization.okay) {
                 viewModel.nullifyError()
             }
         } message: {

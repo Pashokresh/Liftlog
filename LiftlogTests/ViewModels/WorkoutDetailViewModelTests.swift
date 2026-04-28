@@ -13,7 +13,6 @@ import Testing
 @Suite("WorkoutDetailViewModel")
 @MainActor
 struct WorkoutDetailViewModelTests {
-
     var repository: MockWorkoutRepository
     var viewModel: WorkoutDetailViewModel
 
@@ -56,20 +55,19 @@ struct WorkoutDetailViewModelTests {
         let exercises = [
             ExerciseModel(id: UUID(), name: "A", description: nil, type: .reps),
             ExerciseModel(id: UUID(), name: "B", description: nil, type: .reps),
-            ExerciseModel(id: UUID(), name: "C", description: nil, type: .reps),
+            ExerciseModel(id: UUID(), name: "C", description: nil, type: .reps)
         ]
-        
+
         for exercise in exercises {
             await viewModel.addExercise(exercise)
         }
-        
+
         await viewModel.moveExercise(fromSource: IndexSet(integer: 0), to: 2)
-        
+
         #expect(viewModel.workout.exercises[0].exercise.name == "B")
         #expect(viewModel.workout.exercises[1].exercise.name == "A")
-        
     }
-    
+
     @Test("Repository error gets into ViewModel.error")
     func repositoryErrorPropagates() async {
         repository.shouldThrow = true

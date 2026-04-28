@@ -9,7 +9,6 @@ import CoreData
 import Foundation
 
 final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
-
     private let context: NSManagedObjectContext
 
     init(context: NSManagedObjectContext) {
@@ -26,15 +25,15 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             return try self.context.fetch(request).map { $0.toDomain() }
         }
     }
-    
+
     func fetch(_ id: UUID) async throws -> WorkoutModel {
         try await context.perform {
-            let request = fetchRequest(for: Workout.self, with: [id])
-            
+            let request = try fetchRequest(for: Workout.self, with: [id])
+
             guard let workout = try self.context.fetch(request).first else {
                 throw LiftlogError.failure(description: AppLocalization.workoutNotFound)
             }
-            
+
             return workout.toDomain()
         }
     }
@@ -47,19 +46,19 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             workout.name = workoutModel.name
             workout.date = workoutModel.date
             workout.notes = workoutModel.notes
-            
+
             if !workoutModel.tags.isEmpty {
-                let tagsToAddRequest = fetchRequest(
+                let tagsToAddRequest = try fetchRequest(
                     for: Tag.self,
                     with: workoutModel.tags.map { $0.id }
                 )
                 let tagsToAdd = try self.context.fetch(tagsToAddRequest)
-                
+
                 tagsToAdd.forEach {
                     workout.addToTags($0)
                 }
             }
-            
+
             try self.context.save()
 
             return workout.toDomain()
@@ -82,7 +81,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 
             /// * Removing old ones *
             currentTags
-                .filter { !newTagIDs.contains($0.id!) }
+                .filter { !newTagIDs.contains($0.id ?? UUID()) }
                 .forEach { workout.removeFromTags($0) }
 
             /// * Adding new ones *
@@ -90,7 +89,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
                 .filter { !currentTagIds.contains($0.id) }
                 .map(\.id)
 
-            let tagsToAddRequest = fetchRequest(
+            let tagsToAddRequest = try fetchRequest(
                 for: Tag.self,
                 with: tagsToAddIDs
             )
@@ -111,8 +110,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
 
     func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID)
-        async throws
-    {
+        async throws {
         try await context.perform {
             let workout = try self.fetchWorkout(workoutID)
 
@@ -140,10 +138,9 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
 
     func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID)
-        async throws
-    {
+        async throws {
         try await context.perform {
-            let request = fetchRequest(
+            let request = try fetchRequest(
                 for: WorkoutExercise.self,
                 with: [model.id]
             )
@@ -171,8 +168,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
 
     func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID)
-        async throws
-    {
+        async throws {
         try await context.perform {
             let workoutExercise = try self.fetchWorkoutExercise(
                 workoutExerciseID
@@ -185,7 +181,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             set.workoutExercise = workoutExercise
 
             switch setModel.type {
-            case .weighted(let reps, let weight):
+            case let .weighted(reps, weight):
                 set.reps = Int16(reps)
                 set.weight = weight
             case .timed(let duration):
@@ -205,7 +201,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             set.note = model.note
 
             switch model.type {
-            case .weighted(let reps, let weight):
+            case let .weighted(reps, weight):
                 set.reps = Int16(reps)
                 set.weight = weight
             case .timed(let duration):
@@ -227,8 +223,8 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 }
 
 extension CoreDataWorkoutRepository {
-    fileprivate func fetchSet(_ id: UUID) throws -> ExerciseSet {
-        let request = fetchRequest(for: ExerciseSet.self, with: [id])
+    private func fetchSet(_ id: UUID) throws -> ExerciseSet {
+        let request = try fetchRequest(for: ExerciseSet.self, with: [id])
 
         guard let set = try context.fetch(request).first else {
             throw LiftlogError.noData(
@@ -239,9 +235,8 @@ extension CoreDataWorkoutRepository {
         return set
     }
 
-    fileprivate func fetchWorkoutExercise(_ id: UUID) throws -> WorkoutExercise
-    {
-        let request = fetchRequest(for: WorkoutExercise.self, with: [id])
+    private func fetchWorkoutExercise(_ id: UUID) throws -> WorkoutExercise {
+        let request = try fetchRequest(for: WorkoutExercise.self, with: [id])
 
         guard let workoutExercise = try context.fetch(request).first else {
             throw LiftlogError.noData(
@@ -252,8 +247,8 @@ extension CoreDataWorkoutRepository {
         return workoutExercise
     }
 
-    fileprivate func fetchWorkout(_ id: UUID) throws -> Workout {
-        let request = fetchRequest(for: Workout.self, with: [id])
+    func fetchWorkout(_ id: UUID) throws -> Workout {
+        let request = try fetchRequest(for: Workout.self, with: [id])
 
         guard let workout = try context.fetch(request).first else {
             throw LiftlogError.noData(

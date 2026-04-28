@@ -8,10 +8,11 @@
 import CoreData
 import Foundation
 
-func fetchRequest<T: NSManagedObject>(for: T.Type, with ids: [UUID])
-    -> NSFetchRequest<T>
-{
-    let request = T.fetchRequest() as! NSFetchRequest<T>
-    request.predicate = NSPredicate(format: "id IN %@", ids)
-    return request
+func fetchRequest<T: NSManagedObject>(for: T.Type, with ids: [UUID]) throws
+    -> NSFetchRequest<T> {
+        guard let request = T.fetchRequest() as? NSFetchRequest<T> else {
+            throw LiftlogError.failure(description: "Failed to create fetch request")
+        }
+        request.predicate = NSPredicate(format: "id IN %@", ids)
+        return request
 }

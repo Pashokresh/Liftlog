@@ -9,7 +9,6 @@ import CoreData
 import Foundation
 
 final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
-
     private let context: NSManagedObjectContext
 
     init(context: NSManagedObjectContext) {
@@ -28,8 +27,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
     }
 
     func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws
-        -> [ExerciseHistorySection]
-    {
+        -> [ExerciseHistorySection] {
         try await context.perform {
             let request = WorkoutExercise.fetchRequest()
             request.predicate = NSPredicate(
@@ -55,8 +53,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
     }
 
     func create(name: String, description: String?, type: ExerciseType)
-        async throws -> ExerciseModel
-    {
+        async throws -> ExerciseModel {
         try await context.perform {
             let exercise = Exercise(context: self.context)
             exercise.id = UUID()
@@ -75,7 +72,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             let exercise = try self.fetchExercise(model.id)
 
             exercise.name = model.name
-            exercise.type = Int16(model.type.rawValue) 
+            exercise.type = Int16(model.type.rawValue)
             exercise.exerciseDescription = model.description
 
             try self.context.save()
@@ -93,8 +90,8 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
 }
 
 extension CoreDataExerciseRepository {
-    fileprivate func fetchExercise(_ id: UUID) throws -> Exercise {
-        let request = fetchRequest(for: Exercise.self, with: [id])
+    func fetchExercise(_ id: UUID) throws -> Exercise {
+        let request = try fetchRequest(for: Exercise.self, with: [id])
 
         guard let exercise = try context.fetch(request).first else {
             throw LiftlogError.noData(

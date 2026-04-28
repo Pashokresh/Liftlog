@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SelectedOrderIndicator: View {
-
     var order: Int?
 
     var body: some View {

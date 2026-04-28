@@ -11,7 +11,6 @@ import SwiftUI
 @Observable
 @MainActor
 final class ExerciseSetViewModel {
-
     private(set) var workoutExercise: WorkoutExerciseModel
     private(set) var history: [ExerciseHistorySection] = .init()
     private(set) var error: Error?
@@ -74,7 +73,7 @@ final class ExerciseSetViewModel {
             try await workoutRepository.deleteSet(id)
 
             withAnimation {
-                workoutExercise.sets.removeAll(where: { $0.id == id })
+                workoutExercise.sets.removeAll { $0.id == id }
             }
         } catch {
             self.error = error
@@ -90,7 +89,7 @@ final class ExerciseSetViewModel {
                 })
             else {
                 self.error = LiftlogError.failure(
-                    description: AppLocalization.setNotFound
+                    description: AppLocalization.setWasNotFound
                 )
                 return
             }

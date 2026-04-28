@@ -9,11 +9,10 @@ import CoreData
 import Foundation
 
 protocol WorkoutRepositoryProtocol: AnyObject {
-
     // MARK: - Methods working with Workout
 
     func fetchAll() async throws -> [WorkoutModel]
-    
+
     func fetch(_ id: UUID) async throws -> WorkoutModel
 
     func create(_ workoutModel: WorkoutModel) async throws -> WorkoutModel

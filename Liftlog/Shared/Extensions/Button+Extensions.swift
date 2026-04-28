@@ -41,7 +41,7 @@ extension Button {
                 }
         }
     }
-    
+
     @ViewBuilder
         func adaptiveGlassProminentButton() -> some View {
             if #available(iOS 26.0, *) {

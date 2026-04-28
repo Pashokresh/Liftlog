@@ -12,7 +12,7 @@ import Observation
 @MainActor
 final class ExercisePickerViewModel {
     private(set) var exercises: [ExerciseModel] = .init()
-    private(set) var error: Error? = nil
+    private(set) var error: Error?
     var selectedExercises: OrderedSet<ExerciseModel> = .init()
 
     private var repository: ExerciseRepositoryProtocol
@@ -43,7 +43,7 @@ final class ExercisePickerViewModel {
         if selectedExercises.contains(exercise) {
             return (selectedExercises.firstIndex(of: exercise) ?? 0) + 1
         }
-        
+
         return nil
     }
 
@@ -66,7 +66,7 @@ final class ExercisePickerViewModel {
             self.error = error
         }
     }
-    
+
     func clearError() {
         Task { @MainActor in
             self.error = nil

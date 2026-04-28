@@ -9,7 +9,6 @@ import CoreData
 import Foundation
 
 final class CoreDataTagRepository: TagRepositoryProtocol {
-
     private let context: NSManagedObjectContext
 
     init(context: NSManagedObjectContext) {
@@ -61,9 +60,8 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
 }
 
 extension CoreDataTagRepository {
-
-    fileprivate func fetchTag(_ id: UUID) throws -> Tag {
-        let request = fetchRequest(for: Tag.self, with: [id])
+    func fetchTag(_ id: UUID) throws -> Tag {
+        let request = try fetchRequest(for: Tag.self, with: [id])
 
         guard let tag = try context.fetch(request).first else {
             throw LiftlogError.noData(

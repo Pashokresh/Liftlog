@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct WorkoutRowView: View {
-
     let workout: WorkoutModel
 
     private var formattedDate: String {

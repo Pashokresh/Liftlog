@@ -11,7 +11,6 @@ import SwiftUI
 @Observable
 @MainActor
 final class WorkoutDetailViewModel {
-
     private(set) var workout: WorkoutModel
     private(set) var error: Error?
 
@@ -21,7 +20,11 @@ final class WorkoutDetailViewModel {
         self.workout = workout
         self.repository = repository
     }
-    
+
+    private var workoutExerciseIds: Set<UUID> {
+        Set.init(workout.exercises.map(\.id))
+    }
+
     func reloadWorkout() async {
         do {
             let updated = try await repository.fetch(workout.id)
@@ -34,8 +37,7 @@ final class WorkoutDetailViewModel {
     }
 
     func addExercise(_ exercise: ExerciseModel) async {
-        if workout.exercises.contains(where: { $0.exercise.id == exercise.id })
-        {
+        if workout.exercises.contains(where: { $0.exercise.id == exercise.id }) {
             error = LiftlogError.failure(
                 description: AppLocalization.exerciseAlreadyAdded
             )
@@ -61,7 +63,7 @@ final class WorkoutDetailViewModel {
         do {
             try await repository.deleteExercise(id)
             withAnimation {
-                workout.exercises.removeAll(where: { $0.id == id })
+                workout.exercises.removeAll { $0.id == id }
             }
         } catch {
             self.error = error

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AdaptiveNavigationSubtitle: ViewModifier {
-
     var subtitle: String
 
     func body(content: Content) -> some View {

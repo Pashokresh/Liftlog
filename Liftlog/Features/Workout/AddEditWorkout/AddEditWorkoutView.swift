@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct AddEditWorkoutView: View {
-
     let onSave: (WorkoutModel) -> Void
     let viewModel: AddEditWorkoutViewModel
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     init(
         viewModel: AddEditWorkoutViewModel,
@@ -21,7 +21,7 @@ struct AddEditWorkoutView: View {
         self.onSave = onSave
         self.viewModel = viewModel
     }
-    
+
     private var workoutDetailsSection: some View {
         Section {
             TextField(
@@ -56,9 +56,8 @@ struct AddEditWorkoutView: View {
             .lineLimit(1...3)
         }
     }
-    
-    @ViewBuilder
-    private var selectedTags: some View {
+
+    @ViewBuilder private var selectedTags: some View {
         if !viewModel.selectedTagIDs.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
@@ -68,35 +67,31 @@ struct AddEditWorkoutView: View {
                     ) { tag in
                         TagChipView(
                             tag: tag,
-                            isSelected: true,
-                            onTap: { viewModel.toggleTag(tag) }
-                        )
+                            isSelected: true
+                        ) { viewModel.toggleTag(tag) }
                         .padding(4)
                     }
                 }
             }
         }
     }
-    
-    @ViewBuilder
-    private var unselectedTags: some View {
+
+    @ViewBuilder private var unselectedTags: some View {
         if !viewModel.unselectedTags.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    ForEach(viewModel.unselectedTags, id: \.self) {
-                        tag in
+                    ForEach(viewModel.unselectedTags, id: \.self) { tag in
                         TagChipView(
                             tag: tag,
-                            isSelected: false,
-                            onTap: { viewModel.toggleTag(tag) }
-                        )
+                            isSelected: false
+                        ) { viewModel.toggleTag(tag) }
                         .padding(4)
                     }
                 }
             }
         }
     }
-    
+
     private var tagCreation: some View {
         HStack {
             TextField(
@@ -120,15 +115,14 @@ struct AddEditWorkoutView: View {
             .buttonStyle(.plain)
         }
     }
-    
+
     private var navTitle: String {
         viewModel.isEditing
             ? AppLocalization.editWorkout
             : AppLocalization.createWorkout
     }
-    
-    @ToolbarContentBuilder
-    private var addEditToolbarContent: some ToolbarContent {
+
+    @ToolbarContentBuilder private var addEditToolbarContent: some ToolbarContent {
         ToolbarItem(
             id: "create.workout.cancel",
             placement: .topBarLeading
@@ -179,7 +173,6 @@ struct AddEditWorkoutView: View {
         viewModel: AddEditWorkoutViewModel(
             tagRepository: MockTagRepository(),
             workout: WorkoutModel.mock
-        ),
-        onSave: { _ in }
-    )
+        )
+    ) { _ in }
 }

@@ -8,7 +8,6 @@
 import Foundation
 
 extension Exercise {
-
     func toDomain() -> ExerciseModel {
         return ExerciseModel(
             id: id ?? UUID(),

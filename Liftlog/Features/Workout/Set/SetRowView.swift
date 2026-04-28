@@ -8,13 +8,11 @@
 import SwiftUI
 
 struct SetRowView: View {
-
     let set: ExerciseSetModel
     let number: Int
     let copySet: () -> Void
 
-    @ViewBuilder
-    private var notes: some View {
+    @ViewBuilder private var notes: some View {
         if let note = set.note, !note.isEmpty {
             Text(note)
                 .font(.body)
@@ -28,7 +26,7 @@ struct SetRowView: View {
         case .timed(let duration):
             Text(formattedDuration(duration))
                 .font(.title2)
-        case .weighted(let reps, let weight):
+        case let .weighted(reps, weight):
             Text("\(reps) x \(formattedWeight(weight))")
                 .font(.title2)
         }
@@ -36,27 +34,25 @@ struct SetRowView: View {
 
     var body: some View {
         HStack {
-            HStack(spacing: 16)  {
+            HStack(spacing: 16) {
                 Text("\(number).")
                     .font(.title2)
-                
+
                 VStack(alignment: .leading, spacing: 12) {
-                    
                     setInfo
-                    
+
                     notes
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-                        
+
             Button {
-               copySet()
+                copySet()
             } label: {
                 Image(systemName: Images.copy)
                     .foregroundStyle(.accent)
             }
             .buttonStyle(.plain)
-            
         }
         .padding(.horizontal)
     }

@@ -21,13 +21,11 @@ struct ExerciseRowView: View {
                 Text(exercise.name)
                     .font(.title2)
                     .foregroundStyle(.primary)
-                if let description = exercise.description, !description.isEmpty
-                {
-                    Text(exercise.description!)
+                if let description = exercise.description, !description.isEmpty {
+                    Text(exercise.description ?? "")
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }
-
             }
         }
     }

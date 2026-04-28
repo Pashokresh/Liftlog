@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct WorkoutDetailRow: View {
-
     let workoutExercise: WorkoutExerciseModel
 
     private var isComplete: Bool {

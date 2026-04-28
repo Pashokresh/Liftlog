@@ -14,7 +14,7 @@ extension ExerciseModel {
         description: "Classic chest exercise",
         type: .reps
     )
-    
+
     static let mocks = [
         ExerciseModel(id: UUID(), name: "Bench Press", description: "Chest exercise", type: .time),
         ExerciseModel(id: UUID(), name: "Squat", description: "Leg exercise", type: .reps),
@@ -30,7 +30,7 @@ extension ExerciseSetModel {
         note: "Could make more reps",
         type: .weighted(reps: 10, weight: 50)
     )
-    
+
     static let mocks = [
         ExerciseSetModel(
             id: UUID(),
@@ -55,7 +55,7 @@ extension ExerciseSetModel {
             order: 3,
             note: "Done",
             type: .weighted(reps: 12, weight: 40.25)
-        ),
+        )
     ]
 }
 
@@ -64,7 +64,7 @@ extension TagModel {
         id: UUID(),
         name: "Heavy"
     )
-    
+
     static let mocks = [
         TagModel(
             id: UUID(),
@@ -82,39 +82,43 @@ extension TagModel {
 }
 
 extension WorkoutModel {
-    
     static let mock = WorkoutModel(
         id: UUID(),
         name: "New Training",
         date: Date.now,
         notes: "Training I need to repeat every week",
-        tags: [TagModel.mock], exercises: [])
-    
+        tags: [TagModel.mock],
+        exercises: [])
+
     static let mocks = [
         WorkoutModel(
             id: UUID(),
             name: "Training 1",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mock], exercises: []),
+            tags: [TagModel.mock],
+            exercises: []),
         WorkoutModel(
             id: UUID(),
             name: "Training 2",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mocks[1]], exercises: []),
+            tags: [TagModel.mocks[1]],
+            exercises: []),
         WorkoutModel(
             id: UUID(),
             name: "Training 3",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mocks[2]], exercises: []),
+            tags: [TagModel.mocks[2]],
+            exercises: []),
         WorkoutModel(
             id: UUID(),
             name: "Training 4",
             date: Date.now,
             notes: "Training I can skip once in a while",
-            tags: [TagModel.mocks[0]], exercises: []),
+            tags: [TagModel.mocks[0]],
+            exercises: [])
     ]
 }
 
@@ -125,7 +129,7 @@ extension WorkoutExerciseModel {
         exercise: ExerciseModel.mock,
         sets: ExerciseSetModel.mocks
     )
-    
+
     static let mocks = [
         WorkoutExerciseModel(
             id: UUID(),
@@ -144,8 +148,6 @@ extension WorkoutExerciseModel {
             order: 2,
             exercise: ExerciseModel.mocks[2],
             sets: ExerciseSetModel.mocks
-        ),
+        )
     ]
 }
-
-

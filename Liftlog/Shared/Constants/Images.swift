@@ -5,8 +5,7 @@
 //  Created by Pavel Martynenkov on 05.03.26.
 //
 
-final class Images {
-    
+enum Images {
     static let checkmarkCircle = "checkmark.circle.fill"
     static let emptyCircle = "circle"
     static let plusCircle = "plus.circle.fill"

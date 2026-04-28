@@ -37,7 +37,6 @@ struct ExerciseLibraryView: View {
             SwipeEditButton {
                 viewModel.editingExercise = exercise
             }
-
         }
         .deleteConfirmation(item: $exerciseToDelete) { exercise in
             Task {
@@ -46,8 +45,7 @@ struct ExerciseLibraryView: View {
         }
     }
 
-    @ViewBuilder
-    private var emptyState: some View {
+    @ViewBuilder private var emptyState: some View {
         if viewModel.filteredExercises.isEmpty {
             if !viewModel.searchText.isEmpty {
                 ContentUnavailableView.search
@@ -57,8 +55,7 @@ struct ExerciseLibraryView: View {
         }
     }
 
-    @ToolbarContentBuilder
-    private var listToolbar: some ToolbarContent {
+    @ToolbarContentBuilder private var listToolbar: some ToolbarContent {
         ToolbarItem(
             id: "exercise.library.add.new",
             placement: .automatic
@@ -69,8 +66,7 @@ struct ExerciseLibraryView: View {
         }
     }
 
-    @ViewBuilder
-    private var addExerciseSheet: some View {
+    @ViewBuilder private var addExerciseSheet: some View {
         AddEditExerciseView { exercise in
             Task {
                 await viewModel.createExercise(
@@ -109,7 +105,6 @@ struct ExerciseLibraryView: View {
                 localized: "Exercise Library"
             )
         )
-        // TODO: Fix white navigation bar background on search
         .toolbar { listToolbar }
         .searchable(
             text: $viewModel.searchText,
@@ -126,7 +121,7 @@ struct ExerciseLibraryView: View {
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button(AppLocalization.ok) { viewModel.nullifyError() }
+            Button(AppLocalization.okay) { viewModel.nullifyError() }
         } message: {
             Text(viewModel.error?.localizedDescription ?? "")
         }

@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct ExercisePickerRowView: View {
-    
     var exercise: ExerciseModel
     var order: Int?
-    
+
     var body: some View {
         HStack {
             SelectedOrderIndicator(order: order)
-            
+
             ExerciseRowView(exercise: exercise)
         }
     }

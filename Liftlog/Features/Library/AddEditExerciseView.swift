@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct AddEditExerciseView: View {
-
     let onSave: (ExerciseModel) -> Void
     let exercise: ExerciseModel?
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
+
     @State private var name = ""
     @State private var description = ""
     @State private var type: ExerciseType = .reps
@@ -43,8 +44,7 @@ struct AddEditExerciseView: View {
                         AppLocalization.name,
                         text: $name
                     )
-                    Picker(AppLocalization.exerciseType, selection: $type)
-                    {
+                    Picker(AppLocalization.exerciseType, selection: $type) {
                         ForEach(ExerciseType.allCases, id: \.id) {
                             Text(String(describing: $0))
                         }
@@ -75,15 +75,14 @@ struct AddEditExerciseView: View {
             type: type
         )
     }
-    
+
     private var navTitle: String {
         exercise != nil
             ? AppLocalization.editExercise
             : AppLocalization.addExercise
     }
-    
-    @ToolbarContentBuilder
-    private var addEditToolbarContent: some ToolbarContent {
+
+    @ToolbarContentBuilder private var addEditToolbarContent: some ToolbarContent {
         ToolbarItem(
             id: "new.exercise.cancel",
             placement: .topBarLeading
@@ -93,8 +92,7 @@ struct AddEditExerciseView: View {
             }
         }
 
-        ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing)
-        {
+        ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing) {
             AdaptiveConfirmButton {
                 onSave(makeExercise())
                 dismiss()

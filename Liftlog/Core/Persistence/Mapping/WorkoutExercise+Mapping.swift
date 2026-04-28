@@ -8,7 +8,6 @@
 import Foundation
 
 extension WorkoutExercise {
-
     func toDomain() -> WorkoutExerciseModel {
         let exercise =
             exercise?.toDomain()
@@ -21,7 +20,7 @@ extension WorkoutExercise {
         let sets =
             (sets as? Set<ExerciseSet>)?
             .map { $0.toDomain() }
-            .sorted(by: { $0.order < $1.order }) ?? []
+            .sorted { $0.order < $1.order } ?? []
 
         return WorkoutExerciseModel(
             id: id ?? UUID(),

@@ -8,12 +8,11 @@
 import Foundation
 
 enum ExerciseType: Int, CaseIterable, Identifiable, CustomStringConvertible {
-    
     case time = 0
     case reps = 1
-    
+
     var id: Self { self }
-    
+
     var description: String {
         switch self {
         case .reps:
@@ -25,7 +24,6 @@ enum ExerciseType: Int, CaseIterable, Identifiable, CustomStringConvertible {
 }
 
 struct ExerciseModel: Identifiable, Equatable, Hashable {
-    
     let id: UUID
     let name: String
     let description: String?

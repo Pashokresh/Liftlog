@@ -102,6 +102,7 @@ enum Route: Hashable {
 | **Testing** | Swift Testing (`@Suite`, `@Test`, `#expect`) |
 | **Deployment Target** | iOS 18+ |
 | **Dependencies** | None |
+| **Linting** | SwiftLint |
 
 ---
 
@@ -209,7 +210,7 @@ All `#available` checks are isolated to dedicated extensions and components — 
 
 - Xcode 16+
 - iOS 18.0+
-- No external dependencies — clone and run
+- No runtime dependencies — clone and run
 
 ---
 

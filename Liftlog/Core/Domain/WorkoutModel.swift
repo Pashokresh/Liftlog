@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct WorkoutModel: Identifiable, Equatable, Hashable  {
+struct WorkoutModel: Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let date: Date

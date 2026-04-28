@@ -9,15 +9,20 @@ import SwiftUI
 
 struct ExercisePickerView: View {
     @State private var viewModel: ExercisePickerViewModel
-    @Environment(\.dismiss) private var dismiss
+
+    @Environment(\.dismiss)
+    private var dismiss
+
+    private let onAdd: (OrderedSet<ExerciseModel>) -> Void
 
     @State private var isAddingNewExercise: Bool = false
 
     init(
         viewModel: ExercisePickerViewModel,
-        onAdd: (OrderedSet<ExerciseModel>) -> Void
+        onAdd: @escaping (OrderedSet<ExerciseModel>) -> Void
     ) {
         _viewModel = .init(initialValue: viewModel)
+        self.onAdd = onAdd
     }
 
     @ViewBuilder
@@ -31,8 +36,7 @@ struct ExercisePickerView: View {
         }
     }
 
-    @ViewBuilder
-    private var emptyState: some View {
+    @ViewBuilder private var emptyState: some View {
         if viewModel.filteredExercises.isEmpty {
             if !viewModel.searchText.isEmpty {
                 ContentUnavailableView.search
@@ -42,8 +46,7 @@ struct ExercisePickerView: View {
         }
     }
 
-    @ViewBuilder
-    private var addExerciseSheet: some View {
+    @ViewBuilder private var addExerciseSheet: some View {
         AddEditExerciseView { exercise in
             Task {
                 await viewModel.createAndSelectExercise(exercise)
@@ -52,8 +55,7 @@ struct ExercisePickerView: View {
         .presentationDetents([.fraction(2 / 3)])
     }
 
-    @ToolbarContentBuilder
-    private var toolbar: some ToolbarContent {
+    @ToolbarContentBuilder private var toolbar: some ToolbarContent {
         ToolbarItem(id: "exercise.library.pick.add", placement: .bottomBar) {
             AddBottomBarButton(with: AppLocalization.addExercise) {
                 isAddingNewExercise = true
@@ -74,12 +76,12 @@ struct ExercisePickerView: View {
             placement: .topBarTrailing
         ) {
             AdaptiveConfirmButton {
-                //TODO: implement selection confirmation
+                onAdd(viewModel.selectedExercises)
             }
             .disabled(viewModel.selectedExercises.isEmpty)
         }
     }
-    
+
     var content: some View {
         List(viewModel.filteredExercises, id: \.id) {
             exerciseRow($0)
@@ -112,7 +114,7 @@ struct ExercisePickerView: View {
                     set: { if !$0 { viewModel.clearError() } }
                 )
             ) {
-                Button(AppLocalization.ok) { viewModel.clearError() }
+                Button(AppLocalization.okay) { viewModel.clearError() }
             } message: {
                 Text(viewModel.error?.localizedDescription ?? "")
             }
@@ -129,8 +131,7 @@ struct ExercisePickerView: View {
     ExercisePickerView(
         viewModel: ExercisePickerViewModel(
             repository: MockExerciseRepository()
-        ),
-        onAdd: { _ in
-        }
-    )
+        )
+    ) { _ in
+    }
 }

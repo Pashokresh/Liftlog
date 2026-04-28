@@ -9,7 +9,6 @@ import CoreData
 import Foundation
 
 extension Workout {
-
     func toDomain() -> WorkoutModel {
         let tags = (tags as? Set<Tag>)?.map { $0.toDomain() } ?? []
         let exercises =

@@ -13,11 +13,8 @@ struct SwipeEditButton: View {
     var body: some View {
         Button(
             AppLocalization.edit,
-            systemImage: Images.pencil,
-            action: {
-                action()
-            }
-        )
+            systemImage: Images.pencil
+        ) { action() }
         .tint(.blue)
     }
 }

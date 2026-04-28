@@ -6,7 +6,6 @@
 //
 
 extension ExerciseType {
-    
     var systemImage: String {
         switch self {
         case.reps:

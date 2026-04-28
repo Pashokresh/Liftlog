@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct AddEditSetView: View {
-
     let exerciseType: ExerciseType
     let existingSet: ExerciseSetModel?
     let onSave: (ExerciseSetModel) -> Void
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     @State private var reps: Int
     @State private var weight: Double
@@ -32,14 +32,14 @@ struct AddEditSetView: View {
         self.onSave = onSave
 
         switch existingSet?.type {
-        case .weighted(let r, let w):
-            _reps = .init(initialValue: Int(r))
-            _weight = .init(initialValue: w)
+        case let .weighted(rep, weight):
+            _reps = .init(initialValue: Int(rep))
+            _weight = .init(initialValue: weight)
             _duration = .init(initialValue: 0)
-        case .timed(let d):
+        case .timed(let duration):
             _reps = .init(initialValue: 10)
             _weight = .init(initialValue: 0)
-            _duration = .init(initialValue: d)
+            _duration = .init(initialValue: duration)
         case .none:
             _reps = .init(initialValue: 10)
             _weight = .init(initialValue: 0)
@@ -74,9 +74,8 @@ struct AddEditSetView: View {
             .padding()
         }
     }
-    
-    @ToolbarContentBuilder
-    private var addEditToolbarContent: some ToolbarContent {
+
+    @ToolbarContentBuilder private var addEditToolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             AdaptiveCancelButton {
                 dismiss()
@@ -89,11 +88,11 @@ struct AddEditSetView: View {
             }
         }
     }
-    
+
     private var navTitle: String {
         isEditing
             ? AppLocalization.editSet
-            : AppLocalization.addSetTitle
+            : AppLocalization.addSet
     }
 
     var body: some View {
@@ -131,7 +130,6 @@ struct AddEditSetView: View {
 #Preview {
     AddEditSetView(
         exerciseType: .reps,
-        existingSet: nil,
-        onSave: { _ in }
-    )
+        existingSet: nil
+    ) { _ in }
 }

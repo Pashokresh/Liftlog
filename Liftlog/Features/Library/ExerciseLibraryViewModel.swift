@@ -39,8 +39,7 @@ final class ExerciseLibraryViewModel {
     }
 
     func createExercise(name: String, type: ExerciseType, description: String?)
-        async
-    {
+        async {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
 
         do {
@@ -76,7 +75,6 @@ final class ExerciseLibraryViewModel {
         } catch {
             self.error = error
         }
-
     }
 
     func nullifyError() {

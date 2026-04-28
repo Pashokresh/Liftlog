@@ -9,7 +9,6 @@ import Foundation
 
 @Observable
 final class ViewModelFactory {
-
     private let dependencies: AppDependencies
 
     init(dependencies: AppDependencies) {
@@ -26,14 +25,13 @@ final class ViewModelFactory {
     func makeExerciseLibraryViewModel() -> ExerciseLibraryViewModel {
         ExerciseLibraryViewModel(repository: dependencies.exerciseRepository)
     }
-    
+
     func makeExercisePickerViewModel() -> ExercisePickerViewModel {
         ExercisePickerViewModel(repository: dependencies.exerciseRepository)
     }
 
     func makeWorkoutDetailViewModel(_ workout: WorkoutModel)
-        -> WorkoutDetailViewModel
-    {
+        -> WorkoutDetailViewModel {
         WorkoutDetailViewModel(
             workout: workout,
             repository: dependencies.workoutRepository
@@ -41,8 +39,7 @@ final class ViewModelFactory {
     }
 
     func makeExerciseSetViewModel(workoutExercise: WorkoutExerciseModel)
-        -> ExerciseSetViewModel
-    {
+        -> ExerciseSetViewModel {
         ExerciseSetViewModel(
             workoutExercise: workoutExercise,
             workoutRepository: dependencies.workoutRepository,
@@ -51,8 +48,7 @@ final class ViewModelFactory {
     }
 
     func makeAddEditWorkoutViewModel(workout: WorkoutModel? = nil)
-        -> AddEditWorkoutViewModel
-    {
+        -> AddEditWorkoutViewModel {
         AddEditWorkoutViewModel(
             tagRepository: dependencies.tagRepository,
             workout: workout

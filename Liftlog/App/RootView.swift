@@ -9,41 +9,41 @@ import CoreData
 import SwiftUI
 
 struct RootView: View {
-    @Environment(ViewModelFactory.self) private var factory
+    @Environment(ViewModelFactory.self)
+    private var factory
+
     @State var navigationManager = NavigationManager()
 
     var body: some View {
         NavigationStack(
-            path: $navigationManager.path,
-            root: {
-                WorkoutListView(
-                    viewModel: factory.makeWorkoutListViewModel()
-                )
-                .navigationDestination(for: Route.self) { route in
-                    switch route {
-                    case .exerciseLibrary:
-                        ExerciseLibraryView(
-                            viewModel: factory.makeExerciseLibraryViewModel()
-                        )
-                    case .workoutDetailView(let workout):
-                        WorkoutDetailView(
-                            viewModel:
-                                factory.makeWorkoutDetailViewModel(
-                                    workout
-                                )
-                        )
-                    case .exerciseSet(let workoutExercise):
-                        ExerciseSetListView(
-                            viewModel: factory.makeExerciseSetViewModel(
-                                workoutExercise: workoutExercise
+            path: $navigationManager.path
+        ) {
+            WorkoutListView(
+                viewModel: factory.makeWorkoutListViewModel()
+            )
+            .navigationDestination(for: Route.self) { route in
+                switch route {
+                case .exerciseLibrary:
+                    ExerciseLibraryView(
+                        viewModel: factory.makeExerciseLibraryViewModel()
+                    )
+                case .workoutDetailView(let workout):
+                    WorkoutDetailView(
+                        viewModel:
+                            factory.makeWorkoutDetailViewModel(
+                                workout
                             )
+                    )
+                case .exerciseSet(let workoutExercise):
+                    ExerciseSetListView(
+                        viewModel: factory.makeExerciseSetViewModel(
+                            workoutExercise: workoutExercise
                         )
-                    }
+                    )
                 }
             }
-        )
+        }
         .environment(navigationManager)
-
     }
 }
 

@@ -9,7 +9,6 @@ import CoreData
 import Foundation
 
 extension ExerciseSet {
-
     func toDomain() -> ExerciseSetModel {
         ExerciseSetModel(
             id: id ?? UUID(),

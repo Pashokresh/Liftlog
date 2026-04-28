@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct WorkoutDetailView: View {
-
-    @Environment(ViewModelFactory.self) private var viewModelFactory
+    @Environment(ViewModelFactory.self)
+    private var viewModelFactory
 
     @State private var viewModel: WorkoutDetailViewModel
     @State private var isAddingExercise = false
@@ -18,8 +18,7 @@ struct WorkoutDetailView: View {
         _viewModel = .init(initialValue: viewModel)
     }
 
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
+    @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
         if !viewModel.workout.exercises.isEmpty {
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
@@ -35,8 +34,7 @@ struct WorkoutDetailView: View {
         }
     }
 
-    @ViewBuilder
-    private var emptyState: some View {
+    @ViewBuilder private var emptyState: some View {
         if viewModel.workout.exercises.isEmpty {
             ContentUnavailableView(
                 AppLocalization.noExercisesYet,
@@ -48,22 +46,19 @@ struct WorkoutDetailView: View {
 
     private var exerciseLibrarySheet: some View {
         ExercisePickerView(
-            viewModel: viewModelFactory.makeExercisePickerViewModel(),
-            onAdd: { exercisesToAdd in
-                
-            }
-        )
+            viewModel: viewModelFactory.makeExercisePickerViewModel()
+        ) { _ in
+        }
     }
 
     var body: some View {
         List {
             ForEach(viewModel.workout.exercises) { exercise in
                 NavigationLink(
-                    value: Route.exerciseSet(exercise),
-                    label: {
-                        WorkoutDetailRow(workoutExercise: exercise)
-                    }
-                )
+                    value: Route.exerciseSet(exercise)
+                ) {
+                    WorkoutDetailRow(workoutExercise: exercise)
+                }
             }
             .onDelete { indexSet in
                 indexSet.forEach { index in
@@ -98,7 +93,7 @@ struct WorkoutDetailView: View {
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button(AppLocalization.ok) {
+            Button(AppLocalization.okay) {
                 viewModel.nullifyError()
             }
         } message: {

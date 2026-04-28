@@ -15,7 +15,7 @@ final class WorkoutListViewModel {
     private(set) var availableTags: [TagModel] = []
     private(set) var error: Error?
     var selectedTagIDs: Set<UUID> = .init()
-    
+
     var editingWorkout: WorkoutModel?
 
     private var workoutRepository: WorkoutRepositoryProtocol
@@ -25,9 +25,9 @@ final class WorkoutListViewModel {
         self.workoutRepository = workoutRepository
         self.tagRepository = tagRepository
     }
-    
+
     // MARK: - Workout
-    
+
     var filteredWorkouts: [WorkoutModel] {
         guard !selectedTagIDs.isEmpty else { return workouts }
         return workouts.filter { workout in
@@ -86,9 +86,9 @@ final class WorkoutListViewModel {
             }
         }
     }
-    
+
     // MARK: - Work with Tags
-    
+
     func loadTags() async {
         do {
             availableTags = try await tagRepository.fetchAll()
@@ -96,7 +96,7 @@ final class WorkoutListViewModel {
             self.error = error
         }
     }
-    
+
     func toggleTag(_ tag: TagModel) {
         if isTagSelected(tag) {
             selectedTagIDs.remove(tag.id)
@@ -104,11 +104,11 @@ final class WorkoutListViewModel {
             selectedTagIDs.insert(tag.id)
         }
     }
-    
+
     func isTagSelected(_ tag: TagModel) -> Bool {
         selectedTagIDs.contains(tag.id)
     }
-    
+
     // MARK: - Work with errors
 
     func nullifyError() {

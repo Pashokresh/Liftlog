@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension View {
-
     func adaptiveNavigationSubtitle(_ subtitle: String) -> some View {
         modifier(AdaptiveNavigationSubtitle(subtitle: subtitle))
     }
@@ -21,7 +20,6 @@ extension View {
                 action()
             }
     }
-
 
     func deleteConfirmation<T: Identifiable>(
         item: Binding<T?>,

@@ -8,10 +8,10 @@
 import Foundation
 
 extension AppDependencies {
-    
-    static let mock = AppDependencies(
-            exerciseRepository: MockExerciseRepository(),
-            workoutRepository: MockWorkoutRepository(),
-            tagRepository: MockTagRepository()
-        )
+    static let mock =
+    AppDependencies(
+        exerciseRepository: MockExerciseRepository(),
+        workoutRepository: MockWorkoutRepository(),
+        tagRepository: MockTagRepository()
+    )
 }
