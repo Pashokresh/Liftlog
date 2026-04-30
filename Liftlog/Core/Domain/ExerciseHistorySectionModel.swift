@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ExerciseHistorySection: Identifiable {
+struct ExerciseHistorySectionModel: Identifiable {
     let id: UUID
     let date: Date
     let workoutName: String
