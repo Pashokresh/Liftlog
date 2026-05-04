@@ -25,10 +25,8 @@ struct WorkoutDetailView: View {
             }
         }
 
-        ToolbarItem(placement: .bottomBar) {
-            AddBottomBarButton(
-                with: AppLocalization.addExercise
-            ) {
+        ToolbarItem(placement: .topBarTrailing) {
+            AddTopBarButton {
                 isAddingExercise = true
             }
         }
