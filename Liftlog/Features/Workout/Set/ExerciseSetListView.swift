@@ -54,7 +54,7 @@ struct ExerciseSetListView: View {
     }
 
     @ViewBuilder var workingSetsSection: some View {
-        if !viewModel.warmupSets.isEmpty {
+        if !viewModel.workingSets.isEmpty {
             ForEach(
                 Array(viewModel.workingSets.enumerated()),
                 id: \.element.id
