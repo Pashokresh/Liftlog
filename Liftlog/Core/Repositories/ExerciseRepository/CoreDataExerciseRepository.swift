@@ -26,8 +26,9 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
         }
     }
 
-    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws
-        -> [ExerciseHistorySection] {
+    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID)
+        async throws
+        -> [ExerciseHistorySectionModel] {
         try await context.perform {
             let request = WorkoutExercise.fetchRequest()
             request.predicate = NSPredicate(
@@ -40,7 +41,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             ]
 
             return try self.context.fetch(request).map {
-                ExerciseHistorySection(
+                ExerciseHistorySectionModel(
                     id: $0.id ?? UUID(),
                     date: $0.workout?.date ?? Date.now,
                     workoutName: $0.workout?.name ?? "Workout",
@@ -85,6 +86,70 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
 
             self.context.delete(exercise)
             try self.context.save()
+        }
+    }
+
+    func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws
+    -> [ExerciseProgressEntry] {
+        try await context.perform {
+            let request: NSFetchRequest<WorkoutExercise> =
+                WorkoutExercise.fetchRequest()
+            request.predicate = NSPredicate(
+                format: "exercise.id == %@ AND workout.date >= %@",
+                exerciseID as CVarArg,
+                startDate as CVarArg
+            )
+            request.sortDescriptors = [
+                NSSortDescriptor(key: "workout.date", ascending: true)
+            ]
+
+            let workoutExercises: [WorkoutExercise] = try self.context.fetch(request)
+
+            return workoutExercises.compactMap { workoutExercise -> ExerciseProgressEntry? in
+                let sets = (workoutExercise.sets as? Set<ExerciseSet>) ?? []
+                guard !sets.isEmpty else { return nil }
+
+                let exerciseType =
+                    ExerciseType(
+                        rawValue: Int(workoutExercise.exercise?.type ?? 0)
+                    ) ?? .reps
+
+                switch exerciseType {
+                case .reps:
+                    let weightedSets = sets.filter {
+                        $0.weight > 0 || $0.reps > 0
+                    }
+                    guard !weightedSets.isEmpty else { return nil }
+
+                    let maxWeight = weightedSets.map { $0.weight }.max() ?? 0
+                    let volume = weightedSets.reduce(0.0) {
+                        $0 + ($1.weight * Double($1.reps))
+                    }
+
+                    return ExerciseProgressEntry(
+                        id: workoutExercise.id ?? UUID(),
+                        date: workoutExercise.workout?.date ?? .now,
+                        maxWeight: maxWeight,
+                        totalVolume: volume,
+                        maxDuration: 0,
+                        workoutName: workoutExercise.workout?.name ?? ""
+                    )
+                case .time:
+                    let timedSets = sets.filter { $0.duration > 0 }
+                    guard !timedSets.isEmpty else { return nil }
+
+                    let maxDuration = timedSets.map { $0.duration }.max() ?? 0
+
+                    return ExerciseProgressEntry(
+                        id: workoutExercise.id ?? UUID(),
+                        date: workoutExercise.workout?.date ?? .now,
+                        maxWeight: 0,
+                        totalVolume: 0,
+                        maxDuration: maxDuration,
+                        workoutName: workoutExercise.workout?.name ?? ""
+                    )
+                }
+            }
         }
     }
 }

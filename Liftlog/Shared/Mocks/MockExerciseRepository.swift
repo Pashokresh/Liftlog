@@ -17,7 +17,7 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         return exercises
     }
 
-    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySection] {
+    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySectionModel] {
         try checkThrow()
 
         let timeIntervalDay: TimeInterval = 86_400
@@ -25,12 +25,12 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         let dateDayBeforeYesterday = Date.now.addingTimeInterval(-timeIntervalDay * 2)
 
         return [
-            ExerciseHistorySection(
+            ExerciseHistorySectionModel(
                 id: UUID(),
                 date: dateYesterday,
                 workoutName: "Workout 2",
                 sets: WorkoutExerciseModel.mock.sets),
-            ExerciseHistorySection(
+            ExerciseHistorySectionModel(
                 id: UUID(),
                 date: dateDayBeforeYesterday,
                 workoutName: "Workout 1",
@@ -64,6 +64,12 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         try checkThrow()
 
         exercises.removeAll { $0.id == id }
+    }
+
+    func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws -> [ExerciseProgressEntry] {
+        try checkThrow()
+
+        return ExerciseProgressEntry.mocks.filter { $0.date >= startDate }
     }
 
     private func checkThrow() throws {

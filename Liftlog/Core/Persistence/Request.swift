@@ -13,6 +13,7 @@ func fetchRequest<T: NSManagedObject>(for: T.Type, with ids: [UUID]) throws
         guard let request = T.fetchRequest() as? NSFetchRequest<T> else {
             throw LiftlogError.failure(description: "Failed to create fetch request")
         }
+
         request.predicate = NSPredicate(format: "id IN %@", ids)
         return request
 }

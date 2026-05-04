@@ -11,11 +11,13 @@ import CoreData
 protocol ExerciseRepositoryProtocol: AnyObject {
     func fetchAll() async throws -> [ExerciseModel]
 
-    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySection]
+    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySectionModel]
 
     func create(name: String, description: String?, type: ExerciseType) async throws -> ExerciseModel
 
     func update(_ model: ExerciseModel) async throws
 
     func delete(_ id: UUID) async throws
+
+    func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws -> [ExerciseProgressEntry]
 }

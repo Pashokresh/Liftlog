@@ -12,7 +12,7 @@ import SwiftUI
 @MainActor
 final class ExerciseSetViewModel {
     private(set) var workoutExercise: WorkoutExerciseModel
-    private(set) var history: [ExerciseHistorySection] = .init()
+    private(set) var history: [ExerciseHistorySectionModel] = .init()
     private(set) var error: Error?
     var setToEdit: ExerciseSetModel?
 
