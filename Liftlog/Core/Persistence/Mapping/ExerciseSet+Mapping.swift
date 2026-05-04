@@ -16,7 +16,8 @@ extension ExerciseSet {
             note: note,
             type: duration > 0
                 ? .timed(duration: duration)
-                : .weighted(reps: Int(reps), weight: weight)
+                : .weighted(reps: Int(reps), weight: weight),
+            isWarmup: isWarmup
         )
     }
 }

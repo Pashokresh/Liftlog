@@ -48,7 +48,8 @@ struct CoreDataWorkoutRepositoryTests {
         let exercise = try await exerciseRepository.create(
             name: "Squat",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
 
         let workoutExercise = WorkoutExerciseModel(
@@ -74,17 +75,20 @@ struct CoreDataWorkoutRepositoryTests {
         let exercise1 = try await exerciseRepository.create(
             name: "Squat",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
         let exercise2 = try await exerciseRepository.create(
             name: "Bench Press",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
         let exercise3 = try await exerciseRepository.create(
             name: "Deadlift",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
 
         let workoutExercises = [
@@ -105,7 +109,7 @@ struct CoreDataWorkoutRepositoryTests {
                 order: 2,
                 exercise: exercise3,
                 sets: []
-            ),
+            )
         ]
 
         try await workoutRepository.addExercises(
@@ -126,7 +130,8 @@ struct CoreDataWorkoutRepositoryTests {
         let exercise = try await exerciseRepository.create(
             name: "Squat",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
 
         var workoutExercise = WorkoutExerciseModel(
@@ -157,7 +162,8 @@ struct CoreDataWorkoutRepositoryTests {
         let exercise = try await exerciseRepository.create(
             name: "Squat",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
 
         let workoutExercise = WorkoutExerciseModel(
@@ -185,7 +191,8 @@ struct CoreDataWorkoutRepositoryTests {
         let exercise = try await exerciseRepository.create(
             name: "Squat",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
 
         let workoutExercise = WorkoutExerciseModel(
@@ -204,7 +211,8 @@ struct CoreDataWorkoutRepositoryTests {
             id: UUID(),
             order: 0,
             note: nil,
-            type: .weighted(reps: 10, weight: 100)
+            type: .weighted(reps: 10, weight: 100),
+            isWarmup: false
         )
 
         try await workoutRepository.addSet(set, to: workoutExercise.id)
@@ -220,7 +228,8 @@ struct CoreDataWorkoutRepositoryTests {
         let exercise = try await exerciseRepository.create(
             name: "Squat",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
 
         let workoutExercise = WorkoutExerciseModel(
@@ -239,7 +248,8 @@ struct CoreDataWorkoutRepositoryTests {
             id: UUID(),
             order: 0,
             note: nil,
-            type: .weighted(reps: 10, weight: 100)
+            type: .weighted(reps: 10, weight: 100),
+            isWarmup: false
         )
 
         try await workoutRepository.addSet(set, to: workoutExercise.id)
@@ -264,7 +274,8 @@ struct CoreDataWorkoutRepositoryTests {
         let exercise = try await exerciseRepository.create(
             name: "Squat",
             description: nil,
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         )
 
         let workoutExercise = WorkoutExerciseModel(
@@ -283,7 +294,8 @@ struct CoreDataWorkoutRepositoryTests {
             id: UUID(),
             order: 0,
             note: nil,
-            type: .weighted(reps: 10, weight: 100)
+            type: .weighted(reps: 10, weight: 100),
+            isWarmup: false
         )
 
         try await workoutRepository.addSet(set, to: workoutExercise.id)

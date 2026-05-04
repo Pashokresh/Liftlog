@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct SetRowView: View {
-    let set: ExerciseSetModel
-    let number: Int
+    let setItem: ExerciseSetModel
+    let number: Int?
     let copySet: () -> Void
 
     @ViewBuilder private var notes: some View {
-        if let note = set.note, !note.isEmpty {
+        if let note = setItem.note, !note.isEmpty {
             Text(note)
                 .font(.callout)
                 .foregroundStyle(.secondary)
@@ -22,7 +22,7 @@ struct SetRowView: View {
     }
 
     private var setInfo: some View {
-        switch set.type {
+        switch setItem.type {
         case .timed(let duration):
             Text(formattedDuration(duration))
                 .font(.title3)
@@ -35,13 +35,21 @@ struct SetRowView: View {
     var body: some View {
         HStack {
             HStack(alignment: .firstTextBaseline, spacing: 12) {
-                Text("\(number)")
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
+                Group {
+                    if setItem.isWarmup {
+                        Image(systemName: "flame")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(number?.description ?? "")
+                            .font(.headline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .frame(width: 32, alignment: .center)
 
                 VStack(alignment: .leading, spacing: 4) {
                     setInfo
-
                     notes
                 }
             }
@@ -69,7 +77,7 @@ struct SetRowView: View {
 
 #Preview {
     VStack {
-        SetRowView(set: ExerciseSetModel.mocks[1], number: 1) { }
-        SetRowView(set: ExerciseSetModel.mocks[0], number: 2) { }
+        SetRowView(setItem: ExerciseSetModel.mocks[1], number: 1) {}
+        SetRowView(setItem: ExerciseSetModel.mocks[0], number: nil) {}
     }
 }

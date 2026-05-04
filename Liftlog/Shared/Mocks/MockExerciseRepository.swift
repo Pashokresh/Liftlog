@@ -17,35 +17,46 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         return exercises
     }
 
-    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySectionModel] {
+    func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID)
+        async throws -> [ExerciseHistorySectionModel] {
         try checkThrow()
 
         let timeIntervalDay: TimeInterval = 86_400
         let dateYesterday = Date.now.addingTimeInterval(-timeIntervalDay)
-        let dateDayBeforeYesterday = Date.now.addingTimeInterval(-timeIntervalDay * 2)
+        let dateDayBeforeYesterday = Date.now.addingTimeInterval(
+            -timeIntervalDay * 2
+        )
 
         return [
             ExerciseHistorySectionModel(
                 id: UUID(),
                 date: dateYesterday,
                 workoutName: "Workout 2",
-                sets: WorkoutExerciseModel.mock.sets),
+                sets: WorkoutExerciseModel.mock.sets
+            ),
             ExerciseHistorySectionModel(
                 id: UUID(),
                 date: dateDayBeforeYesterday,
                 workoutName: "Workout 1",
-                sets: [WorkoutExerciseModel.mock.sets.last ?? .mock])
+                sets: [WorkoutExerciseModel.mock.sets.last ?? .mock]
+            )
         ]
     }
 
-    func create(name: String, description: String?, type: ExerciseType) throws -> ExerciseModel {
+    func create(
+        name: String,
+        description: String?,
+        type: ExerciseType,
+        muscleGroup: ExerciseModel.MuscleGroup?
+    ) async throws -> ExerciseModel {
         try checkThrow()
 
         let exercise = ExerciseModel(
             id: UUID(),
             name: name,
             description: description,
-            type: type
+            type: type,
+            muscleGroup: muscleGroup
         )
 
         exercises.append(exercise)
@@ -56,7 +67,8 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
     func update(_ model: ExerciseModel) throws {
         try checkThrow()
 
-        guard let index = exercises.firstIndex(where: { $0.id == model.id }) else { return }
+        guard let index = exercises.firstIndex(where: { $0.id == model.id })
+        else { return }
         exercises[index] = model
     }
 
@@ -66,7 +78,8 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         exercises.removeAll { $0.id == id }
     }
 
-    func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws -> [ExerciseProgressEntry] {
+    func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws
+        -> [ExerciseProgressEntry] {
         try checkThrow()
 
         return ExerciseProgressEntry.mocks.filter { $0.date >= startDate }

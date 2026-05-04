@@ -26,6 +26,10 @@ final class ExerciseLibraryViewModel {
         }
     }
 
+    var exercisesByMuscleGroup: [MuscleGroupSection] {
+        filteredExercises.groupedByMuscle()
+    }
+
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository
     }
@@ -38,7 +42,7 @@ final class ExerciseLibraryViewModel {
         }
     }
 
-    func createExercise(name: String, type: ExerciseType, description: String?)
+    func createExercise(name: String, type: ExerciseType, description: String?, muscleGroup: ExerciseModel.MuscleGroup?)
         async {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
 
@@ -46,7 +50,8 @@ final class ExerciseLibraryViewModel {
             let exercise = try await repository.create(
                 name: name,
                 description: description,
-                type: type
+                type: type,
+                muscleGroup: muscleGroup
             )
             exercises.append(exercise)
         } catch {

@@ -16,34 +16,59 @@ struct ExerciseSetListView: View {
         _viewModel = .init(initialValue: viewModel)
     }
 
+    private func setRow(with set: ExerciseSetModel, at index: Int?) -> some View {
+        var displayIndex: Int?
+        if let index = index {
+            displayIndex = index + 1
+        }
+
+        return SetRowView(
+            setItem: set,
+            number: displayIndex
+        ) {
+            Task {
+                await viewModel.copySet(set)
+            }
+        }
+        .onRowTap {
+            viewModel.setToEdit = set
+        }
+        .swipeActions {
+            SwipeDeleteButton {
+                setToDelete = set
+            }
+
+            SwipeEditButton {
+                viewModel.setToEdit = set
+            }
+        }
+    }
+
+    @ViewBuilder var warmupSetsSection: some View {
+        if !viewModel.warmupSets.isEmpty {
+            ForEach(
+                viewModel.warmupSets,
+                id: \.id
+            ) { setRow(with: $0, at: nil) }
+        }
+    }
+
+    @ViewBuilder var workingSetsSection: some View {
+        if !viewModel.warmupSets.isEmpty {
+            ForEach(
+                Array(viewModel.workingSets.enumerated()),
+                id: \.element.id
+            ) { setRow(with: $1, at: $0) }
+        }
+    }
+
     @ViewBuilder var currentWorkoutSection: some View {
         Section {
-            if !viewModel.workoutExercise.sets.isEmpty {
-                ForEach(
-                    Array(viewModel.workoutExercise.sets.enumerated()),
-                    id: \.element.id
-                ) { index, set in
-                    SetRowView(
-                        set: set,
-                        number: index + 1
-                    ) {
-                        Task {
-                            await viewModel.copySet(set)
-                        }
-                    }
-                    .onRowTap {
-                        viewModel.setToEdit = set
-                    }
-                    .swipeActions {
-                        SwipeDeleteButton {
-                            setToDelete = set
-                        }
+            if !viewModel.warmupSets.isEmpty
+                || !viewModel.workingSets.isEmpty {
+                warmupSetsSection
 
-                        SwipeEditButton {
-                            viewModel.setToEdit = set
-                        }
-                    }
-                }
+                workingSetsSection
             } else {
                 noSetsPlaceholder
             }
@@ -56,11 +81,28 @@ struct ExerciseSetListView: View {
         ForEach(viewModel.history) { historyExercise in
             Section {
                 ForEach(
-                    Array(historyExercise.sets.enumerated()),
+                    historyExercise.sets.filter({ $0.isWarmup }),
+                    id: \.id
+                ) { set in
+                    SetRowView(
+                        setItem: set,
+                        number: nil
+                    ) {
+                        Task {
+                            await viewModel.copySet(set)
+                        }
+                    }
+                }
+
+                ForEach(
+                    Array(
+                        historyExercise.sets.filter({ !$0.isWarmup })
+                            .enumerated()
+                    ),
                     id: \.element.id
                 ) { index, set in
                     SetRowView(
-                        set: set,
+                        setItem: set,
                         number: index + 1
                     ) {
                         Task {
@@ -72,12 +114,17 @@ struct ExerciseSetListView: View {
                 HStack(spacing: 8) {
                     Text(historyExercise.workoutName)
                     Text("·")
-                    Image(systemName: Images.calendar(
-                        day: Calendar.current.component(
-                            .day,
-                            from: historyExercise.date
-                        )))
-                    Text("\(historyExercise.date.formatted(date: .abbreviated, time: .omitted))")
+                    Image(
+                        systemName: Images.calendar(
+                            day: Calendar.current.component(
+                                .day,
+                                from: historyExercise.date
+                            )
+                        )
+                    )
+                    Text(
+                        "\(historyExercise.date.formatted(date: .abbreviated, time: .omitted))"
+                    )
                 }
             }
         }

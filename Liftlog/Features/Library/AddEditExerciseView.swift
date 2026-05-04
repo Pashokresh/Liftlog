@@ -17,6 +17,7 @@ struct AddEditExerciseView: View {
     @State private var name = ""
     @State private var description = ""
     @State private var type: ExerciseType = .reps
+    @State private var muscleGroup: ExerciseModel.MuscleGroup?
 
     init(
         exercise: ExerciseModel? = nil,
@@ -30,6 +31,7 @@ struct AddEditExerciseView: View {
         _name = .init(initialValue: exercise.name)
         _description = .init(initialValue: exercise.description ?? "")
         _type = .init(initialValue: exercise.type)
+        _muscleGroup = .init(initialValue: exercise.muscleGroup)
     }
 
     private var isValid: Bool {
@@ -44,12 +46,28 @@ struct AddEditExerciseView: View {
                         AppLocalization.name,
                         text: $name
                     )
+
                     Picker(AppLocalization.exerciseType, selection: $type) {
                         ForEach(ExerciseType.allCases, id: \.id) {
                             Text(String(describing: $0))
                         }
                     }
                     .pickerStyle(.menu)
+
+                    Picker(
+                        AppLocalization.muscleGroup,
+                        selection: $muscleGroup
+                    ) {
+                        Text(AppLocalization.notSpecified)
+                            .tag(Optional<ExerciseModel.MuscleGroup>.none)
+
+                        ForEach(ExerciseModel.MuscleGroup.allCases) { group in
+                            Text(group.localizedName)
+                                .tag(Optional(group))
+                        }
+                    }
+                    .pickerStyle(.menu)
+
                     TextField(
                         AppLocalization.descriptionOptional,
                         text: $description,
@@ -73,7 +91,8 @@ struct AddEditExerciseView: View {
             description: description.trimmingCharacters(
                 in: .whitespacesAndNewlines
             ).isEmpty ? nil : description,
-            type: type
+            type: type,
+            muscleGroup: muscleGroup
         )
     }
 
@@ -83,7 +102,8 @@ struct AddEditExerciseView: View {
             : AppLocalization.addExercise
     }
 
-    @ToolbarContentBuilder private var addEditToolbarContent: some ToolbarContent {
+    @ToolbarContentBuilder private var addEditToolbarContent:
+        some ToolbarContent {
         ToolbarItem(
             id: "new.exercise.cancel",
             placement: .topBarLeading

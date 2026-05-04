@@ -16,6 +16,14 @@ final class ExerciseSetViewModel {
     private(set) var error: Error?
     var setToEdit: ExerciseSetModel?
 
+    var warmupSets: [ExerciseSetModel] {
+        workoutExercise.sets.filter { $0.isWarmup }
+    }
+
+    var workingSets: [ExerciseSetModel] {
+        workoutExercise.sets.filter { !$0.isWarmup }
+    }
+
     private let workoutRepository: WorkoutRepositoryProtocol
     private let exerciseRepository: ExerciseRepositoryProtocol
 
@@ -62,7 +70,8 @@ final class ExerciseSetViewModel {
             id: UUID(),
             order: workoutExercise.sets.count,
             note: set.note,
-            type: set.type
+            type: set.type,
+            isWarmup: set.isWarmup
         )
 
         await addSet(set: copiedSet)

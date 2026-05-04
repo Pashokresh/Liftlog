@@ -19,6 +19,7 @@ struct AddEditSetView: View {
     @State private var weight: Double
     @State private var duration: Double
     @State private var note: String
+    @State private var isWarmup: Bool
 
     @FocusState private var notesFocused: Bool
 
@@ -49,6 +50,7 @@ struct AddEditSetView: View {
         }
 
         _note = .init(initialValue: existingSet?.note ?? "")
+        _isWarmup = .init(initialValue: existingSet?.isWarmup ?? false)
     }
 
     var repSection: some View {
@@ -62,6 +64,15 @@ struct AddEditSetView: View {
         Section(AppLocalization.duration) {
             DurationInputView(duration: $duration)
                 .frame(maxHeight: 180)
+        }
+    }
+
+    var warmupSection: some View {
+        Section {
+            Toggle(isOn: $isWarmup) {
+                Text(AppLocalization.isWarmUp)
+            }
+            .tint(.accent)
         }
     }
 
@@ -110,6 +121,8 @@ struct AddEditSetView: View {
                     repSection
                 }
 
+                warmupSection
+
                 noteSection
             }
             .contentMargins(.horizontal, 8, for: .scrollContent)
@@ -128,7 +141,8 @@ struct AddEditSetView: View {
                 ? nil : note,
             type: exerciseType == .reps
                 ? .weighted(reps: reps, weight: weight)
-                : .timed(duration: duration)
+                : .timed(duration: duration),
+            isWarmup: isWarmup
         )
     }
 }

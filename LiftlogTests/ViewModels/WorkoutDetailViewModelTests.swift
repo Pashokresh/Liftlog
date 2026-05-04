@@ -20,10 +20,10 @@ struct WorkoutDetailViewModelTests {
     init() {
         // Create unique IDs for this test instance
         workoutID = UUID()
-        
+
         // Create a fresh repository for each test
         repository = MockWorkoutRepository()
-        
+
         // Create a fresh workout for each test with unique ID
         let freshWorkout = WorkoutModel(
             id: workoutID,
@@ -33,10 +33,10 @@ struct WorkoutDetailViewModelTests {
             tags: [TagModel.mock],
             exercises: []
         )
-        
+
         // Add workout to repository so fetch() works
         repository.addWorkoutDirectly(freshWorkout)
-        
+
         viewModel = WorkoutDetailViewModel(
             workout: freshWorkout,
             repository: repository
@@ -67,7 +67,7 @@ struct WorkoutDetailViewModelTests {
             ExerciseModel(id: UUID(), name: "Exercise 2", description: nil, type: .reps),
             ExerciseModel(id: UUID(), name: "Exercise 3", description: nil, type: .reps)
         ]
-        
+
         await viewModel.addExercises(exercises)
 
         #expect(viewModel.workout.exercises.count == 3)
@@ -110,16 +110,16 @@ struct WorkoutDetailViewModelTests {
     func addSet() async throws {
         await viewModel.addExercises([ExerciseModel.mock])
         let workoutExerciseID = try #require(viewModel.workout.exercises.first?.id)
-        
+
         let set = ExerciseSetModel(
             id: UUID(),
             order: 0,
             note: nil,
             type: .weighted(reps: 10, weight: 50)
         )
-        
+
         await viewModel.addSet(set, to: workoutExerciseID)
-        
+
         let addedSet = try #require(viewModel.workout.exercises.first?.sets.first)
         #expect(addedSet.id == set.id)
         #expect(viewModel.error == nil)
@@ -129,17 +129,17 @@ struct WorkoutDetailViewModelTests {
     func deleteSet() async throws {
         await viewModel.addExercises([ExerciseModel.mock])
         let workoutExerciseID = try #require(viewModel.workout.exercises.first?.id)
-        
+
         let set = ExerciseSetModel(
             id: UUID(),
             order: 0,
             note: nil,
             type: .weighted(reps: 10, weight: 50)
         )
-        
+
         await viewModel.addSet(set, to: workoutExerciseID)
         #expect(viewModel.workout.exercises.first?.sets.count == 1)
-        
+
         await viewModel.deleteSet(set.id, from: workoutExerciseID)
         #expect(viewModel.workout.exercises.first?.sets.isEmpty == true)
         #expect(viewModel.error == nil)
@@ -156,7 +156,7 @@ struct WorkoutDetailViewModelTests {
         repository.shouldThrow = true
         await viewModel.addExercises([ExerciseModel.mock])
         #expect(viewModel.error != nil)
-        
+
         viewModel.nullifyError()
         #expect(viewModel.error == nil)
     }

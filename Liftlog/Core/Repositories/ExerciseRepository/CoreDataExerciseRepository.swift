@@ -53,7 +53,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
         }
     }
 
-    func create(name: String, description: String?, type: ExerciseType)
+    func create(name: String, description: String?, type: ExerciseType, muscleGroup: ExerciseModel.MuscleGroup?)
         async throws -> ExerciseModel {
         try await context.perform {
             let exercise = Exercise(context: self.context)
@@ -61,6 +61,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             exercise.name = name
             exercise.type = Int16(type.rawValue)
             exercise.exerciseDescription = description
+            exercise.muscleGroup = Int16(muscleGroup?.rawValue ?? -1)
 
             try self.context.save()
 
@@ -75,6 +76,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             exercise.name = model.name
             exercise.type = Int16(model.type.rawValue)
             exercise.exerciseDescription = model.description
+            exercise.muscleGroup = Int16(model.muscleGroup?.rawValue ?? -1)
 
             try self.context.save()
         }

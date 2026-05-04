@@ -12,7 +12,8 @@ extension ExerciseModel {
         id: UUID(),
         name: "Bench Press",
         description: "Classic chest exercise",
-        type: .reps
+        type: .reps,
+        muscleGroup: .chest
     )
 
     static let mocks = [
@@ -20,25 +21,29 @@ extension ExerciseModel {
             id: UUID(),
             name: "Bench Press",
             description: "Chest exercise",
-            type: .time
+            type: .time,
+            muscleGroup: .chest
         ),
         ExerciseModel(
             id: UUID(),
             name: "Squat",
             description: "Leg exercise",
-            type: .reps
+            type: .reps,
+            muscleGroup: .legs
         ),
         ExerciseModel(
             id: UUID(),
             name: "Pull Up",
             description: "Back exercise",
-            type: .reps
+            type: .reps,
+            muscleGroup: .back
         ),
         ExerciseModel(
             id: UUID(),
             name: "Plank",
             description: "Core exercise",
-            type: .reps
+            type: .reps,
+            muscleGroup: .core
         )
     ]
 }
@@ -48,7 +53,8 @@ extension ExerciseSetModel {
         id: UUID(),
         order: 0,
         note: "Could make more reps",
-        type: .weighted(reps: 10, weight: 50)
+        type: .weighted(reps: 10, weight: 50),
+        isWarmup: false
     )
 
     static let mocks = [
@@ -56,25 +62,29 @@ extension ExerciseSetModel {
             id: UUID(),
             order: 0,
             note: nil,
-            type: .timed(duration: 60 * 30 + 15)
+            type: .timed(duration: 60 * 30 + 15),
+            isWarmup: true
         ),
         ExerciseSetModel(
             id: UUID(),
             order: 1,
             note: nil,
-            type: .weighted(reps: 10, weight: 55)
+            type: .weighted(reps: 10, weight: 55),
+            isWarmup: false
         ),
         ExerciseSetModel(
             id: UUID(),
             order: 2,
             note: "Got sweaty",
-            type: .weighted(reps: 10, weight: 37.5)
+            type: .weighted(reps: 10, weight: 37.5),
+            isWarmup: false
         ),
         ExerciseSetModel(
             id: UUID(),
             order: 3,
             note: "Done",
-            type: .weighted(reps: 12, weight: 40.25)
+            type: .weighted(reps: 12, weight: 40.25),
+            isWarmup: false
         )
     ]
 }
@@ -185,7 +195,8 @@ extension ExerciseProgressEntry {
         return [
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -90, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -90, to: today)
+                    ?? .now,
                 maxWeight: 60.0,
                 totalVolume: 1200.0,
                 maxDuration: 0,
@@ -193,7 +204,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -76, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -76, to: today)
+                    ?? .now,
                 maxWeight: 62.5,
                 totalVolume: 1375.0,
                 maxDuration: 0,
@@ -201,7 +213,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -62, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -62, to: today)
+                    ?? .now,
                 maxWeight: 62.5,
                 totalVolume: 1500.0,
                 maxDuration: 0,
@@ -209,7 +222,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -48, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -48, to: today)
+                    ?? .now,
                 maxWeight: 65.0,
                 totalVolume: 1560.0,
                 maxDuration: 0,
@@ -217,7 +231,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -34, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -34, to: today)
+                    ?? .now,
                 maxWeight: 65.0,
                 totalVolume: 1625.0,
                 maxDuration: 0,
@@ -225,7 +240,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -27, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -27, to: today)
+                    ?? .now,
                 maxWeight: 67.5,
                 totalVolume: 1687.5,
                 maxDuration: 0,
@@ -233,7 +249,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -20, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -20, to: today)
+                    ?? .now,
                 maxWeight: 67.5,
                 totalVolume: 1800.0,
                 maxDuration: 0,
@@ -241,7 +258,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -13, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -13, to: today)
+                    ?? .now,
                 maxWeight: 70.0,
                 totalVolume: 1750.0,
                 maxDuration: 0,
@@ -249,7 +267,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -6, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -6, to: today)
+                    ?? .now,
                 maxWeight: 70.0,
                 totalVolume: 1960.0,
                 maxDuration: 0,
@@ -257,7 +276,8 @@ extension ExerciseProgressEntry {
             ),
             ExerciseProgressEntry(
                 id: UUID(),
-                date: calendar.date(byAdding: .day, value: -1, to: today) ?? .now,
+                date: calendar.date(byAdding: .day, value: -1, to: today)
+                    ?? .now,
                 maxWeight: 72.5,
                 totalVolume: 2030.0,
                 maxDuration: 0,

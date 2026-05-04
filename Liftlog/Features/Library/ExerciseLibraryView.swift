@@ -72,7 +72,8 @@ struct ExerciseLibraryView: View {
                 await viewModel.createExercise(
                     name: exercise.name,
                     type: exercise.type,
-                    description: exercise.description
+                    description: exercise.description,
+                    muscleGroup: exercise.muscleGroup
                 )
             }
         }
@@ -90,8 +91,18 @@ struct ExerciseLibraryView: View {
     }
 
     var body: some View {
-        List(viewModel.filteredExercises, id: \.id) {
-            exerciseRow($0)
+        List {
+            ForEach(viewModel.exercisesByMuscleGroup, id: \.group) { item in
+                Section {
+                    ForEach(item.exercises) {
+                        exerciseRow($0)
+                    }
+                } header: {
+                    Text(item.group?.localizedName ?? AppLocalization.otherGroup)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .animation(
             .easeInOut(duration: 0.3),

@@ -15,7 +15,8 @@ extension WorkoutExercise {
                 id: UUID(),
                 name: "",
                 description: description,
-                type: .reps
+                type: .reps,
+                muscleGroup: nil
             )
         let sets =
             (sets as? Set<ExerciseSet>)?

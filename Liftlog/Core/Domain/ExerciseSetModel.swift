@@ -17,4 +17,5 @@ struct ExerciseSetModel: Identifiable, Equatable, Hashable {
     var order: Int
     var note: String?
     var type: SetType
+    var isWarmup: Bool
 }

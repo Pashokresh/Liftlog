@@ -53,6 +53,9 @@ enum AppLocalization {
         localized: "Exercise already added"
     )
 
+    // MARK: - Exercise Library
+
+    static let otherGroup = String(localized: "Other")
     // MARK: - Exercise Picker
 
     static let exerciseLibrary = String(
@@ -67,11 +70,23 @@ enum AppLocalization {
     static let descriptionOptional = String(localized: "Description (optional)")
     static let addExercise = String(localized: "Add Exercise")
     static let editExercise = String(localized: "Edit Exercise")
+    static let muscleGroup = String(localized: "Muscle Group")
+    static let notSpecified = String(localized: "Not specified")
 
     // MARK: - Exercise Types
 
     static let reps = String(localized: "Reps")
     static let time = String(localized: "Time")
+
+    // MARK: - Exercise Muscle Groups
+
+    static let chest = String(localized: "Chest")
+    static let back = String(localized: "Back")
+    static let legs = String(localized: "Legs")
+    static let shoulders = String(localized: "Shoulders")
+    static let arms = String(localized: "Arms")
+    static let core = String(localized: "Core")
+    static let cardio = String(localized: "Cardio")
 
     // MARK: - Exercise Set List
 
@@ -81,6 +96,8 @@ enum AppLocalization {
         localized: "Start by adding sets here"
     )
     static let addSet = String(localized: "Add Set")
+    static let warmUp = String(localized: "Warm-Up")
+    static let workingSets = String(localized: "Working Sets")
 
     // MARK: - Add/Edit Set
 
@@ -89,6 +106,7 @@ enum AppLocalization {
     static let notes = String(localized: "Notes")
     static let optional = String(localized: "Optional")
     static let editSet = String(localized: "Edit Set")
+    static let isWarmUp = String(localized: "Is Warm-Up?")
 
     // MARK: - Weight/Duration Input
 

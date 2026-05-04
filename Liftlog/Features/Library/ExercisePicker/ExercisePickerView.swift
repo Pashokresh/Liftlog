@@ -84,8 +84,16 @@ struct ExercisePickerView: View {
     }
 
     var content: some View {
-        List(viewModel.filteredExercises, id: \.id) {
-            exerciseRow($0)
+        List {
+            ForEach(viewModel.exercisesByMuscleGroup) { section in
+                Section {
+                    ForEach(section.exercises) { exercise in
+                        exerciseRow(exercise)
+                    }
+                } header: {
+                    Text(section.title)
+                }
+            }
         }
         .animation(
             .easeInOut(duration: 0.3),

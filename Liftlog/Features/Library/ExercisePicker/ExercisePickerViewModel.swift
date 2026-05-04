@@ -27,6 +27,10 @@ final class ExercisePickerViewModel {
         }
     }
 
+    var exercisesByMuscleGroup: [MuscleGroupSection] {
+        filteredExercises.groupedByMuscle()
+    }
+
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository
     }
@@ -58,7 +62,8 @@ final class ExercisePickerViewModel {
             let created = try await repository.create(
                 name: exercise.name,
                 description: exercise.description,
-                type: exercise.type
+                type: exercise.type,
+                muscleGroup: exercise.muscleGroup
             )
             exercises.append(created)
             selectedExercises.insert(created)

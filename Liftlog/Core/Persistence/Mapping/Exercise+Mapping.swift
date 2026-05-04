@@ -13,7 +13,8 @@ extension Exercise {
             id: id ?? UUID(),
             name: name ?? "",
             description: exerciseDescription,
-            type: ExerciseType(rawValue: Int(type)) ?? .reps
+            type: ExerciseType(rawValue: Int(type)) ?? .reps,
+            muscleGroup: ExerciseModel.MuscleGroup(rawValue: Int(muscleGroup))
         )
     }
 }

@@ -211,6 +211,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             set.id = setModel.id
             set.order = Int16(setModel.order)
             set.note = setModel.note
+            set.isWarmup = setModel.isWarmup
             set.workoutExercise = workoutExercise
 
             switch setModel.type {
@@ -238,6 +239,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             set.id = model.id
             set.order = Int16(model.order)
             set.note = model.note
+            set.isWarmup = model.isWarmup
 
             switch model.type {
             case let .weighted(reps, weight):

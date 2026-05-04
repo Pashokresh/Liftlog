@@ -13,7 +13,7 @@ protocol ExerciseRepositoryProtocol: AnyObject {
 
     func fetchHistory(for exerciseID: UUID, excluding workoutExerciseID: UUID) async throws -> [ExerciseHistorySectionModel]
 
-    func create(name: String, description: String?, type: ExerciseType) async throws -> ExerciseModel
+    func create(name: String, description: String?, type: ExerciseType, muscleGroup: ExerciseModel.MuscleGroup?) async throws -> ExerciseModel
 
     func update(_ model: ExerciseModel) async throws
 
