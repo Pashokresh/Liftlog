@@ -125,13 +125,10 @@ struct ExerciseSetListView: View {
             historyWorkoutSection
         }
         .scrollDismissesKeyboard(.interactively)
-        .environment(\.defaultMinListRowHeight, 80)
         .navigationTitle(viewModel.workoutExercise.exercise.name)
         .toolbar {
-            ToolbarItem(placement: .bottomBar) {
-                AddBottomBarButton(
-                    with: AppLocalization.addSet
-                ) {
+            ToolbarItem(placement: .topBarTrailing) {
+                AddTopBarButton {
                     isAddingNewSet = true
                 }
             }

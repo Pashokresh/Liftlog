@@ -26,6 +26,8 @@ struct DurationInputView: View {
                 .clipped()
 
                 Text(AppLocalization.min)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -40,6 +42,8 @@ struct DurationInputView: View {
                 .clipped()
 
                 Text(AppLocalization.sec)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }

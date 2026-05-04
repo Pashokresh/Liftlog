@@ -11,5 +11,4 @@ import Observation
 @Observable
 @MainActor
 final class ExerciseProgressViewModel {
-    
 }

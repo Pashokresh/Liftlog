@@ -15,21 +15,28 @@ struct WorkoutRowView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(workout.name)
-                .font(.title2)
+        VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(formattedDate)
-                    .font(.body)
+                Text(workout.name)
+                    .font(.headline)
+
+                Text("·")
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
+
+                Text(formattedDate)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            HStack {
                 if !workout.tags.isEmpty {
-                    Text("·")
                     HStack {
                         ForEach(workout.tags, id: \.id) {
                             Text($0.name)
-                                .font(.body)
+                                .font(.callout)
                                 .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
+                                .padding(.vertical, 2)
                                 .background(Color.accentColor.opacity(0.8))
                                 .foregroundStyle(.white)
                                 .clipShape(.capsule)
@@ -38,7 +45,8 @@ struct WorkoutRowView: View {
                 }
             }
         }
-        .padding(.vertical)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
     }
 }
 

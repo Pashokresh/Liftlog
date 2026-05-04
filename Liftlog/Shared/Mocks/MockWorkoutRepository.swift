@@ -11,6 +11,10 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
     var shouldThrow = false
     private var workouts: [WorkoutModel] = []
 
+    init(workouts: [WorkoutModel] = []) {
+        self.workouts = workouts
+    }
+
     func fetchAll() async throws -> [WorkoutModel] {
         try checkThrow()
         return workouts

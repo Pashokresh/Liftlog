@@ -20,6 +20,8 @@ struct AddEditSetView: View {
     @State private var duration: Double
     @State private var note: String
 
+    @FocusState private var notesFocused: Bool
+
     private var isEditing: Bool { existingSet != nil }
 
     init(
@@ -71,7 +73,10 @@ struct AddEditSetView: View {
                 axis: .vertical
             )
             .lineLimit(1...3)
-            .padding()
+            .frame(maxWidth: .infinity, minHeight: 60, alignment: .topLeading)
+        }
+        .onTapGesture {
+            notesFocused = true
         }
     }
 
@@ -107,6 +112,7 @@ struct AddEditSetView: View {
 
                 noteSection
             }
+            .contentMargins(.horizontal, 8, for: .scrollContent)
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { addEditToolbarContent }

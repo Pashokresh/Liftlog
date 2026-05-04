@@ -56,8 +56,8 @@ struct ExercisePickerView: View {
     }
 
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
-        ToolbarItem(id: "exercise.library.pick.add", placement: .bottomBar) {
-            AddBottomBarButton(with: AppLocalization.addExercise) {
+        ToolbarItem(id: "exercise.library.create.new", placement: .topBarTrailing) {
+            AddTopBarButton {
                 isAddingNewExercise = true
             }
         }
@@ -72,10 +72,10 @@ struct ExercisePickerView: View {
         }
 
         ToolbarItem(
-            id: "exercise.library.pick.done",
-            placement: .topBarTrailing
+            id: "exercise.library.selection.done",
+            placement: .bottomBar
         ) {
-            AdaptiveConfirmButton {
+            DoneBottomBarBottom(with: AppLocalization.add(count: viewModel.selectedExercises.count)) {
                 onAdd(viewModel.selectedExercises)
                 dismiss()
             }
@@ -97,9 +97,9 @@ struct ExercisePickerView: View {
         NavigationStack {
             content
             .scrollDismissesKeyboard(.interactively)
-            .environment(\.defaultMinListRowHeight, 80)
             .overlay { emptyState }
-            .navigationTitle(AppLocalization.pickExerciseFromLibrary)
+            .navigationTitle(AppLocalization.exerciseLibrary)
+            .navigationBarTitleDisplayMode(.large)
             .toolbar { toolbar }
             .searchable(
                 text: $viewModel.searchText,

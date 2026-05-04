@@ -117,7 +117,6 @@ struct WorkoutListView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.workouts)
-        .environment(\.defaultMinListRowHeight, 80)
         .navigationTitle(Text(AppLocalization.workouts))
         .navigationBarTitleDisplayMode(.inline)
         .overlay { emptyState }
@@ -169,7 +168,7 @@ struct WorkoutListView: View {
     NavigationStack {
         WorkoutListView(
             viewModel: WorkoutListViewModel(
-                workoutRepository: MockWorkoutRepository(),
+                workoutRepository: MockWorkoutRepository(workouts: WorkoutModel.mocks),
                 tagRepository: MockTagRepository()
             )
         )

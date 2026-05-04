@@ -79,7 +79,6 @@ struct WorkoutDetailView: View {
                 }
             }
         }
-        .environment(\.defaultMinListRowHeight, 80)
         .navigationTitle(viewModel.workout.name)
         .adaptiveNavigationSubtitle(
             viewModel.workout.date.formatted(date: .abbreviated, time: .omitted)
@@ -113,7 +112,7 @@ struct WorkoutDetailView: View {
         WorkoutDetailView(
             viewModel: WorkoutDetailViewModel(
                 workout: WorkoutModel.mock,
-                repository: MockWorkoutRepository()
+                repository: MockWorkoutRepository(workouts: WorkoutModel.mocks)
             )
         )
     }

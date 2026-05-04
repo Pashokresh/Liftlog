@@ -25,6 +25,8 @@ struct WeightInputView: View {
                 .clipped()
 
                 Text(AppLocalization.repsLowercase)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -40,6 +42,7 @@ struct WeightInputView: View {
 
                 Text(AppLocalization.kilogram)
                     .foregroundStyle(.secondary)
+                    .font(.body)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -58,9 +61,11 @@ struct WeightInputView: View {
 
                 Text(AppLocalization.gram)
                     .foregroundStyle(.secondary)
+                    .font(.body)
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
+        .frame(maxWidth: .infinity, alignment: .center)
         .onChange(of: kilo) { updateBinding() }
         .onChange(of: grams) { updateBinding() }
         .onAppear { loadFromBinding() }

@@ -98,19 +98,14 @@ struct ExerciseLibraryView: View {
             value: viewModel.filteredExercises.map { $0.id }
         )
         .scrollDismissesKeyboard(.interactively)
-        .environment(\.defaultMinListRowHeight, 80)
         .overlay { emptyState }
         .navigationTitle(
-            String(
-                localized: "Exercise Library"
-            )
+            AppLocalization.exerciseLibrary
         )
         .toolbar { listToolbar }
         .searchable(
             text: $viewModel.searchText,
-            prompt: String(
-                localized: "Search Exercise"
-            )
+            prompt: AppLocalization.searchExercise
         )
         .sheet(isPresented: $isAddingExercise) { addExerciseSheet }
         .sheet(item: $viewModel.editingExercise) { editExerciseSheet($0) }

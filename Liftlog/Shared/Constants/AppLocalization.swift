@@ -20,6 +20,10 @@ enum AppLocalization {
     static let deleteConfirmationMessage = String(
         localized: "This action cannot be undone."
     )
+    static let add = String(localized: "Add")
+    static func add(count: Int) -> String {
+        AppLocalization.add + (count > 0 ? " (\(count))" : "")
+    }
 
     // MARK: - Workout List
 
@@ -51,8 +55,8 @@ enum AppLocalization {
 
     // MARK: - Exercise Picker
 
-    static let pickExerciseFromLibrary = String(
-        localized: "Pick Exercise from the Library"
+    static let exerciseLibrary = String(
+        localized: "Exercise Library"
     )
     static let searchExercise = String(localized: "Search Exercise")
 

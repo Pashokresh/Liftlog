@@ -157,6 +157,7 @@ struct AddEditWorkoutView: View {
                     tagCreation
                 }
             }
+            .contentMargins(.horizontal, 8, for: .scrollContent)
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)

@@ -59,6 +59,7 @@ struct AddEditExerciseView: View {
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
+            .contentMargins(.horizontal, 8, for: .scrollContent)
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { addEditToolbarContent }

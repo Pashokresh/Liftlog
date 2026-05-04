@@ -11,15 +11,15 @@ struct ExerciseRowView: View {
     let exercise: ExerciseModel
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 12) {
             Image(systemName: exercise.type.systemImage)
-                .font(.title)
+                .font(.title3)
                 .foregroundStyle(.accent)
                 .frame(width: 40, height: 40, alignment: .center)
 
             VStack(alignment: .leading) {
                 Text(exercise.name)
-                    .font(.title2)
+                    .font(.title3)
                     .foregroundStyle(.primary)
                 if let description = exercise.description, !description.isEmpty {
                     Text(exercise.description ?? "")
