@@ -31,37 +31,11 @@ struct ExerciseModel: Identifiable, Equatable, Hashable {
     let muscleGroup: MuscleGroup?
 }
 
-extension ExerciseModel {
-    enum MuscleGroup: Int, CaseIterable, Identifiable, Hashable {
-        case chest = 0
-        case back = 1
-        case legs = 2
-        case shoulders = 3
-        case arms = 4
-        case core = 5
-        case cardio = 6
-
-        var id: Int { rawValue }
-
-        var localizedName: String {
-            switch self {
-            case .chest: AppLocalization.chest
-            case .back: AppLocalization.back
-            case .legs: AppLocalization.legs
-            case .shoulders: AppLocalization.shoulders
-            case .arms: AppLocalization.arms
-            case .core: AppLocalization.core
-            case .cardio: AppLocalization.cardio
-            }
-        }
-    }
-}
-
 extension Array where Element == ExerciseModel {
     func groupedByMuscle() -> [MuscleGroupSection] {
         let grouped = Dictionary(grouping: self) { $0.muscleGroup }
 
-        let withGroup = ExerciseModel.MuscleGroup.allCases
+        let withGroup = MuscleGroup.allCases
             .compactMap { group -> MuscleGroupSection? in
                 guard let exercises = grouped[Optional(group)],
                     !exercises.isEmpty

@@ -42,7 +42,7 @@ final class ExerciseLibraryViewModel {
         }
     }
 
-    func createExercise(name: String, type: ExerciseType, description: String?, muscleGroup: ExerciseModel.MuscleGroup?)
+    func createExercise(name: String, type: ExerciseType, description: String?, muscleGroup: MuscleGroup?)
         async {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
 

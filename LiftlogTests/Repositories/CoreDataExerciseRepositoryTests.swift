@@ -23,7 +23,7 @@ struct CoreDataExerciseRepositoryTests {
     func createExercise() async throws {
         let name = "Squat"
 
-        let exercise = try await repository.create(name: name, description: "Leg exercise", type: .reps)
+        let exercise = try await repository.create(name: name, description: "Leg exercise", type: .reps, muscleGroup: .legs)
 
         let all = try await repository.fetchAll()
         #expect(all.count == 1)
@@ -33,9 +33,9 @@ struct CoreDataExerciseRepositoryTests {
 
     @Test("fetchAll returns all saved exercises")
     func fetchAll() async throws {
-        _ = try await repository.create(name: "Squad", description: "Leg exercise", type: .reps)
-        _ = try await repository.create(name: "Bench Press", description: nil, type: .reps)
-        _ = try await repository.create(name: "Plank", description: nil, type: .time)
+        _ = try await repository.create(name: "Squad", description: "Leg exercise", type: .reps, muscleGroup: .legs)
+        _ = try await repository.create(name: "Bench Press", description: nil, type: .reps, muscleGroup: .chest)
+        _ = try await repository.create(name: "Plank", description: nil, type: .time, muscleGroup: .core)
 
         let all = try await repository.fetchAll()
         #expect(all.count == 3)
@@ -43,7 +43,7 @@ struct CoreDataExerciseRepositoryTests {
 
     @Test("delete deletes exercise from database")
     func deleteExercise() async throws {
-        let exercise = try await repository.create(name: "Bench Press", description: nil, type: .reps)
+        let exercise = try await repository.create(name: "Bench Press", description: nil, type: .reps, muscleGroup: .chest)
 
         try await repository.delete(exercise.id)
 
@@ -56,13 +56,14 @@ struct CoreDataExerciseRepositoryTests {
         let newName = "Incline Bench Press"
         let newDescription = "Updated"
 
-        let exercise = try await repository.create(name: "Bench Press", description: nil, type: .reps)
+        let exercise = try await repository.create(name: "Bench Press", description: nil, type: .reps, muscleGroup: .chest)
 
         let updated = ExerciseModel(
             id: exercise.id,
             name: newName,
             description: newDescription,
-            type: .reps
+            type: .reps,
+            muscleGroup: .chest
         )
 
         try await repository.update(updated)

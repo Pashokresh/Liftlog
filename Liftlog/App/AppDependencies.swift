@@ -14,8 +14,8 @@ final class AppDependencies {
     let workoutRepository: WorkoutRepositoryProtocol
     let tagRepository: TagRepositoryProtocol
 
-    init() {
-        let context = PersistenceController.shared.container.viewContext
+    init(persistenceController: PersistenceController = .shared) {
+        let context = persistenceController.container.viewContext
 
         let exerciseRepository = CoreDataExerciseRepository(context: context)
         let tagRepository = CoreDataTagRepository(context: context)

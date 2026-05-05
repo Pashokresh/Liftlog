@@ -27,6 +27,7 @@
 		B00480B42F46F76C00EAF81B /* Liftlog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Liftlog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00480C62F46F76D00EAF81B /* LiftlogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftlogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00480D02F46F76D00EAF81B /* LiftlogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftlogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0A215712FAA1B3700CE2EB1 /* Liftlog.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Liftlog.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +76,7 @@
 		B00480AB2F46F76C00EAF81B = {
 			isa = PBXGroup;
 			children = (
+				B0A215712FAA1B3700CE2EB1 /* Liftlog.xctestplan */,
 				B00480B62F46F76C00EAF81B /* Liftlog */,
 				B00480C92F46F76D00EAF81B /* LiftlogTests */,
 				B00480D32F46F76D00EAF81B /* LiftlogUITests */,

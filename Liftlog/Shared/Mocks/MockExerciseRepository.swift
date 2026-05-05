@@ -47,7 +47,7 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
         name: String,
         description: String?,
         type: ExerciseType,
-        muscleGroup: ExerciseModel.MuscleGroup?
+        muscleGroup: MuscleGroup?
     ) async throws -> ExerciseModel {
         try checkThrow()
 

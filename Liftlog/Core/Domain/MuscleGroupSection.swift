@@ -6,7 +6,7 @@
 //
 
 struct MuscleGroupSection: Identifiable {
-    let group: ExerciseModel.MuscleGroup?
+    let group: MuscleGroup?
     let exercises: [ExerciseModel]
 
     var id: Int { group?.rawValue ?? -1 }

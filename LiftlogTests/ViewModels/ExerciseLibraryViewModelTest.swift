@@ -32,7 +32,7 @@ struct ExerciseLibraryViewModelTest {
         await viewModel.loadExercises()
         let countBefore = viewModel.exercises.count
 
-        await viewModel.createExercise(name: name, type: .reps, description: nil)
+        await viewModel.createExercise(name: name, type: .reps, description: nil, muscleGroup: .chest)
 
         #expect(countBefore + 1 == viewModel.exercises.count)
         #expect(viewModel.exercises.last?.name == name)
@@ -51,7 +51,7 @@ struct ExerciseLibraryViewModelTest {
         await viewModel.loadExercises()
         let countBefore = viewModel.exercises.count
 
-        await viewModel.createExercise(name: "", type: .reps, description: nil)
+        await viewModel.createExercise(name: "", type: .reps, description: nil, muscleGroup: .chest)
 
         #expect(countBefore == viewModel.exercises.count)
     }

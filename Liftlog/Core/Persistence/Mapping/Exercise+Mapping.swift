@@ -14,7 +14,7 @@ extension Exercise {
             name: name ?? "",
             description: exerciseDescription,
             type: ExerciseType(rawValue: Int(type)) ?? .reps,
-            muscleGroup: ExerciseModel.MuscleGroup(rawValue: Int(muscleGroup))
+            muscleGroup: MuscleGroup(rawValue: Int(muscleGroup))
         )
     }
 }

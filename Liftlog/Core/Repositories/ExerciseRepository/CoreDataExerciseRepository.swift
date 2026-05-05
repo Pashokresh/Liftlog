@@ -53,7 +53,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
         }
     }
 
-    func create(name: String, description: String?, type: ExerciseType, muscleGroup: ExerciseModel.MuscleGroup?)
+    func create(name: String, description: String?, type: ExerciseType, muscleGroup: MuscleGroup?)
         async throws -> ExerciseModel {
         try await context.perform {
             let exercise = Exercise(context: self.context)

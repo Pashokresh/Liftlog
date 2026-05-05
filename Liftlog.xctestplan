@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "DECBC3BB-4EC3-437A-BCE7-EC9A55831C8F",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Liftlog.xcodeproj",
+      "identifier" : "B00480B32F46F76C00EAF81B",
+      "name" : "Liftlog"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Liftlog.xcodeproj",
+        "identifier" : "B00480C52F46F76D00EAF81B",
+        "name" : "LiftlogTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Liftlog.xcodeproj",
+        "identifier" : "B00480CF2F46F76D00EAF81B",
+        "name" : "LiftlogUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -17,7 +17,7 @@ struct AddEditExerciseView: View {
     @State private var name = ""
     @State private var description = ""
     @State private var type: ExerciseType = .reps
-    @State private var muscleGroup: ExerciseModel.MuscleGroup?
+    @State private var muscleGroup: MuscleGroup?
 
     init(
         exercise: ExerciseModel? = nil,
@@ -59,9 +59,9 @@ struct AddEditExerciseView: View {
                         selection: $muscleGroup
                     ) {
                         Text(AppLocalization.notSpecified)
-                            .tag(Optional<ExerciseModel.MuscleGroup>.none)
+                            .tag(Optional<MuscleGroup>.none)
 
-                        ForEach(ExerciseModel.MuscleGroup.allCases) { group in
+                        ForEach(MuscleGroup.allCases) { group in
                             Text(group.localizedName)
                                 .tag(Optional(group))
                         }

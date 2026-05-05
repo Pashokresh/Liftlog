@@ -63,9 +63,9 @@ struct WorkoutDetailViewModelTests {
     @Test("addExercises adds multiple exercises")
     func addMultipleExercises() async {
         let exercises = [
-            ExerciseModel(id: UUID(), name: "Exercise 1", description: nil, type: .reps),
-            ExerciseModel(id: UUID(), name: "Exercise 2", description: nil, type: .reps),
-            ExerciseModel(id: UUID(), name: "Exercise 3", description: nil, type: .reps)
+            ExerciseModel(id: UUID(), name: "Exercise 1", description: nil, type: .reps, muscleGroup: .chest),
+            ExerciseModel(id: UUID(), name: "Exercise 2", description: nil, type: .reps, muscleGroup: .chest),
+            ExerciseModel(id: UUID(), name: "Exercise 3", description: nil, type: .reps, muscleGroup: .chest)
         ]
 
         await viewModel.addExercises(exercises)
@@ -86,9 +86,9 @@ struct WorkoutDetailViewModelTests {
     @Test("moveExercise changes order")
     func moveExercise() async {
         let exercises = [
-            ExerciseModel(id: UUID(), name: "A", description: nil, type: .reps),
-            ExerciseModel(id: UUID(), name: "B", description: nil, type: .reps),
-            ExerciseModel(id: UUID(), name: "C", description: nil, type: .reps)
+            ExerciseModel(id: UUID(), name: "A", description: nil, type: .reps, muscleGroup: .chest),
+            ExerciseModel(id: UUID(), name: "B", description: nil, type: .reps, muscleGroup: .chest),
+            ExerciseModel(id: UUID(), name: "C", description: nil, type: .reps, muscleGroup: .chest)
         ]
 
         await viewModel.addExercises(exercises)
@@ -115,7 +115,8 @@ struct WorkoutDetailViewModelTests {
             id: UUID(),
             order: 0,
             note: nil,
-            type: .weighted(reps: 10, weight: 50)
+            type: .weighted(reps: 10, weight: 50),
+            isWarmup: false
         )
 
         await viewModel.addSet(set, to: workoutExerciseID)
@@ -134,7 +135,8 @@ struct WorkoutDetailViewModelTests {
             id: UUID(),
             order: 0,
             note: nil,
-            type: .weighted(reps: 10, weight: 50)
+            type: .weighted(reps: 10, weight: 50),
+            isWarmup: false
         )
 
         await viewModel.addSet(set, to: workoutExerciseID)
