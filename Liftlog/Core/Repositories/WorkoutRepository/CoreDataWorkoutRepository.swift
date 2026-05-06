@@ -103,9 +103,10 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
 
     func delete(_ id: UUID) async throws {
-        try await context.perform {
-            let workout = try self.fetchWorkout(id)
+        let workoutID = try await self.fetchEntityID(type: Workout.self, id: id)
 
+        try await context.perform {
+            let workout = self.context.object(with: workoutID)
             self.context.delete(workout)
             try self.context.save()
         }
@@ -174,19 +175,10 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
 
     func deleteExercise(_ id: UUID) async throws {
+        let workoutExerciseID = try await self.fetchEntityID(type: WorkoutExercise.self, id: id)
+
         try await context.perform {
-            let request = try fetchRequest(
-                for: WorkoutExercise.self,
-                with: [id]
-            )
-
-            guard let workoutExercise = try self.context.fetch(request).first
-            else {
-                throw LiftlogError.noData(
-                    description: AppLocalization.setWasNotFound
-                )
-            }
-
+            let workoutExercise = self.context.object(with: workoutExerciseID)
             self.context.delete(workoutExercise)
             try self.context.save()
         }
@@ -254,15 +246,9 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
     }
 
     func deleteSet(_ id: UUID) async throws {
+        let setID = try await self.fetchEntityID(type: ExerciseSet.self, id: id)
         try await context.perform {
-            let request = try fetchRequest(for: ExerciseSet.self, with: [id])
-
-            guard let set = try self.context.fetch(request).first else {
-                throw LiftlogError.noData(
-                    description: AppLocalization.setWasNotFound
-                )
-            }
-
+            let set = self.context.object(with: setID)
             self.context.delete(set)
             try self.context.save()
         }
@@ -280,5 +266,17 @@ extension CoreDataWorkoutRepository {
         }
 
         return workout
+    }
+
+    private func fetchEntityID<T: NSManagedObject>(type: T.Type, id: UUID) async throws -> NSManagedObjectID {
+        try await context.perform {
+            let request = try fetchRequest(for: type, with: [id])
+            guard let entity = try? self.context.fetch(request).first else {
+                throw LiftlogError.noData(
+                    description: "\(T.self) not found with id: \(id)"
+                )
+            }
+            return entity.objectID
+        }
     }
 }
