@@ -8,15 +8,26 @@
 import SwiftUI
 
 extension Button {
-    @available(iOS 26.0, *)
     @ViewBuilder
-    func adaptiveGlassStyle(_ isProminent: Bool) -> some View {
-        if isProminent {
-            self.buttonStyle(.glassProminent)
-        } else {
-            self.buttonStyle(.glass)
+        func adaptiveGlassStyle(_ isProminent: Bool) -> some View {
+            if #available(iOS 26, *) {
+                if isProminent {
+                    self.buttonStyle(.glassProminent)
+                } else {
+                    self.buttonStyle(.glass)
+                }
+            } else {
+                self
+                    .buttonStyle(.plain)
+                    .foregroundStyle(isProminent ? .white : .primary)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        isProminent ? Color.accentColor : Color.secondary.opacity(0.15),
+                        in: Capsule()
+                    )
+            }
         }
-    }
 
     @ViewBuilder
     func tagChipStyle(isSelected: Bool) -> some View {

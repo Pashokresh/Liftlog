@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 struct ExerciseProgressView: View {
     @State private var viewModel: ExerciseProgressViewModel
@@ -24,9 +25,27 @@ struct ExerciseProgressView: View {
     }
 }
 
+// MARK: - Chart Interactive modifier
+
+private extension View {
+    @ViewBuilder var chartInteractive: some View {
+        if #available(iOS 26, *) {
+            self.chartScrollableAxes(.horizontal)
+        } else {
+            self
+        }
+    }
+}
+
+// MARK: Preview
+
 #Preview {
-    ExerciseProgressView(
-        viewModel: ViewModelFactory(dependencies: .mock)
-            .makeExerciseProgressViewModel(exercise: ExerciseModel.mock)
-    )
+    NavigationStack {
+        ExerciseProgressView(
+            viewModel: ExerciseProgressViewModel(
+                exercise: .mock,
+                fetchProgressUseCase: MockFetchExerciseProgressUseCase()
+            )
+        )
+    }
 }

@@ -27,10 +27,10 @@ enum AppLocalization {
 
     // MARK: Periods
 
-    static let threeMonths = String(localized: "three months")
-    static let sixMonths = String(localized: "six months")
-    static let oneYear = String(localized: "one year")
-    static let allTime = String(localized: "all time")
+    static let threeMonths = String(localized: "3M")
+    static let sixMonths = String(localized: "6M")
+    static let oneYear = String(localized: "1Y")
+    static let allTime = String(localized: "All")
 
     // MARK: - Workout List
 

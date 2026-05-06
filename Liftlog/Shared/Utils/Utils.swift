@@ -8,11 +8,8 @@
 import Foundation
 
 func formattedDuration(_ duration: Double) -> String {
-    let seconds = DateComponents.init(second: Int(duration))
-
     let formatter = DateComponentsFormatter()
     formatter.allowedUnits = [.minute, .second]
-    formatter.unitsStyle = .short
-
-    return formatter.string(from: seconds) ?? "0:00"
+    formatter.unitsStyle = .abbreviated
+    return formatter.string(from: duration) ?? "0s"
 }

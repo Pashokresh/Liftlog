@@ -8,11 +8,47 @@
 import SwiftUI
 
 struct PeriodPicker: View {
+    @State private var selectedPeriod: Period
+    @Namespace private var animation
+    private var onChange: (Period) -> Void
+
+    init(selectedPeriod: Period, onChange: @escaping (Period) -> Void) {
+        self.selectedPeriod = selectedPeriod
+        self.onChange = onChange
+    }
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack(spacing: 8) {
+            ForEach(Period.allCases) { period in
+                Button {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selectedPeriod = period
+                        onChange(period)
+                    }
+                } label: {
+                    Text(period.localizedName)
+                        .font(.subheadline.weight(.medium))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .foregroundStyle(
+                            selectedPeriod == period ? .white : .primary
+                        )
+                }
+                .buttonStyle(.plain)
+                .background {
+                    if selectedPeriod == period {
+                        Capsule()
+                            .fill(Color.accentColor)
+                            .matchedGeometryEffect(id: "pill", in: animation)
+                    }
+                }
+            }
+        }
+        .padding(4)
+        .background(.secondary.opacity(0.15), in: Capsule())
     }
 }
 
 #Preview {
-    PeriodPicker()
+    PeriodPicker(selectedPeriod: .sixMonths, onChange: { _ in })
 }

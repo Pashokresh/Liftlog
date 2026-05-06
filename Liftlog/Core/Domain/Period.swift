@@ -7,11 +7,13 @@
 
 import Foundation
 
-enum Period: String, CaseIterable {
+enum Period: String, CaseIterable, Identifiable {
     case threeMonths = "3M"
     case sixMonths = "6M"
     case year = "1Y"
     case all = "All"
+
+    var id: String { self.rawValue }
 
     var startDate: Date {
         let calendar = Calendar.current
