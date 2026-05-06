@@ -40,6 +40,12 @@ struct RootView: View {
                             workoutExercise: workoutExercise
                         )
                     )
+                case .exerciseProgress(let exercise):
+                    ExerciseProgressView(
+                        viewModel: factory.makeExerciseProgressViewModel(
+                            exercise: exercise
+                        )
+                    )
                 }
             }
         }

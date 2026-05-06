@@ -57,6 +57,13 @@ final class ViewModelFactory {
             workout: workout
         )
     }
+
+    func makeExerciseProgressViewModel(exercise: ExerciseModel) -> ExerciseProgressViewModel {
+        ExerciseProgressViewModel(
+            exercise: exercise,
+            fetchProgressUseCase: dependencies.fetchExerciseProgressUseCase
+        )
+    }
 }
 
 extension ViewModelFactory {

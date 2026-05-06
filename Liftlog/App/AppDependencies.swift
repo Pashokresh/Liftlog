@@ -18,6 +18,8 @@ final class AppDependencies {
     let deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
     let manageWorkoutTagsUseCase: ManageWorkoutTagsUseCaseProtocol
 
+    let fetchExerciseProgressUseCase: FetchExerciseProgressUseCaseProtocol
+
     init(persistenceController: PersistenceController = .shared) {
         let context = persistenceController.container.viewContext
 
@@ -34,6 +36,10 @@ final class AppDependencies {
         self.manageWorkoutTagsUseCase = ManageWorkoutTagsUseCase(
             workoutRepository: workoutRepository,
             tagRepository: tagRepository
+        )
+
+        self.fetchExerciseProgressUseCase = FetchExerciseProgressUseCase(
+            exerciseRepository: exerciseRepository
         )
     }
 
@@ -52,6 +58,10 @@ final class AppDependencies {
         self.manageWorkoutTagsUseCase = ManageWorkoutTagsUseCase(
             workoutRepository: workoutRepository,
             tagRepository: tagRepository
+        )
+
+        self.fetchExerciseProgressUseCase = FetchExerciseProgressUseCase(
+            exerciseRepository: exerciseRepository
         )
     }
 }

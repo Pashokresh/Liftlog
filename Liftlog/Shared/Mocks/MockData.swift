@@ -286,5 +286,40 @@ extension ExerciseProgressEntry {
         ]
     }()
 
+    static let timedMocks: [ExerciseProgressEntry] = {
+        let calendar = Calendar.current
+        let today = Date.now
+
+        return [
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -60, to: today)
+                    ?? .now,
+                maxWeight: 0,
+                totalVolume: 0,
+                maxDuration: 30,
+                workoutName: "Core Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -30, to: today)
+                    ?? .now,
+                maxWeight: 0,
+                totalVolume: 0,
+                maxDuration: 60,
+                workoutName: "Core Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -7, to: today)
+                    ?? .now,
+                maxWeight: 0,
+                totalVolume: 0,
+                maxDuration: 120,
+                workoutName: "Core Day"
+            )
+        ]
+    }()
+
     static let mock = mocks[0]
 }

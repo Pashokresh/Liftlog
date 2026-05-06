@@ -25,6 +25,13 @@ enum AppLocalization {
         AppLocalization.add + (count > 0 ? " (\(count))" : "")
     }
 
+    // MARK: Periods
+
+    static let threeMonths = String(localized: "three months")
+    static let sixMonths = String(localized: "six months")
+    static let oneYear = String(localized: "one year")
+    static let allTime = String(localized: "all time")
+
     // MARK: - Workout List
 
     static let noWorkoutsYet = String(localized: "No workouts yet")
@@ -115,6 +122,15 @@ enum AppLocalization {
     static let gram = String(localized: "g")
     static let min = String(localized: "min")
     static let sec = String(localized: "sec")
+
+    // MARK: - Progress
+
+    static let totalVolume = String(localized: "Total Volume")
+    static let noProgressYet = String(localized: "No Progress Yet")
+    static let startLoggingToSeeProgress = String(localized: "Start logging sets to see your progress here.")
+    static let maxWeight = String(localized: "Max Weight")
+    static let maxDuration = String(localized: "Max Duration")
+    static let maxReps = String(localized: "Max Reps")
 
     // MARK: - Repository Errors
 
