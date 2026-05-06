@@ -15,11 +15,14 @@ final class WorkoutDetailViewModel {
     private(set) var error: Error?
 
     private let repository: WorkoutRepositoryProtocol
+    private let addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol
+
     private var loadTask: Task<Void, Never>?
 
-    init(workout: WorkoutModel, repository: WorkoutRepositoryProtocol) {
+    init(workout: WorkoutModel, repository: WorkoutRepositoryProtocol, addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol) {
         self.workout = workout
         self.repository = repository
+        self.addExercisesUseCase = addExercisesUseCase
     }
 
     isolated deinit {
@@ -100,39 +103,18 @@ final class WorkoutDetailViewModel {
     }
 
     func addExercises(_ exercises: [ExerciseModel]) async {
-        var exercisesToAdd: [WorkoutExerciseModel] = []
-        var currentWorkoutExerciseIds = workoutExerciseIds
-        var errorToDisplay: Error?
-
-        var exerciseOrder = (workout.exercises.last?.order ?? 0) + 1
-        for exercise in exercises {
-            if !currentWorkoutExerciseIds.contains(exercise.id) {
-                let workoutExercise = WorkoutExerciseModel(
-                    id: UUID(),
-                    order: exerciseOrder,
-                    exercise: exercise,
-                    sets: []
-                )
-                exercisesToAdd.append(workoutExercise)
-                currentWorkoutExerciseIds.insert(exercise.id)  // Fixed: use exercise.id
-                exerciseOrder += 1
-            } else {
-                errorToDisplay = LiftlogError.failure(
-                    description: AppLocalization.exerciseAlreadyAdded
-                )
-            }
-        }
-
-        guard !exercisesToAdd.isEmpty else {
-            if let errorToDisplay {
-                self.error = errorToDisplay
-            }
-            return
-        }
-
         do {
-            try await repository.addExercises(exercisesToAdd, to: workout.id)
-            workout.exercises.append(contentsOf: exercisesToAdd)
+            let added = try await addExercisesUseCase.execute(
+                exercises: exercises,
+                workoutID: workout.id,
+                currentExercises: workout.exercises
+            )
+
+            withAnimation {
+                workout.exercises.append(contentsOf: added)
+            }
+        } catch DomainError.duplicateExercise {
+            error = DomainError.duplicateExercise
         } catch {
             self.error = error
         }

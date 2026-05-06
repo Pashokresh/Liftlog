@@ -99,7 +99,8 @@ struct WorkoutDetailView: View {
         WorkoutDetailView(
             viewModel: WorkoutDetailViewModel(
                 workout: WorkoutModel.mock,
-                repository: MockWorkoutRepository(workouts: WorkoutModel.mocks)
+                repository: MockWorkoutRepository(workouts: WorkoutModel.mocks),
+                addExercisesUseCase: AppDependencies.mock.addExercisesToWorkoutUseCase
             )
         )
     }

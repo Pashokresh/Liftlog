@@ -22,7 +22,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
                 NSSortDescriptor(key: "name", ascending: true)
             ]
 
-            return try self.context.fetch(request).map { $0.toDomain() }
+            return try self.context.fetchOrThrow(request).map { $0.toDomain() }
         }
     }
 
@@ -40,7 +40,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
                 NSSortDescriptor(key: "workout.date", ascending: false)
             ]
 
-            return try self.context.fetch(request).map {
+            return try self.context.fetchOrThrow(request).map {
                 ExerciseHistorySectionModel(
                     id: $0.id ?? UUID(),
                     date: $0.workout?.date ?? Date.now,
@@ -63,7 +63,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             exercise.exerciseDescription = description
             exercise.muscleGroup = Int16(muscleGroup?.rawValue ?? -1)
 
-            try self.context.save()
+            try self.context.saveOrThrow()
 
             return exercise.toDomain()
         }
@@ -78,7 +78,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             exercise.exerciseDescription = model.description
             exercise.muscleGroup = Int16(model.muscleGroup?.rawValue ?? -1)
 
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
@@ -87,7 +87,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             let exercise = try self.fetchExercise(id)
 
             self.context.delete(exercise)
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
@@ -105,7 +105,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
                 NSSortDescriptor(key: "workout.date", ascending: true)
             ]
 
-            let workoutExercises: [WorkoutExercise] = try self.context.fetch(request)
+            let workoutExercises: [WorkoutExercise] = try self.context.fetchOrThrow(request)
 
             return workoutExercises.compactMap { workoutExercise -> ExerciseProgressEntry? in
                 let sets = (workoutExercise.sets as? Set<ExerciseSet>) ?? []
@@ -161,9 +161,7 @@ extension CoreDataExerciseRepository {
         let request = try fetchRequest(for: Exercise.self, with: [id])
 
         guard let exercise = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: AppLocalization.exerciseWasNotFound
-            )
+            throw RepositoryError.notFound(entity: "Exercise")
         }
 
         return exercise

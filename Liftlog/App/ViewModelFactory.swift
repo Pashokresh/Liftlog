@@ -34,7 +34,8 @@ final class ViewModelFactory {
         -> WorkoutDetailViewModel {
         WorkoutDetailViewModel(
             workout: workout,
-            repository: dependencies.workoutRepository
+            repository: dependencies.workoutRepository,
+            addExercisesUseCase: dependencies.addExercisesToWorkoutUseCase
         )
     }
 

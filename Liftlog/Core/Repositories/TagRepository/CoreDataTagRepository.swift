@@ -22,7 +22,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
                 NSSortDescriptor(key: "name", ascending: true)
             ]
 
-            return try self.context.fetch(request).map { $0.toDomain() }
+            return try self.context.fetchOrThrow(request).map { $0.toDomain() }
         }
     }
 
@@ -33,7 +33,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
             tag.id = UUID()
             tag.name = name
 
-            try self.context.save()
+            try self.context.saveOrThrow()
 
             return tag.toDomain()
         }
@@ -45,7 +45,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
 
             tag.name = model.name
 
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
@@ -54,7 +54,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
             let tag = try self.fetchTag(id)
 
             self.context.delete(tag)
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 }
@@ -64,9 +64,7 @@ extension CoreDataTagRepository {
         let request = try fetchRequest(for: Tag.self, with: [id])
 
         guard let tag = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: AppLocalization.tagWasNotFound
-            )
+            throw RepositoryError.notFound(entity: "Tag")
         }
 
         return tag

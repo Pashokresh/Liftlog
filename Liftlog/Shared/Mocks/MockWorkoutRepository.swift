@@ -24,7 +24,7 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
         try checkThrow()
 
         guard let workout = workouts.first(where: { $0.id == id }) else {
-            throw LiftlogError.failure(description: String(localized: "Workout not found"))
+            throw RepositoryError.notFound(entity: "Workout")
         }
         return workout
     }
@@ -106,7 +106,7 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
 
     private func checkThrow() throws {
         if shouldThrow {
-            throw LiftlogError.failure(description: "Test error")
+            throw RepositoryError.invalidData(description: "Test error")
         }
     }
 

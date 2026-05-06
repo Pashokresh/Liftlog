@@ -74,7 +74,7 @@ struct CoreDataExerciseRepositoryTests {
 
     @Test("delete non-existent exercise doesn't throw an error")
     func deleteNonExistent() async throws {
-        await #expect(throws: LiftlogError.self) {
+        await #expect(throws: RepositoryError.self) {
             try await repository.delete(UUID())
         }
     }

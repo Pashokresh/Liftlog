@@ -87,7 +87,7 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
 
     private func checkThrow() throws {
         if shouldThrow {
-            throw LiftlogError.failure(description: "Test error")
+            throw RepositoryError.invalidData(description: "Test Error")
         }
     }
 

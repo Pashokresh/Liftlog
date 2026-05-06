@@ -15,6 +15,7 @@ import Testing
 struct WorkoutDetailViewModelTests {
     let repository: MockWorkoutRepository
     let viewModel: WorkoutDetailViewModel
+    let addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol
     let workoutID: UUID
 
     init() {
@@ -23,6 +24,8 @@ struct WorkoutDetailViewModelTests {
 
         // Create a fresh repository for each test
         repository = MockWorkoutRepository()
+        
+        addExercisesUseCase = AddExercisesToWorkoutUseCase(workoutRepository: repository)
 
         // Create a fresh workout for each test with unique ID
         let freshWorkout = WorkoutModel(
@@ -39,7 +42,8 @@ struct WorkoutDetailViewModelTests {
 
         viewModel = WorkoutDetailViewModel(
             workout: freshWorkout,
-            repository: repository
+            repository: repository,
+            addExercisesUseCase: addExercisesUseCase
         )
     }
 

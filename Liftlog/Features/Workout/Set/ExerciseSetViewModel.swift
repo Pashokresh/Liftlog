@@ -126,9 +126,7 @@ final class ExerciseSetViewModel {
                     $0.id == set.id
                 })
             else {
-                self.error = LiftlogError.failure(
-                    description: AppLocalization.setWasNotFound
-                )
+                self.error = DomainError.setNotFound
                 return
             }
             workoutExercise.sets[index] = set
