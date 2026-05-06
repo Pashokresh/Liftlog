@@ -168,9 +168,11 @@ struct AddEditWorkoutView: View {
 }
 
 #Preview {
+    let tagRepository = MockTagRepository()
     AddEditWorkoutView(
         viewModel: AddEditWorkoutViewModel(
-            tagRepository: MockTagRepository(),
+            tagRepository: tagRepository,
+            manageTagUseCase: ManageWorkoutTagsUseCase(workoutRepository: MockWorkoutRepository(), tagRepository: tagRepository),
             workout: WorkoutModel.mock
         )
     ) { _ in }

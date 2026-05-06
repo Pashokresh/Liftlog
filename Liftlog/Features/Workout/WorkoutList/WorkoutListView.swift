@@ -165,11 +165,15 @@ struct WorkoutListView: View {
 }
 
 #Preview {
+    let workoutRepository = MockWorkoutRepository(workouts: WorkoutModel.mocks)
     NavigationStack {
         WorkoutListView(
             viewModel: WorkoutListViewModel(
-                workoutRepository: MockWorkoutRepository(workouts: WorkoutModel.mocks),
-                tagRepository: MockTagRepository()
+                workoutRepository: workoutRepository,
+                tagRepository: MockTagRepository(),
+                deleteWorkoutUseCase: DeleteWorkoutUseCase(
+                    workoutRepository: workoutRepository
+                )
             )
         )
     }

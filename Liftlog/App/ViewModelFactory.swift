@@ -18,7 +18,8 @@ final class ViewModelFactory {
     func makeWorkoutListViewModel() -> WorkoutListViewModel {
         WorkoutListViewModel(
             workoutRepository: dependencies.workoutRepository,
-            tagRepository: dependencies.tagRepository
+            tagRepository: dependencies.tagRepository,
+            deleteWorkoutUseCase: dependencies.deleteWorkoutUseCase
         )
     }
 
@@ -52,6 +53,7 @@ final class ViewModelFactory {
         -> AddEditWorkoutViewModel {
         AddEditWorkoutViewModel(
             tagRepository: dependencies.tagRepository,
+            manageTagUseCase: dependencies.manageWorkoutTagsUseCase,
             workout: workout
         )
     }

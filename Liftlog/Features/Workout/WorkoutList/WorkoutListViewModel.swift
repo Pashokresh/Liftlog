@@ -20,10 +20,16 @@ final class WorkoutListViewModel {
 
     private var workoutRepository: WorkoutRepositoryProtocol
     private var tagRepository: TagRepositoryProtocol
+    private var deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
 
-    init(workoutRepository: WorkoutRepositoryProtocol, tagRepository: TagRepositoryProtocol) {
+    init(
+        workoutRepository: WorkoutRepositoryProtocol,
+        tagRepository: TagRepositoryProtocol,
+        deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
+    ) {
         self.workoutRepository = workoutRepository
         self.tagRepository = tagRepository
+        self.deleteWorkoutUseCase = deleteWorkoutUseCase
     }
 
     // MARK: - Workout
@@ -46,11 +52,13 @@ final class WorkoutListViewModel {
     func deleteWorkout(_ id: UUID) {
         Task {
             do {
-                try await workoutRepository.delete(id)
+                try await deleteWorkoutUseCase.execute(workoutId: id)
 
                 withAnimation {
                     workouts.removeAll { $0.id == id }
                 }
+            } catch DomainError.workoutNotFound {
+                self.error = DomainError.workoutNotFound
             } catch {
                 self.error = error
             }

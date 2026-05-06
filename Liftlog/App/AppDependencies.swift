@@ -15,6 +15,8 @@ final class AppDependencies {
     let tagRepository: TagRepositoryProtocol
 
     let addExercisesToWorkoutUseCase: AddExercisesToWorkoutUseCaseProtocol
+    let deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
+    let manageWorkoutTagsUseCase: ManageWorkoutTagsUseCaseProtocol
 
     init(persistenceController: PersistenceController = .shared) {
         let context = persistenceController.container.viewContext
@@ -28,6 +30,11 @@ final class AppDependencies {
         self.tagRepository = tagRepository
 
         self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(workoutRepository: workoutRepository)
+        self.deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: workoutRepository)
+        self.manageWorkoutTagsUseCase = ManageWorkoutTagsUseCase(
+            workoutRepository: workoutRepository,
+            tagRepository: tagRepository
+        )
     }
 
     // mock init
@@ -41,5 +48,10 @@ final class AppDependencies {
         self.tagRepository = tagRepository
 
         self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(workoutRepository: workoutRepository)
+        self.deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: workoutRepository)
+        self.manageWorkoutTagsUseCase = ManageWorkoutTagsUseCase(
+            workoutRepository: workoutRepository,
+            tagRepository: tagRepository
+        )
     }
 }

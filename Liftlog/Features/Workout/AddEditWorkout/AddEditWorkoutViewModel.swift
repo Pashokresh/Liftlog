@@ -22,6 +22,7 @@ final class AddEditWorkoutViewModel {
 
     private let workout: WorkoutModel?
     private let tagRepository: TagRepositoryProtocol
+    private let manageTagsUseCase: ManageWorkoutTagsUseCaseProtocol
 
     var isEditing: Bool { workout != nil }
 
@@ -31,8 +32,9 @@ final class AddEditWorkoutViewModel {
 
     var unselectedTags: [TagModel] { availableTags.filter { !selectedTagIDs.contains($0.id) } }
 
-    init(tagRepository: TagRepositoryProtocol, workout: WorkoutModel? = nil) {
+    init(tagRepository: TagRepositoryProtocol, manageTagUseCase: ManageWorkoutTagsUseCaseProtocol, workout: WorkoutModel? = nil) {
         self.tagRepository = tagRepository
+        self.manageTagsUseCase = manageTagUseCase
         self.workout = workout
 
         self.name = workout?.name ?? ""
@@ -83,11 +85,8 @@ final class AddEditWorkoutViewModel {
     }
 
     func createTag() async {
-        let trimmedTag = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTag.isEmpty else { return }
-
         do {
-            let tag = try await tagRepository.create(name: trimmedTag)
+            let tag = try await manageTagsUseCase.createTag(name: newTagName)
             availableTags.append(tag)
             selectedTagIDs.insert(tag.id)
             newTagName = ""

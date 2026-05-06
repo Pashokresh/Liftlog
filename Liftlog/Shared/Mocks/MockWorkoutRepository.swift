@@ -9,7 +9,7 @@ import Foundation
 
 final class MockWorkoutRepository: WorkoutRepositoryProtocol {
     var shouldThrow = false
-    private var workouts: [WorkoutModel] = []
+    var workouts: [WorkoutModel] = []
 
     init(workouts: [WorkoutModel] = []) {
         self.workouts = workouts
@@ -44,7 +44,7 @@ final class MockWorkoutRepository: WorkoutRepositoryProtocol {
     }
 
     func delete(_ id: UUID) async throws {
-        try checkThrow()
+        if shouldThrow { throw RepositoryError.notFound(entity: "Workout") }
 
         workouts.removeAll { $0.id == id }
     }
