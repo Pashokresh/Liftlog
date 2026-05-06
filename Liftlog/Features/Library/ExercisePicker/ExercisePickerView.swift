@@ -48,9 +48,7 @@ struct ExercisePickerView: View {
 
     @ViewBuilder private var addExerciseSheet: some View {
         AddEditExerciseView { exercise in
-            Task {
-                await viewModel.createAndSelectExercise(exercise)
-            }
+            viewModel.createAndSelect(exercise: exercise)
         }
         .presentationDetents([.fraction(2 / 3)])
     }
@@ -128,9 +126,7 @@ struct ExercisePickerView: View {
                 Text(viewModel.error?.localizedDescription ?? "")
             }
             .onAppear {
-                Task {
-                    await viewModel.loadExercises()
-                }
+                viewModel.onApper()
             }
         }
     }

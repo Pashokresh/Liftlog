@@ -26,6 +26,7 @@ final class ExerciseSetViewModel {
 
     private let workoutRepository: WorkoutRepositoryProtocol
     private let exerciseRepository: ExerciseRepositoryProtocol
+    private var loadTask: Task<Void, Never>?
 
     init(
         workoutExercise: WorkoutExerciseModel,
@@ -35,6 +36,46 @@ final class ExerciseSetViewModel {
         self.workoutExercise = workoutExercise
         self.workoutRepository = workoutRepository
         self.exerciseRepository = exerciseRepository
+    }
+
+    func addSet(set: ExerciseSetModel) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await addSet(set: set)
+        }
+    }
+
+    func copySet(_ set: ExerciseSetModel) {
+        let copiedSet = ExerciseSetModel(
+            id: UUID(),
+            order: workoutExercise.sets.count,
+            note: set.note,
+            type: set.type,
+            isWarmup: set.isWarmup
+        )
+
+        addSet(set: copiedSet)
+    }
+
+    func deleteSet(_ set: ExerciseSetModel) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await deleteSet(set.id)
+        }
+    }
+
+    func updateSet(_ set: ExerciseSetModel) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await updateSet(set)
+        }
+    }
+
+    func nullifyError() {
+        error = nil
     }
 
     func loadHistory() async {
@@ -63,18 +104,6 @@ final class ExerciseSetViewModel {
         } catch {
             self.error = error
         }
-    }
-
-    func copySet(_ set: ExerciseSetModel) async {
-        let copiedSet = ExerciseSetModel(
-            id: UUID(),
-            order: workoutExercise.sets.count,
-            note: set.note,
-            type: set.type,
-            isWarmup: set.isWarmup
-        )
-
-        await addSet(set: copiedSet)
     }
 
     func deleteSet(_ id: UUID) async {
@@ -106,9 +135,5 @@ final class ExerciseSetViewModel {
         } catch {
             self.error = error
         }
-    }
-
-    func nullifyError() {
-        error = nil
     }
 }

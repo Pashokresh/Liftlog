@@ -39,9 +39,7 @@ struct ExerciseLibraryView: View {
             }
         }
         .deleteConfirmation(item: $exerciseToDelete) { exercise in
-            Task {
-                await viewModel.deleteExercise(exercise.id)
-            }
+            viewModel.deleteExercise(exercise)
         }
     }
 
@@ -68,14 +66,7 @@ struct ExerciseLibraryView: View {
 
     @ViewBuilder private var addExerciseSheet: some View {
         AddEditExerciseView { exercise in
-            Task {
-                await viewModel.createExercise(
-                    name: exercise.name,
-                    type: exercise.type,
-                    description: exercise.description,
-                    muscleGroup: exercise.muscleGroup
-                )
-            }
+            viewModel.createExercise(exercise)
         }
         .presentationDetents([.fraction(2 / 3)])
     }
@@ -83,9 +74,7 @@ struct ExerciseLibraryView: View {
     @ViewBuilder
     private func editExerciseSheet(_ exercise: ExerciseModel) -> some View {
         AddEditExerciseView(exercise: exercise) { updatedExercise in
-            Task {
-                await viewModel.updateExercise(updatedExercise)
-            }
+            viewModel.updateExercise(updatedExercise)
         }
         .presentationDetents([.fraction(2 / 3)])
     }
@@ -98,9 +87,11 @@ struct ExerciseLibraryView: View {
                         exerciseRow($0)
                     }
                 } header: {
-                    Text(item.group?.localizedName ?? AppLocalization.otherGroup)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                    Text(
+                        item.group?.localizedName ?? AppLocalization.otherGroup
+                    )
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
                 }
             }
         }
@@ -132,9 +123,7 @@ struct ExerciseLibraryView: View {
             Text(viewModel.error?.localizedDescription ?? "")
         }
         .onAppear {
-            Task {
-                await viewModel.loadExercises()
-            }
+            viewModel.onApper()
         }
     }
 }

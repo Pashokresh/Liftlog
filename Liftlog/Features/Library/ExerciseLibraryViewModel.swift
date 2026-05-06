@@ -14,10 +14,13 @@ final class ExerciseLibraryViewModel {
     private(set) var error: Error?
 
     private let repository: ExerciseRepositoryProtocol
+    private var loadTask: Task<Void, Error>?
 
     var editingExercise: ExerciseModel?
 
     var searchText = ""
+
+    // MARK: - Computed Properties
 
     var filteredExercises: [ExerciseModel] {
         guard !searchText.isEmpty else { return exercises }
@@ -30,9 +33,61 @@ final class ExerciseLibraryViewModel {
         filteredExercises.groupedByMuscle()
     }
 
+    // MARK: Init and Clean Up
+
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository
     }
+
+    isolated deinit {
+        cleanUp()
+    }
+
+    private func cleanUp() {
+        loadTask?.cancel()
+    }
+
+    // MARK: - Sync Methods
+
+    func onApper() {
+        loadTask?.cancel()
+
+        loadTask = Task {
+            await self.loadExercises()
+        }
+    }
+
+    func createExercise(_ exercise: ExerciseModel) {
+        Task {[weak self] in
+            guard let self else { return }
+            await self.createExercise(
+                name: exercise.name,
+                type: exercise.type,
+                description: exercise.description,
+                muscleGroup: exercise.muscleGroup
+            )
+        }
+    }
+
+    func updateExercise(_ exercise: ExerciseModel) {
+        Task {[weak self] in
+            guard let self else { return }
+            await self.updateExercise(exercise)
+        }
+    }
+
+    func deleteExercise(_ exercise: ExerciseModel) {
+        Task { [weak self] in
+            guard let self else { return }
+            await deleteExercise(exercise.id)
+        }
+    }
+
+    func nullifyError() {
+        self.error = nil
+    }
+
+    // MARK: - Async Methods
 
     func loadExercises() async {
         do {
@@ -80,9 +135,5 @@ final class ExerciseLibraryViewModel {
         } catch {
             self.error = error
         }
-    }
-
-    func nullifyError() {
-        self.error = nil
     }
 }

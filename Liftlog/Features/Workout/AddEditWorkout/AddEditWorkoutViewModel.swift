@@ -41,25 +41,10 @@ final class AddEditWorkoutViewModel {
         workout?.tags.forEach { self.selectedTagIDs.insert($0.id) }
     }
 
-    func loadTags() async {
-        do {
-            availableTags = try await self.tagRepository.fetchAll()
-        } catch {
-            self.error = error
-        }
-    }
-
-    func createTag() async {
-        let trimmedTag = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedTag.isEmpty else { return }
-
-        do {
-            let tag = try await tagRepository.create(name: trimmedTag)
-            availableTags.append(tag)
-            selectedTagIDs.insert(tag.id)
-            newTagName = ""
-        } catch {
-            self.error = error
+    func createTag() {
+        Task { [weak self] in
+            guard let self else { return }
+            await createTag()
         }
     }
 
@@ -85,5 +70,29 @@ final class AddEditWorkoutViewModel {
 
     func nullifyError() {
         self.error = nil
+    }
+
+    // MARK: Async Methods
+
+    func loadTags() async {
+        do {
+            availableTags = try await self.tagRepository.fetchAll()
+        } catch {
+            self.error = error
+        }
+    }
+
+    func createTag() async {
+        let trimmedTag = newTagName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedTag.isEmpty else { return }
+
+        do {
+            let tag = try await tagRepository.create(name: trimmedTag)
+            availableTags.append(tag)
+            selectedTagIDs.insert(tag.id)
+            newTagName = ""
+        } catch {
+            self.error = error
+        }
     }
 }

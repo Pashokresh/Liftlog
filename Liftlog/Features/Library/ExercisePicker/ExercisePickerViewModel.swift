@@ -16,8 +16,11 @@ final class ExercisePickerViewModel {
     var selectedExercises: OrderedSet<ExerciseModel> = .init()
 
     private var repository: ExerciseRepositoryProtocol
+    private var loadTask: Task<Void, Never>?
 
     var searchText: String = ""
+
+    // MARK: - Computed Properties
 
     var filteredExercises: [ExerciseModel] {
         guard !searchText.isEmpty else { return self.exercises }
@@ -31,9 +34,21 @@ final class ExercisePickerViewModel {
         filteredExercises.groupedByMuscle()
     }
 
+    // MARK: - Init and Clean Up
+
     init(repository: ExerciseRepositoryProtocol) {
         self.repository = repository
     }
+
+    isolated deinit {
+        cleanUp()
+    }
+
+    private func cleanUp() {
+        loadTask?.cancel()
+    }
+
+    // MARK: Sync methods
 
     func toggle(_ exercise: ExerciseModel) {
         if selectedExercises.contains(exercise) {
@@ -50,6 +65,28 @@ final class ExercisePickerViewModel {
 
         return nil
     }
+
+    func onApper() {
+        loadTask?.cancel()
+
+        loadTask = Task {
+            await self.loadExercises()
+        }
+    }
+
+    func createAndSelect(exercise: ExerciseModel) {
+        Task {
+            await createAndSelectExercise(exercise)
+        }
+    }
+
+    func clearError() {
+        Task { @MainActor in
+            self.error = nil
+        }
+    }
+
+    // MARK: Async methods
 
     func loadExercises() async {
         do {
@@ -69,12 +106,6 @@ final class ExercisePickerViewModel {
             selectedExercises.insert(created)
         } catch {
             self.error = error
-        }
-    }
-
-    func clearError() {
-        Task { @MainActor in
-            self.error = nil
         }
     }
 }

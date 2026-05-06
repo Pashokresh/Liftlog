@@ -46,7 +46,7 @@ struct WorkoutDetailView: View {
         ExercisePickerView(
             viewModel: viewModelFactory.makeExercisePickerViewModel()
         ) { newExercises in
-            Task { await viewModel.addExercises(newExercises.elements) }
+            viewModel.addExercises(newExercises.elements)
         }
     }
 
@@ -61,20 +61,11 @@ struct WorkoutDetailView: View {
             }
             .onDelete { indexSet in
                 indexSet.forEach { index in
-                    Task {
-                        await viewModel.deleteExercise(
-                            viewModel.workout.exercises[index].id
-                        )
-                    }
+                    viewModel.deleteExercise(viewModel.workout.exercises[index].id)
                 }
             }
             .onMove { source, destination in
-                Task {
-                    await viewModel.moveExercise(
-                        fromSource: source,
-                        to: destination
-                    )
-                }
+                viewModel.moveExercise(fromSource: source, to: destination)
             }
         }
         .navigationTitle(viewModel.workout.name)
@@ -98,9 +89,7 @@ struct WorkoutDetailView: View {
             Text(viewModel.error?.localizedDescription ?? "")
         }
         .onAppear {
-            Task {
-                await viewModel.reloadWorkout()
-            }
+            viewModel.onAppear()
         }
     }
 }

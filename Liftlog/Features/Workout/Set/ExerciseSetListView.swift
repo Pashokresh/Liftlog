@@ -25,11 +25,7 @@ struct ExerciseSetListView: View {
         return SetRowView(
             setItem: set,
             number: displayIndex
-        ) {
-            Task {
-                await viewModel.copySet(set)
-            }
-        }
+        ) { viewModel.copySet(set) }
         .onRowTap {
             viewModel.setToEdit = set
         }
@@ -87,11 +83,7 @@ struct ExerciseSetListView: View {
                     SetRowView(
                         setItem: set,
                         number: nil
-                    ) {
-                        Task {
-                            await viewModel.copySet(set)
-                        }
-                    }
+                    ) { viewModel.copySet(set) }
                 }
 
                 ForEach(
@@ -104,11 +96,7 @@ struct ExerciseSetListView: View {
                     SetRowView(
                         setItem: set,
                         number: index + 1
-                    ) {
-                        Task {
-                            await viewModel.copySet(set)
-                        }
-                    }
+                    ) { viewModel.copySet(set) }
                 }
             } header: {
                 HStack(spacing: 8) {
@@ -142,9 +130,7 @@ struct ExerciseSetListView: View {
             exerciseType: viewModel.workoutExercise.exercise.type,
             existingSet: nil
         ) { newSet in
-            Task {
-                await viewModel.addSet(set: newSet)
-            }
+            viewModel.addSet(set: newSet)
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
@@ -155,9 +141,7 @@ struct ExerciseSetListView: View {
             exerciseType: viewModel.workoutExercise.exercise.type,
             existingSet: setToEdit
         ) { updatedSet in
-            Task {
-                await viewModel.updateSet(updatedSet)
-            }
+            viewModel.updateSet(updatedSet)
         }
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
@@ -183,9 +167,7 @@ struct ExerciseSetListView: View {
         .sheet(isPresented: $isAddingNewSet) { addSetSheet }
         .sheet(item: $viewModel.setToEdit) { editSetSheet($0) }
         .deleteConfirmation(item: $setToDelete) { set in
-            Task {
-                await viewModel.deleteSet(set.id)
-            }
+            viewModel.deleteSet(set)
         }
         .alert(
             AppLocalization.error,

@@ -15,15 +15,78 @@ final class WorkoutDetailViewModel {
     private(set) var error: Error?
 
     private let repository: WorkoutRepositoryProtocol
+    private var loadTask: Task<Void, Never>?
 
     init(workout: WorkoutModel, repository: WorkoutRepositoryProtocol) {
         self.workout = workout
         self.repository = repository
     }
 
+    isolated deinit {
+        cleanUp()
+    }
+
+    func cleanUp() {
+        loadTask?.cancel()
+    }
+
     private var workoutExerciseIds: Set<UUID> {
         Set.init(workout.exercises.map(\.exercise.id))
     }
+
+    func onAppear() {
+        loadTask?.cancel()
+
+        loadTask = Task {
+            await reloadWorkout()
+        }
+    }
+
+    func addExercises(_ exercises: [ExerciseModel]) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await addExercises(exercises)
+        }
+    }
+
+    func deleteExercise(_ id: UUID) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await deleteExercise(id)
+        }
+    }
+
+    func moveExercise(fromSource: IndexSet, to destination: Int) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await moveExercise(fromSource: fromSource, to: destination)
+        }
+    }
+
+    func addSet(_ set: ExerciseSetModel, to workoutExerciseID: UUID) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await addSet(set, to: workoutExerciseID)
+        }
+    }
+
+    func deleteSet(_ set: UUID, from workoutExerciseID: UUID) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await deleteSet(set, from: workoutExerciseID)
+        }
+    }
+
+    func nullifyError() {
+        error = nil
+    }
+
+    // MARK: Async Methods
 
     func reloadWorkout() async {
         do {
@@ -143,9 +206,5 @@ final class WorkoutDetailViewModel {
         } catch {
             self.error = error
         }
-    }
-
-    func nullifyError() {
-        error = nil
     }
 }

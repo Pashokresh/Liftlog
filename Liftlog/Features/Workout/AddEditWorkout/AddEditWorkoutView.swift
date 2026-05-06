@@ -103,7 +103,7 @@ struct AddEditWorkoutView: View {
                     )
             )
             Button {
-                Task { await viewModel.createTag() }
+                viewModel.createTag()
             } label: {
                 Image(systemName: Images.plusCircle)
             }
@@ -162,9 +162,7 @@ struct AddEditWorkoutView: View {
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { addEditToolbarContent }
-            .task {
-                await viewModel.loadTags()
-            }
+            .task { await viewModel.loadTags() }
         }
     }
 }
