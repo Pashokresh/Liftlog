@@ -5,8 +5,8 @@
 //  Created by Pavel Martynenkov on 06.05.26.
 //
 
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct ExerciseProgressView: View {
     @State private var viewModel: ExerciseProgressViewModel
@@ -18,22 +18,25 @@ struct ExerciseProgressView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                if viewModel.hasData {
+
+            }
+            .overlay {
+                if !viewModel.hasData {
+                    emptyState
                 }
             }
         }
     }
-}
 
-// MARK: - Chart Interactive modifier
+    // MARK: - Empty State
 
-private extension View {
-    @ViewBuilder var chartInteractive: some View {
-        if #available(iOS 26, *) {
-            self.chartScrollableAxes(.horizontal)
-        } else {
-            self
-        }
+    @ViewBuilder private var emptyState: some View {
+        ContentUnavailableView(
+            AppLocalization.noProgressYet,
+            systemImage: Images.chart,
+            description: Text(AppLocalization.startLoggingToSeeProgress)
+        )
+        .frame(maxHeight: .infinity)
     }
 }
 

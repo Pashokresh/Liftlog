@@ -126,6 +126,7 @@ enum AppLocalization {
     // MARK: - Progress
 
     static let totalVolume = String(localized: "Total Volume")
+    static let volume = String(localized: "Volume")
     static let noProgressYet = String(localized: "No Progress Yet")
     static let startLoggingToSeeProgress = String(localized: "Start logging sets to see your progress here.")
     static let maxWeight = String(localized: "Max Weight")

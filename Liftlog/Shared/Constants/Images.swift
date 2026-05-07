@@ -19,6 +19,7 @@ enum Images {
     static let stopwatch = "stopwatch"
     static let xmark = "xmark"
     static let copy = "document.on.document"
+    static let chart = "chart.line.uptrend.xyaxis"
 
     static func calendar(day: Int) -> String { "\(day).calendar" }
 }

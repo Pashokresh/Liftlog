@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 extension View {
     func adaptiveNavigationSubtitle(_ subtitle: String) -> some View {
@@ -44,6 +45,16 @@ extension View {
             }
         } message: { _ in
             Text(message)
+        }
+    }
+
+    // MARK: - Chart Interactive modifier
+
+    @ViewBuilder var chartInteractive: some View {
+        if #available(iOS 26, *) {
+            self.chartScrollableAxes(.horizontal)
+        } else {
+            self
         }
     }
 }
