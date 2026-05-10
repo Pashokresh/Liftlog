@@ -20,26 +20,25 @@ struct PeriodPicker: View {
     var body: some View {
         HStack(spacing: 8) {
             ForEach(Period.allCases) { period in
-                Button {
-                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                        selectedPeriod = period
-                        onChange(period)
+                let isSelected = selectedPeriod == period
+                ZStack {
+                    if isSelected {
+                        Capsule()
+                            .fill(Color.accentColor)
+                            .matchedGeometryEffect(id: "pill", in: animation)
                     }
-                } label: {
                     Text(period.localizedName)
                         .font(.subheadline.weight(.medium))
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .foregroundStyle(
-                            selectedPeriod == period ? .white : .primary
-                        )
+                        .foregroundStyle(isSelected ? Color.white : Color.primary)
                 }
-                .buttonStyle(.plain)
-                .background {
-                    if selectedPeriod == period {
-                        Capsule()
-                            .fill(Color.accentColor)
-                            .matchedGeometryEffect(id: "pill", in: animation)
+                .fixedSize()
+                .contentShape(Capsule())
+                .onTapGesture {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selectedPeriod = period
+                        onChange(period)
                     }
                 }
             }

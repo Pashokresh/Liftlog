@@ -64,5 +64,13 @@ final class ExerciseProgressViewModel {
         }
     }
 
+    /// Formats the primary chart metric: weight (kg) for reps exercises, duration for timed.
+    var chartFormatter: (Double) -> String {
+        switch exercise.type {
+        case .reps: { $0.formattedWeight }
+        case .time: { $0.formattedDuration }
+        }
+    }
+
     func nullifyError() { error = nil }
 }

@@ -1,5 +1,5 @@
 //
-//  ExerciseProgressVolumeChartView.swift
+//  ExerciseProgressLineChartView.swift
 //  Liftlog
 //
 //  Created by Pavel Martynenkov on 07.05.26.
@@ -8,16 +8,32 @@
 import Charts
 import SwiftUI
 
-struct ExerciseProgressVolumeChartView: View {
+struct ExerciseProgressLineChartView: View {
     typealias DataEntry = [(date: Date, value: Double)]
 
     let data: DataEntry
+    let title: String
+    let valueFormatter: (Double) -> String
 
     @State private var selectedEntry: (date: Date, value: Double)?
     @State private var animationProgress: Double = 0
 
-    init(data: DataEntry) {
+    init(
+        data: DataEntry,
+        title: String,
+        valueFormatter: @escaping (Double) -> String
+    ) {
         self.data = data
+        self.title = title
+        self.valueFormatter = valueFormatter
+    }
+
+    private var xDomain: ClosedRange<Date> {
+        guard let first = data.map(\.date).min(), let last = data.map(\.date).max() else {
+            return Date()...Date()
+        }
+        let padding = max(last.timeIntervalSince(first) * 0.08, 60 * 60 * 24 * 5)
+        return Date(timeInterval: -padding, since: first)...Date(timeInterval: padding, since: last)
     }
 
     private var gradient: LinearGradient {
@@ -36,14 +52,14 @@ struct ExerciseProgressVolumeChartView: View {
 
     @ViewBuilder var headerView: some View {
         HStack {
-            Text(AppLocalization.totalVolume)
+            Text(title)
                 .font(.headline)
                 .foregroundStyle(.primary)
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 2) {
-                Text(selectedEntry.map { "\($0.value.formattedVolume)" } ?? "")
+                Text(selectedEntry.map { "\(valueFormatter($0.value))" } ?? "")
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.accent)
                 Text(
@@ -79,6 +95,13 @@ struct ExerciseProgressVolumeChartView: View {
             .foregroundStyle(gradient)
             .interpolationMethod(.catmullRom)
 
+            PointMark(
+                x: .value(AppLocalization.date, entry.date),
+                y: .value(AppLocalization.volume, entry.value)
+            )
+            .foregroundStyle(Color.accentColor)
+            .symbolSize(30)
+
             if let selected = selectedEntry, selected.date == entry.date {
                 PointMark(
                     x: .value(AppLocalization.date, entry.date),
@@ -103,7 +126,7 @@ struct ExerciseProgressVolumeChartView: View {
                 AxisGridLine()
                 AxisValueLabel {
                     if let doubleValue = value.as(Double.self) {
-                        Text(doubleValue.formattedVolume)
+                        Text(valueFormatter(doubleValue))
                             .font(.caption)
                     }
                 }
@@ -131,8 +154,13 @@ struct ExerciseProgressVolumeChartView: View {
                     )
             }
         }
-        .chartYScale(domain: .automatic(includesZero: false))
-        .padding(.top, 8)
+        .chartYScale(range: .plotDimension)
+        .chartXScale(domain: xDomain)
+        .chartPlotStyle { plotArea in
+            plotArea
+                .padding(.top, 16)
+                .padding(.bottom, 12)
+        }
         .frame(height: 200)
         .chartAnimation(progress: animationProgress)
     }
@@ -195,10 +223,22 @@ extension View {
 }
 
 #Preview {
-    ExerciseProgressVolumeChartView(
-        data: ExerciseProgressEntry.mocks.map {
-            ($0.date, $0.totalVolume)
-        }
-    )
-    .padding()
+    VStack {
+        ExerciseProgressLineChartView(
+            data: ExerciseProgressEntry.mocks.map {
+                ($0.date, $0.totalVolume)
+            },
+            title: AppLocalization.totalVolume,
+            valueFormatter: { $0.formattedVolume }
+        )
+        .padding()
+        ExerciseProgressLineChartView(
+            data: ExerciseProgressEntry.mocks.map {
+                ($0.date, $0.maxWeight)
+            },
+            title: AppLocalization.maxWeight,
+            valueFormatter: { $0.formattedWeight }
+        )
+        .padding()
+    }
 }

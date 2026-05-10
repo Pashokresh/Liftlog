@@ -24,7 +24,7 @@ struct SetRowView: View {
     private var setInfo: some View {
         switch setItem.type {
         case .timed(let duration):
-            Text(formattedDuration(duration))
+            Text(duration.formattedDuration)
                 .font(.title3)
         case let .weighted(reps, weight):
             Text("\(reps) x \(formattedWeight(weight))")

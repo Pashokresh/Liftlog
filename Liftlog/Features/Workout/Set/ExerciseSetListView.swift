@@ -9,6 +9,10 @@ import SwiftUI
 
 struct ExerciseSetListView: View {
     @State private var viewModel: ExerciseSetViewModel
+
+    @Environment(NavigationManager.self)
+    private var navigationManager
+
     @State private var isAddingNewSet = false
     @State private var setToDelete: ExerciseSetModel?
 
@@ -159,6 +163,16 @@ struct ExerciseSetListView: View {
         .navigationTitle(viewModel.workoutExercise.exercise.name)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    navigationManager.push(
+                        .exerciseProgress(viewModel.workoutExercise.exercise)
+                    )
+                } label: {
+                    Image(systemName: Images.chart)
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
                 AddTopBarButton {
                     isAddingNewSet = true
                 }
@@ -198,4 +212,5 @@ struct ExerciseSetListView: View {
             )
         )
     }
+    .environment(NavigationManager())
 }

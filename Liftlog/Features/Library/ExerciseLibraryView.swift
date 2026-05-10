@@ -10,6 +10,9 @@ import SwiftUI
 struct ExerciseLibraryView: View {
     @State private var viewModel: ExerciseLibraryViewModel
 
+    @Environment(NavigationManager.self)
+    private var navigationManager
+
     @State private var isAddingExercise = false
     @State private var exerciseToDelete: ExerciseModel?
 
@@ -27,7 +30,7 @@ struct ExerciseLibraryView: View {
             exercise: exercise
         )
         .onRowTap {
-            viewModel.editingExercise = exercise
+            navigationManager.push(.exerciseProgress(exercise))
         }
         .swipeActions {
             SwipeDeleteButton {
@@ -136,4 +139,5 @@ struct ExerciseLibraryView: View {
             )
         )
     }
+    .environment(NavigationManager())
 }

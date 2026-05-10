@@ -16,21 +16,52 @@ struct ExerciseProgressView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                PeriodPicker(selectedPeriod: viewModel.selectedPeriod) { period in
-                    viewModel.selectedPeriod = period
+        Group {
+            if viewModel.hasData {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        primaryChart
+                        if viewModel.exercise.type == .reps {
+                            totalVolumeChart
+                        }
+                    }
+                    .padding()
                 }
-            }
-            .onChange(of: viewModel.selectedPeriod) {
-                viewModel.loadProgress()
-            }
-            .overlay {
-                if !viewModel.hasData {
-                    emptyState
-                }
+            } else {
+                emptyState
             }
         }
+        .navigationTitle(viewModel.exercise.name)
+        .safeAreaInset(edge: .bottom) {
+            PeriodPicker(selectedPeriod: viewModel.selectedPeriod) { period in
+                viewModel.selectedPeriod = period
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(.bar)
+        }
+        .onChange(of: viewModel.selectedPeriod) {
+            viewModel.loadProgress()
+        }
+        .task {
+            await viewModel.loadProgress()
+        }
+    }
+
+    @ViewBuilder private var primaryChart: some View {
+        ExerciseProgressLineChartView(
+            data: viewModel.chartEntries,
+            title: viewModel.chartTitle,
+            valueFormatter: viewModel.chartFormatter
+        )
+    }
+
+    @ViewBuilder private var totalVolumeChart: some View {
+        ExerciseProgressLineChartView(
+            data: viewModel.volumeEntries,
+            title: AppLocalization.totalVolume,
+            valueFormatter: { $0.formattedVolume }
+        )
     }
 
     // MARK: - Empty State

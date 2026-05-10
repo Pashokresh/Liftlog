@@ -24,4 +24,11 @@ extension Double {
         formatter.groupingSeparator = ""
         return "\(formatter.string(from: NSNumber(value: self)) ?? String(self)) kg"
     }
+
+    var formattedDuration: String {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.minute, .second]
+        formatter.unitsStyle = .abbreviated
+        return formatter.string(from: self) ?? "0s"
+    }
 }

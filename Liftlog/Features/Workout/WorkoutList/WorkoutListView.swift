@@ -49,7 +49,7 @@ struct WorkoutListView: View {
             placement: .topBarLeading
         ) {
             Button {
-                navigationManager.push(Route.exerciseLibrary)
+                navigationManager.push(.exerciseLibrary)
             } label: {
                 Image(
                     systemName:
