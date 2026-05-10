@@ -27,7 +27,7 @@ struct ExerciseSetMappingTests {
         set.weight = 50.0
         set.duration = 0.0
 
-        let domain = set.toDomain()
+        let domain = try set.toDomain()
 
         if case .weighted(let reps, let weight) = domain.type {
             #expect(reps == 10)
@@ -46,7 +46,7 @@ struct ExerciseSetMappingTests {
         set.weight = 0.0
         set.duration = 30.0
 
-        let domain = set.toDomain()
+        let domain = try set.toDomain()
 
         if case .timed(let duration) = domain.type {
             #expect(duration == 30.0)
@@ -65,21 +65,21 @@ struct ExerciseSetMappingTests {
         set.duration = 0.0
         set.note = "Heavy set"
 
-        let domain = set.toDomain()
+        let domain = try set.toDomain()
 
         #expect(domain.note == "Heavy set")
     }
 
-    @Test("toDomain with nil ID generates new one")
-    func mapsNilId() async throws {
+    @Test("toDomain throws when ID is nil")
+    func throwsOnNilId() throws {
         let set = ExerciseSet(context: context)
         set.order = 0
         set.reps = 0
         set.weight = 0.0
         set.duration = 0.0
 
-        let domain = set.toDomain()
-
-        #expect(domain.id != UUID())
+        #expect(throws: RepositoryError.self) {
+            try set.toDomain()
+        }
     }
 }

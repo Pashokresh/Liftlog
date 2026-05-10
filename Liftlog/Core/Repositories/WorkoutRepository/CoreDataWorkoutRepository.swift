@@ -8,7 +8,8 @@
 import CoreData
 import Foundation
 
-final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol, WorkoutExerciseRepositoryProtocol, WorkoutSetRepositoryProtocol {
+final class CoreDataWorkoutRepository:
+    WorkoutRepositoryProtocol, WorkoutExerciseRepositoryProtocol, WorkoutSetRepositoryProtocol {
     private let context: NSManagedObjectContext
 
     init(context: NSManagedObjectContext) {

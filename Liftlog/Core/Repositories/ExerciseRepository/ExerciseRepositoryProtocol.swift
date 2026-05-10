@@ -25,13 +25,12 @@ protocol ExerciseRepositoryProtocol: AnyObject {
 
     func delete(_ id: UUID) async throws
 
-    /// Returns one aggregated entry per workout session within the given date range.
+    /// Returns raw per-session data for an exercise within the given date range, sorted by date ascending.
     ///
-    /// Warmup sets are excluded from all calculations.
-    /// For weighted exercises: `maxWeight` and `totalVolume` are populated; `maxDuration` is 0.
-    /// For timed exercises: `maxDuration` is populated; `maxWeight` and `totalVolume` are 0.
+    /// Each entry contains all sets logged in that workout session, including warmup sets.
+    /// Callers (use cases) are responsible for filtering warmup sets and aggregating metrics.
     ///
-    /// - Parameter exerciseID: The exercise to aggregate progress for.
+    /// - Parameter exerciseID: The exercise to fetch sessions for.
     /// - Parameter startDate: Lower bound (inclusive). Pass `Date.distantPast` to fetch all time.
-    func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws -> [ExerciseProgressEntry]
+    func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws -> [ExerciseHistorySectionModel]
 }

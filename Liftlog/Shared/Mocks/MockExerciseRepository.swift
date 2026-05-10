@@ -9,7 +9,7 @@ import Foundation
 
 final class MockExerciseRepository: ExerciseRepositoryProtocol {
     var exercises = ExerciseModel.mocks
-    var progressEntries: [ExerciseProgressEntry] = []
+    var progressSessions: [ExerciseHistorySectionModel] = []
     var shouldThrow = false
 
     func fetchAll() throws -> [ExerciseModel] {
@@ -82,9 +82,9 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
     func fetchProgress(
         for exerciseID: UUID,
         from startDate: Date
-    ) async throws -> [ExerciseProgressEntry] {
+    ) async throws -> [ExerciseHistorySectionModel] {
         if shouldThrow { throw RepositoryError.notFound(entity: "Exercise") }
-        return progressEntries.filter { $0.date >= startDate }
+        return progressSessions.filter { $0.date >= startDate }
     }
 
     private func checkThrow() throws {

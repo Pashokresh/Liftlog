@@ -193,7 +193,7 @@ struct ExerciseSetListView: View {
         ExerciseSetListView(
             viewModel: ExerciseSetViewModel(
                 workoutExercise: WorkoutExerciseModel.mock,
-                workoutRepository: MockWorkoutRepository(),
+                setRepository: MockWorkoutRepository(),
                 exerciseRepository: MockExerciseRepository()
             )
         )

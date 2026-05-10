@@ -95,18 +95,17 @@ struct WorkoutDetailView: View {
 }
 
 #Preview {
+    let mockRepo = MockWorkoutRepository(workouts: WorkoutModel.mocks)
     NavigationStack {
         WorkoutDetailView(
             viewModel: WorkoutDetailViewModel(
                 workout: WorkoutModel.mock,
-                repository: MockWorkoutRepository(workouts: WorkoutModel.mocks),
+                workoutRepository: mockRepo,
+                exerciseRepository: mockRepo,
+                setRepository: mockRepo,
                 addExercisesUseCase: AppDependencies.mock.addExercisesToWorkoutUseCase
             )
         )
     }
-    .environment(
-        ViewModelFactory(
-            dependencies: .mock
-        )
-    )
+    .environment(ViewModelFactory(dependencies: .mock))
 }

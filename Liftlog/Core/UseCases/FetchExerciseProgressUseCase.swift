@@ -8,10 +8,10 @@
 import Foundation
 
 protocol FetchExerciseProgressUseCaseProtocol {
-    /// Fetches aggregated progress entries for an exercise within the given period.
+    /// Fetches and aggregates progress entries for an exercise within the given period.
     ///
-    /// Entries where all relevant metrics are zero are filtered out — this happens when a
-    /// workout session contained only warmup sets, which are excluded from progress tracking.
+    /// Warmup sets are excluded from all calculations. Sessions where all working sets
+    /// produce zero metrics are also excluded (e.g. a session logged with 0 weight/reps).
     ///
     /// - Throws: `DomainError.exerciseNotFound` if the exercise no longer exists in the store.
     func execute(for exercise: ExerciseModel, period: Period) async throws
@@ -28,23 +28,65 @@ final class FetchExerciseProgressUseCase: FetchExerciseProgressUseCaseProtocol {
     func execute(for exercise: ExerciseModel, period: Period) async throws
         -> [ExerciseProgressEntry] {
         do {
-            let entries = try await exerciseRepository.fetchProgress(
+            let sessions = try await exerciseRepository.fetchProgress(
                 for: exercise.id,
                 from: period.startDate
             )
-            return entries.filter { entry in
-                switch exercise.type {
-                case .reps:
-                    return entry.maxWeight > 0 || entry.totalVolume > 0
-                case .time:
-                    return entry.maxDuration > 0
-                }
-            }
+            return sessions.compactMap { aggregate($0, for: exercise) }
         } catch RepositoryError.notFound {
             throw DomainError.exerciseNotFound
         } catch {
-            throw DomainError.invalidInput(
-                description: error.localizedDescription
+            throw DomainError.invalidInput(description: error.localizedDescription)
+        }
+    }
+
+    // MARK: - Private
+
+    private func aggregate(
+        _ session: ExerciseHistorySectionModel,
+        for exercise: ExerciseModel
+    ) -> ExerciseProgressEntry? {
+        let workingSets = session.sets.filter { !$0.isWarmup }
+        guard !workingSets.isEmpty else { return nil }
+
+        switch exercise.type {
+        case .reps:
+            let weighted = workingSets.compactMap { set -> (reps: Int, weight: Double)? in
+                guard case .weighted(let reps, let weight) = set.type else { return nil }
+                return (reps, weight)
+            }
+            guard !weighted.isEmpty else { return nil }
+
+            let maxWeight = weighted.map(\.weight).max() ?? 0
+            let totalVolume = weighted.reduce(0.0) { $0 + $1.weight * Double($1.reps) }
+            guard maxWeight > 0 || totalVolume > 0 else { return nil }
+
+            return ExerciseProgressEntry(
+                id: session.id,
+                date: session.date,
+                maxWeight: maxWeight,
+                totalVolume: totalVolume,
+                maxDuration: 0,
+                workoutName: session.workoutName
+            )
+
+        case .time:
+            let durations = workingSets.compactMap { set -> Double? in
+                guard case .timed(let duration) = set.type else { return nil }
+                return duration
+            }
+            guard !durations.isEmpty else { return nil }
+
+            let maxDuration = durations.max() ?? 0
+            guard maxDuration > 0 else { return nil }
+
+            return ExerciseProgressEntry(
+                id: session.id,
+                date: session.date,
+                maxWeight: 0,
+                totalVolume: 0,
+                maxDuration: maxDuration,
+                workoutName: session.workoutName
             )
         }
     }
