@@ -5,10 +5,8 @@
 //  Created by Pavel Martynenkov on 20.02.26.
 //
 
-import CoreData
 import Foundation
 
-@Observable
 final class AppDependencies {
     let exerciseRepository: ExerciseRepositoryProtocol
     let workoutRepository: WorkoutRepositoryProtocol
@@ -19,35 +17,8 @@ final class AppDependencies {
     let addExercisesToWorkoutUseCase: AddExercisesToWorkoutUseCaseProtocol
     let deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
     let manageWorkoutTagsUseCase: ManageWorkoutTagsUseCaseProtocol
-
     let fetchExerciseProgressUseCase: FetchExerciseProgressUseCaseProtocol
 
-    init(persistenceController: PersistenceController = .shared) {
-        let context = persistenceController.container.viewContext
-
-        let exerciseRepository = CoreDataExerciseRepository(context: context)
-        let tagRepository = CoreDataTagRepository(context: context)
-        let workoutRepository = CoreDataWorkoutRepository(context: context)
-
-        self.exerciseRepository = exerciseRepository
-        self.workoutRepository = workoutRepository
-        self.workoutExerciseRepository = workoutRepository
-        self.workoutSetRepository = workoutRepository
-        self.tagRepository = tagRepository
-
-        self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(workoutRepository: workoutRepository)
-        self.deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: workoutRepository)
-        self.manageWorkoutTagsUseCase = ManageWorkoutTagsUseCase(
-            workoutRepository: workoutRepository,
-            tagRepository: tagRepository
-        )
-
-        self.fetchExerciseProgressUseCase = FetchExerciseProgressUseCase(
-            exerciseRepository: exerciseRepository
-        )
-    }
-
-    // mock init
     init(
         exerciseRepository: ExerciseRepositoryProtocol,
         workoutRepository: WorkoutRepositoryProtocol,
@@ -61,13 +32,16 @@ final class AppDependencies {
         self.workoutSetRepository = workoutSetRepository
         self.tagRepository = tagRepository
 
-        self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(workoutRepository: workoutExerciseRepository)
-        self.deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: workoutRepository)
+        self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(
+            workoutRepository: workoutExerciseRepository
+        )
+        self.deleteWorkoutUseCase = DeleteWorkoutUseCase(
+            workoutRepository: workoutRepository
+        )
         self.manageWorkoutTagsUseCase = ManageWorkoutTagsUseCase(
             workoutRepository: workoutRepository,
             tagRepository: tagRepository
         )
-
         self.fetchExerciseProgressUseCase = FetchExerciseProgressUseCase(
             exerciseRepository: exerciseRepository
         )

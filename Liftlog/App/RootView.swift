@@ -5,7 +5,6 @@
 //  Created by Pavel Martynenkov on 19.02.26.
 //
 
-import CoreData
 import SwiftUI
 
 struct RootView: View {
