@@ -16,7 +16,7 @@ extension Double {
         formatter.groupingSeparator = ""
         return "\(formatter.string(from: NSNumber(value: self)) ?? String(self)) kg"
     }
-    
+
     var formattedVolume: String {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal

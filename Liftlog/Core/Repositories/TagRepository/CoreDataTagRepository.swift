@@ -22,7 +22,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
                 NSSortDescriptor(key: "name", ascending: true)
             ]
 
-            return try self.context.fetchOrThrow(request).map { $0.toDomain() }
+            return try self.context.fetchOrThrow(request).map { try $0.toDomain() }
         }
     }
 
@@ -35,7 +35,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
 
             try self.context.saveOrThrow()
 
-            return tag.toDomain()
+            return try tag.toDomain()
         }
     }
 

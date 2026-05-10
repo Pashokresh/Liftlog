@@ -35,7 +35,9 @@ final class ViewModelFactory {
         -> WorkoutDetailViewModel {
         WorkoutDetailViewModel(
             workout: workout,
-            repository: dependencies.workoutRepository,
+            workoutRepository: dependencies.workoutRepository,
+            exerciseRepository: dependencies.workoutExerciseRepository,
+            setRepository: dependencies.workoutSetRepository,
             addExercisesUseCase: dependencies.addExercisesToWorkoutUseCase
         )
     }
@@ -44,7 +46,7 @@ final class ViewModelFactory {
         -> ExerciseSetViewModel {
         ExerciseSetViewModel(
             workoutExercise: workoutExercise,
-            workoutRepository: dependencies.workoutRepository,
+            setRepository: dependencies.workoutSetRepository,
             exerciseRepository: dependencies.exerciseRepository
         )
     }

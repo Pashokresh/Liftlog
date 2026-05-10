@@ -12,6 +12,8 @@ import Foundation
 final class AppDependencies {
     let exerciseRepository: ExerciseRepositoryProtocol
     let workoutRepository: WorkoutRepositoryProtocol
+    let workoutExerciseRepository: WorkoutExerciseRepositoryProtocol
+    let workoutSetRepository: WorkoutSetRepositoryProtocol
     let tagRepository: TagRepositoryProtocol
 
     let addExercisesToWorkoutUseCase: AddExercisesToWorkoutUseCaseProtocol
@@ -29,6 +31,8 @@ final class AppDependencies {
 
         self.exerciseRepository = exerciseRepository
         self.workoutRepository = workoutRepository
+        self.workoutExerciseRepository = workoutRepository
+        self.workoutSetRepository = workoutRepository
         self.tagRepository = tagRepository
 
         self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(workoutRepository: workoutRepository)
@@ -47,13 +51,17 @@ final class AppDependencies {
     init(
         exerciseRepository: ExerciseRepositoryProtocol,
         workoutRepository: WorkoutRepositoryProtocol,
+        workoutExerciseRepository: WorkoutExerciseRepositoryProtocol,
+        workoutSetRepository: WorkoutSetRepositoryProtocol,
         tagRepository: TagRepositoryProtocol
     ) {
         self.exerciseRepository = exerciseRepository
         self.workoutRepository = workoutRepository
+        self.workoutExerciseRepository = workoutExerciseRepository
+        self.workoutSetRepository = workoutSetRepository
         self.tagRepository = tagRepository
 
-        self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(workoutRepository: workoutRepository)
+        self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(workoutRepository: workoutExerciseRepository)
         self.deleteWorkoutUseCase = DeleteWorkoutUseCase(workoutRepository: workoutRepository)
         self.manageWorkoutTagsUseCase = ManageWorkoutTagsUseCase(
             workoutRepository: workoutRepository,

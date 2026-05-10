@@ -14,9 +14,7 @@ final class ExerciseProgressViewModel {
     let exercise: ExerciseModel
     private(set) var entries: [ExerciseProgressEntry] = []
     private(set) var error: Error?
-    var selectedPeriod: Period = .threeMonths {
-        didSet { loadProgress() }
-    }
+    var selectedPeriod: Period = .threeMonths
 
     private let fetchProgressUseCase: FetchExerciseProgressUseCaseProtocol
     private var loadTask: Task<Void, Never>?

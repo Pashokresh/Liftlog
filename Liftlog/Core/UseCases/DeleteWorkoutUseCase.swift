@@ -8,6 +8,9 @@
 import Foundation
 
 protocol DeleteWorkoutUseCaseProtocol {
+    /// Deletes a workout, translating infrastructure errors into domain errors.
+    ///
+    /// - Throws: `DomainError.workoutNotFound` if the workout no longer exists.
     func execute(workoutId: UUID) async throws
 }
 

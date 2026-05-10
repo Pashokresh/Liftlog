@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class MockWorkoutRepository: WorkoutRepositoryProtocol {
+final class MockWorkoutRepository: WorkoutRepositoryProtocol, WorkoutExerciseRepositoryProtocol, WorkoutSetRepositoryProtocol {
     var shouldThrow = false
     var workouts: [WorkoutModel] = []
 

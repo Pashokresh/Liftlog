@@ -8,6 +8,12 @@
 import Foundation
 
 protocol FetchExerciseProgressUseCaseProtocol {
+    /// Fetches aggregated progress entries for an exercise within the given period.
+    ///
+    /// Entries where all relevant metrics are zero are filtered out — this happens when a
+    /// workout session contained only warmup sets, which are excluded from progress tracking.
+    ///
+    /// - Throws: `DomainError.exerciseNotFound` if the exercise no longer exists in the store.
     func execute(for exercise: ExerciseModel, period: Period) async throws
         -> [ExerciseProgressEntry]
 }

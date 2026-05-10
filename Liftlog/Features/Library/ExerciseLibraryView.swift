@@ -123,7 +123,7 @@ struct ExerciseLibraryView: View {
             Text(viewModel.error?.localizedDescription ?? "")
         }
         .onAppear {
-            viewModel.onApper()
+            viewModel.onAppear()
         }
     }
 }

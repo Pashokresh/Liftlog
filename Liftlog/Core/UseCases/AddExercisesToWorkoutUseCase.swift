@@ -8,6 +8,16 @@
 import Foundation
 
 protocol AddExercisesToWorkoutUseCaseProtocol {
+    /// Adds exercises to a workout, skipping any that are already present.
+    ///
+    /// Partial success is intentional: if the user selects 5 exercises and 3 are already in
+    /// the workout, only the 2 new ones are added and returned. The operation throws
+    /// `DomainError.duplicateExercise` only when *every* selected exercise is already present.
+    ///
+    /// New exercises are assigned sequential `order` values starting after the last existing one.
+    ///
+    /// - Returns: The newly added `WorkoutExerciseModel` items (never includes pre-existing ones).
+    /// - Throws: `DomainError.duplicateExercise` if all exercises are already in the workout.
     func execute(
         exercises: [ExerciseModel],
         workoutID: UUID,
@@ -16,9 +26,9 @@ protocol AddExercisesToWorkoutUseCaseProtocol {
 }
 
 final class AddExercisesToWorkoutUseCase: AddExercisesToWorkoutUseCaseProtocol {
-    private let workoutRepository: WorkoutRepositoryProtocol
+    private let workoutRepository: WorkoutExerciseRepositoryProtocol
 
-    init(workoutRepository: WorkoutRepositoryProtocol) {
+    init(workoutRepository: WorkoutExerciseRepositoryProtocol) {
         self.workoutRepository = workoutRepository
     }
 

@@ -15,8 +15,8 @@ import Foundation
 struct AddExercisesToWorkoutUseCaseTests {
     
     var useCase: AddExercisesToWorkoutUseCase
-    var repository: WorkoutRepositoryProtocol
-    
+    var repository: WorkoutExerciseRepositoryProtocol
+
     init() {
         repository = MockWorkoutRepository()
         useCase = AddExercisesToWorkoutUseCase(workoutRepository: repository)

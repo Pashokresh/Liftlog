@@ -135,6 +135,9 @@ enum AppLocalization {
 
     // MARK: - Repository Errors
 
+    /// Thrown when a CoreData record has a nil `id` and cannot be mapped to a domain model.
+    static let missingRecordID = String(localized: "Record is missing a required identifier")
+
     /// Generic "not found" error message
     static func itemNotFound(_ item: String) -> String {
         String(localized: "\(item) not found")

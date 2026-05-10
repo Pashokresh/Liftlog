@@ -14,14 +14,24 @@ final class WorkoutDetailViewModel {
     private(set) var workout: WorkoutModel
     private(set) var error: Error?
 
-    private let repository: WorkoutRepositoryProtocol
+    private let workoutRepository: WorkoutRepositoryProtocol
+    private let exerciseRepository: WorkoutExerciseRepositoryProtocol
+    private let setRepository: WorkoutSetRepositoryProtocol
     private let addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol
 
     private var loadTask: Task<Void, Never>?
 
-    init(workout: WorkoutModel, repository: WorkoutRepositoryProtocol, addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol) {
+    init(
+        workout: WorkoutModel,
+        workoutRepository: WorkoutRepositoryProtocol,
+        exerciseRepository: WorkoutExerciseRepositoryProtocol,
+        setRepository: WorkoutSetRepositoryProtocol,
+        addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol
+    ) {
         self.workout = workout
-        self.repository = repository
+        self.workoutRepository = workoutRepository
+        self.exerciseRepository = exerciseRepository
+        self.setRepository = setRepository
         self.addExercisesUseCase = addExercisesUseCase
     }
 
@@ -93,7 +103,7 @@ final class WorkoutDetailViewModel {
 
     func reloadWorkout() async {
         do {
-            let updated = try await repository.fetch(workout.id)
+            let updated = try await workoutRepository.fetch(workout.id)
             withAnimation(.easeInOut) {
                 workout = updated
             }
@@ -122,7 +132,7 @@ final class WorkoutDetailViewModel {
 
     func deleteExercise(_ id: UUID) async {
         do {
-            try await repository.deleteExercise(id)
+            try await exerciseRepository.deleteExercise(id)
             withAnimation {
                 workout.exercises.removeAll { $0.id == id }
             }
@@ -140,7 +150,7 @@ final class WorkoutDetailViewModel {
                 updated.order = index
 
                 taskGroup.addTask {
-                    try await self.repository.updateExercise(
+                    try await self.exerciseRepository.updateExercise(
                         updated,
                         in: self.workout.id
                     )
@@ -160,7 +170,7 @@ final class WorkoutDetailViewModel {
 
     func addSet(_ set: ExerciseSetModel, to workoutExerciseID: UUID) async {
         do {
-            try await repository.addSet(set, to: workoutExerciseID)
+            try await setRepository.addSet(set, to: workoutExerciseID)
             withAnimation {
                 guard
                     let index = workout.exercises.firstIndex(where: {
@@ -176,7 +186,7 @@ final class WorkoutDetailViewModel {
 
     func deleteSet(_ id: UUID, from workoutExerciseID: UUID) async {
         do {
-            try await repository.deleteSet(id)
+            try await setRepository.deleteSet(id)
             withAnimation {
                 guard
                     let index = workout.exercises.firstIndex(where: {

@@ -18,7 +18,12 @@ struct ExerciseProgressView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-
+                PeriodPicker(selectedPeriod: viewModel.selectedPeriod) { period in
+                    viewModel.selectedPeriod = period
+                }
+            }
+            .onChange(of: viewModel.selectedPeriod) {
+                viewModel.loadProgress()
             }
             .overlay {
                 if !viewModel.hasData {

@@ -22,7 +22,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
                 NSSortDescriptor(key: "name", ascending: true)
             ]
 
-            return try self.context.fetchOrThrow(request).map { $0.toDomain() }
+            return try self.context.fetchOrThrow(request).map { try $0.toDomain() }
         }
     }
 
@@ -45,9 +45,9 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
                     id: $0.id ?? UUID(),
                     date: $0.workout?.date ?? Date.now,
                     workoutName: $0.workout?.name ?? "Workout",
-                    sets: ($0.sets as? Set<ExerciseSet>)?
+                    sets: try ($0.sets as? Set<ExerciseSet>)?
                         .sorted { $0.order < $1.order }
-                        .map { $0.toDomain() } ?? []
+                        .map { try $0.toDomain() } ?? []
                 )
             }
         }
@@ -65,7 +65,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
 
             try self.context.saveOrThrow()
 
-            return exercise.toDomain()
+            return try exercise.toDomain()
         }
     }
 

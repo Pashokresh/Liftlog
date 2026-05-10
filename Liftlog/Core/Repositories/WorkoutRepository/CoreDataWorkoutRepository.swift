@@ -8,7 +8,7 @@
 import CoreData
 import Foundation
 
-final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
+final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol, WorkoutExerciseRepositoryProtocol, WorkoutSetRepositoryProtocol {
     private let context: NSManagedObjectContext
 
     init(context: NSManagedObjectContext) {
@@ -22,7 +22,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
                 NSSortDescriptor(key: "date", ascending: false)
             ]
 
-            return try self.context.fetchOrThrow(request).map { $0.toDomain() }
+            return try self.context.fetchOrThrow(request).map { try $0.toDomain() }
         }
     }
 
@@ -34,7 +34,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
                 throw RepositoryError.notFound(entity: "\(Workout.self)")
             }
 
-            return workout.toDomain()
+            return try workout.toDomain()
         }
     }
 
@@ -61,7 +61,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 
             try self.context.saveOrThrow()
 
-            return workout.toDomain()
+            return try workout.toDomain()
         }
     }
 

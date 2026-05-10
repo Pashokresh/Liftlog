@@ -25,7 +25,7 @@ struct ExerciseProgressVolumeChartView: View {
             stops: [
                 .init(color: Color.accentColor.opacity(0.8), location: 0),
                 .init(color: Color.accentColor.opacity(0.3), location: 0.5),
-                .init(color: Color.accentColor.opacity(0.0), location: 1),
+                .init(color: Color.accentColor.opacity(0.0), location: 1)
             ],
             startPoint: .top,
             endPoint: .bottom

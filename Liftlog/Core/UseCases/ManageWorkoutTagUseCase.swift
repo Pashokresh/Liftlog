@@ -8,7 +8,15 @@
 import Foundation
 
 protocol ManageWorkoutTagsUseCaseProtocol {
+    /// Replaces the workout's current tag set with the provided list and persists the change.
+    ///
+    /// - Returns: A copy of the workout with `tags` updated to the new list.
+    /// - Throws: `DomainError.workoutNotFound` if the workout has been deleted concurrently.
     func updateTags(_ tags: [TagModel], for workout: WorkoutModel) async throws -> WorkoutModel
+
+    /// Creates a new tag after trimming whitespace from the name.
+    ///
+    /// - Throws: `DomainError.invalidInput` if the trimmed name is empty.
     func createTag(name: String) async throws -> TagModel
 }
 

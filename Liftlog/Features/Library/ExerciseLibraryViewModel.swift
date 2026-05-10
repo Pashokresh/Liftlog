@@ -49,7 +49,7 @@ final class ExerciseLibraryViewModel {
 
     // MARK: - Sync Methods
 
-    func onApper() {
+    func onAppear() {
         loadTask?.cancel()
 
         loadTask = Task {

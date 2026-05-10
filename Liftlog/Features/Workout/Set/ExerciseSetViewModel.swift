@@ -24,17 +24,17 @@ final class ExerciseSetViewModel {
         workoutExercise.sets.filter { !$0.isWarmup }
     }
 
-    private let workoutRepository: WorkoutRepositoryProtocol
+    private let setRepository: WorkoutSetRepositoryProtocol
     private let exerciseRepository: ExerciseRepositoryProtocol
     private var loadTask: Task<Void, Never>?
 
     init(
         workoutExercise: WorkoutExerciseModel,
-        workoutRepository: WorkoutRepositoryProtocol,
+        setRepository: WorkoutSetRepositoryProtocol,
         exerciseRepository: ExerciseRepositoryProtocol
     ) {
         self.workoutExercise = workoutExercise
-        self.workoutRepository = workoutRepository
+        self.setRepository = setRepository
         self.exerciseRepository = exerciseRepository
     }
 
@@ -94,7 +94,7 @@ final class ExerciseSetViewModel {
         setWithOrder.order = workoutExercise.sets.lazy.map(\.order).max() ?? 0 + 1
 
         do {
-            try await workoutRepository.addSet(
+            try await setRepository.addSet(
                 setWithOrder,
                 to: workoutExercise.id
             )
@@ -108,7 +108,7 @@ final class ExerciseSetViewModel {
 
     func deleteSet(_ id: UUID) async {
         do {
-            try await workoutRepository.deleteSet(id)
+            try await setRepository.deleteSet(id)
 
             withAnimation {
                 workoutExercise.sets.removeAll { $0.id == id }
@@ -120,7 +120,7 @@ final class ExerciseSetViewModel {
 
     func updateSet(_ set: ExerciseSetModel) async {
         do {
-            try await workoutRepository.updateSet(set)
+            try await setRepository.updateSet(set)
             guard
                 let index = workoutExercise.sets.firstIndex(where: {
                     $0.id == set.id

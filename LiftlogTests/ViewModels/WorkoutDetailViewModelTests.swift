@@ -19,15 +19,11 @@ struct WorkoutDetailViewModelTests {
     let workoutID: UUID
 
     init() {
-        // Create unique IDs for this test instance
         workoutID = UUID()
 
-        // Create a fresh repository for each test
         repository = MockWorkoutRepository()
-        
         addExercisesUseCase = AddExercisesToWorkoutUseCase(workoutRepository: repository)
 
-        // Create a fresh workout for each test with unique ID
         let freshWorkout = WorkoutModel(
             id: workoutID,
             name: "New Training",
@@ -37,12 +33,13 @@ struct WorkoutDetailViewModelTests {
             exercises: []
         )
 
-        // Add workout to repository so fetch() works
         repository.addWorkoutDirectly(freshWorkout)
 
         viewModel = WorkoutDetailViewModel(
             workout: freshWorkout,
-            repository: repository,
+            workoutRepository: repository,
+            exerciseRepository: repository,
+            setRepository: repository,
             addExercisesUseCase: addExercisesUseCase
         )
     }

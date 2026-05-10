@@ -58,6 +58,9 @@ fastlane/test_output/
 # Thumbnails
 Thumbs.db
 
+# Personal notes
+TODO.md
+
 # IDEWorkspaceChecks
 *.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
 
