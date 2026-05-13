@@ -15,7 +15,7 @@ struct SetRowView: View {
     @ViewBuilder private var notes: some View {
         if let note = setItem.note, !note.isEmpty {
             Text(note)
-                .font(.callout)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.leading)
         }
@@ -27,7 +27,7 @@ struct SetRowView: View {
             Text(duration.formattedDuration)
                 .font(.title3)
         case let .weighted(reps, weight):
-            Text("\(reps) x \(formattedWeight(weight))")
+            Text("\(reps) x \(weight.formattedWeight)")
                 .font(.title3)
         }
     }
@@ -64,14 +64,6 @@ struct SetRowView: View {
             .buttonStyle(.plain)
         }
         .padding(4)
-    }
-
-    private func formattedWeight(_ weight: Double) -> String {
-        let formatter = MassFormatter()
-        formatter.unitStyle = .medium
-        formatter.isForPersonMassUse = true
-
-        return formatter.string(fromKilograms: weight)
     }
 }
 

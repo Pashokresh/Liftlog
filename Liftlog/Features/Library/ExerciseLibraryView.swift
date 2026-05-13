@@ -10,9 +10,6 @@ import SwiftUI
 struct ExerciseLibraryView: View {
     @State private var viewModel: ExerciseLibraryViewModel
 
-    @Environment(NavigationManager.self)
-    private var navigationManager
-
     @State private var isAddingExercise = false
     @State private var exerciseToDelete: ExerciseModel?
 
@@ -26,23 +23,22 @@ struct ExerciseLibraryView: View {
 
     @ViewBuilder
     private func exerciseRow(_ exercise: ExerciseModel) -> some View {
-        ExerciseRowView(
-            exercise: exercise
-        )
-        .onRowTap {
-            navigationManager.push(.exerciseProgress(exercise))
-        }
-        .swipeActions {
-            SwipeDeleteButton {
-                exerciseToDelete = exercise
-            }
+        NavigationLink(value: Route.exerciseProgress(exercise)) {
+            ExerciseRowView(
+                exercise: exercise
+            )
+            .swipeActions {
+                SwipeDeleteButton {
+                    exerciseToDelete = exercise
+                }
 
-            SwipeEditButton {
-                viewModel.editingExercise = exercise
+                SwipeEditButton {
+                    viewModel.editingExercise = exercise
+                }
             }
-        }
-        .deleteConfirmation(item: $exerciseToDelete) { exercise in
-            viewModel.deleteExercise(exercise)
+            .deleteConfirmation(item: $exerciseToDelete) { exercise in
+                viewModel.deleteExercise(exercise)
+            }
         }
     }
 
@@ -139,5 +135,4 @@ struct ExerciseLibraryView: View {
             )
         )
     }
-    .environment(NavigationManager())
 }
