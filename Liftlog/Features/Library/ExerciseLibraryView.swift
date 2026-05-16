@@ -43,7 +43,9 @@ struct ExerciseLibraryView: View {
     }
 
     @ViewBuilder private var emptyState: some View {
-        if viewModel.filteredExercises.isEmpty {
+        if viewModel.isLoading && viewModel.exercises.isEmpty {
+            ProgressView()
+        } else if viewModel.filteredExercises.isEmpty {
             if !viewModel.searchText.isEmpty {
                 ContentUnavailableView.search
             } else {
@@ -131,7 +133,10 @@ struct ExerciseLibraryView: View {
     NavigationStack {
         ExerciseLibraryView(
             viewModel: ExerciseLibraryViewModel(
-                repository: MockExerciseRepository()
+                fetchExerciseLibraryUseCase: AppDependencies.mock
+                    .fetchExerciseLibraryUseCase,
+                manageExerciseUseCase: AppDependencies.mock
+                    .manageExerciseUseCase
             )
         )
     }

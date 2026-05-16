@@ -24,7 +24,11 @@ final class ViewModelFactory {
     }
 
     func makeExerciseLibraryViewModel() -> ExerciseLibraryViewModel {
-        ExerciseLibraryViewModel(repository: dependencies.exerciseRepository)
+        ExerciseLibraryViewModel(
+            fetchExerciseLibraryUseCase: dependencies
+                .fetchExerciseLibraryUseCase,
+            manageExerciseUseCase: dependencies.manageExerciseUseCase
+        )
     }
 
     func makeExercisePickerViewModel() -> ExercisePickerViewModel {
@@ -60,7 +64,8 @@ final class ViewModelFactory {
         )
     }
 
-    func makeExerciseProgressViewModel(exercise: ExerciseModel) -> ExerciseProgressViewModel {
+    func makeExerciseProgressViewModel(exercise: ExerciseModel)
+        -> ExerciseProgressViewModel {
         ExerciseProgressViewModel(
             exercise: exercise,
             fetchProgressUseCase: dependencies.fetchExerciseProgressUseCase

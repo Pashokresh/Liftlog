@@ -27,6 +27,15 @@ struct ExerciseProgressView: View {
                     }
                     .padding()
                 }
+                .overlay(alignment: .top) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .padding(.top, 8)
+                    }
+                }
+            } else if viewModel.isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 emptyState
             }

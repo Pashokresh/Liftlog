@@ -13,6 +13,7 @@ import SwiftUI
 final class ExerciseSetViewModel {
     private(set) var workoutExercise: WorkoutExerciseModel
     private(set) var history: [ExerciseHistorySectionModel] = .init()
+    private(set) var isLoadingHistory = false
     private(set) var error: Error?
     var setToEdit: ExerciseSetModel?
 
@@ -79,6 +80,8 @@ final class ExerciseSetViewModel {
     }
 
     func loadHistory() async {
+        isLoadingHistory = true
+        defer { isLoadingHistory = false }
         do {
             history = try await exerciseRepository.fetchHistory(
                 for: workoutExercise.exercise.id,

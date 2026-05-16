@@ -77,7 +77,20 @@ struct ExerciseSetListView: View {
         }
     }
 
-    var historyWorkoutSection: some View {
+    @ViewBuilder var historyWorkoutSection: some View {
+        if viewModel.isLoadingHistory {
+            Section {
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+            } header: {
+                Text(AppLocalization.previousWorkouts)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        } else {
         ForEach(viewModel.history) { historyExercise in
             Section {
                 ForEach(
@@ -119,6 +132,7 @@ struct ExerciseSetListView: View {
                     )
                 }
             }
+        }
         }
     }
 

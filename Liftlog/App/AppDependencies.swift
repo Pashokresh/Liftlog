@@ -14,6 +14,8 @@ final class AppDependencies {
     let workoutSetRepository: WorkoutSetRepositoryProtocol
     let tagRepository: TagRepositoryProtocol
 
+    let manageExerciseUseCase: ManageExerciseUseCaseProtocol
+    let fetchExerciseLibraryUseCase: FetchExerciseLibraryUseCase
     let addExercisesToWorkoutUseCase: AddExercisesToWorkoutUseCaseProtocol
     let deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
     let manageWorkoutTagsUseCase: ManageWorkoutTagsUseCaseProtocol
@@ -31,6 +33,13 @@ final class AppDependencies {
         self.workoutExerciseRepository = workoutExerciseRepository
         self.workoutSetRepository = workoutSetRepository
         self.tagRepository = tagRepository
+
+        self.manageExerciseUseCase = ManageExerciseUseCase(
+            repository: exerciseRepository
+        )
+        self.fetchExerciseLibraryUseCase = FetchExerciseLibraryUseCase(
+            repository: exerciseRepository
+        )
 
         self.addExercisesToWorkoutUseCase = AddExercisesToWorkoutUseCase(
             workoutRepository: workoutExerciseRepository

@@ -11,9 +11,11 @@ import Foundation
 @MainActor
 final class ExerciseLibraryViewModel {
     private(set) var exercises: [ExerciseModel] = []
+    private(set) var isLoading = false
     private(set) var error: Error?
 
-    private let repository: ExerciseRepositoryProtocol
+    private let fetchExerciseLibraryUseCase: FetchExerciseLibraryUseCaseProtocol
+    private let manageExerciseUseCase: ManageExerciseUseCaseProtocol
     private var loadTask: Task<Void, Error>?
 
     var editingExercise: ExerciseModel?
@@ -35,8 +37,12 @@ final class ExerciseLibraryViewModel {
 
     // MARK: Init and Clean Up
 
-    init(repository: ExerciseRepositoryProtocol) {
-        self.repository = repository
+    init(
+        fetchExerciseLibraryUseCase: FetchExerciseLibraryUseCaseProtocol,
+        manageExerciseUseCase: ManageExerciseUseCaseProtocol
+    ) {
+        self.fetchExerciseLibraryUseCase = fetchExerciseLibraryUseCase
+        self.manageExerciseUseCase = manageExerciseUseCase
     }
 
     isolated deinit {
@@ -58,19 +64,14 @@ final class ExerciseLibraryViewModel {
     }
 
     func createExercise(_ exercise: ExerciseModel) {
-        Task {[weak self] in
+        Task { [weak self] in
             guard let self else { return }
-            await self.createExercise(
-                name: exercise.name,
-                type: exercise.type,
-                description: exercise.description,
-                muscleGroup: exercise.muscleGroup
-            )
+            await self.createExercise(exercise)
         }
     }
 
     func updateExercise(_ exercise: ExerciseModel) {
-        Task {[weak self] in
+        Task { [weak self] in
             guard let self else { return }
             await self.updateExercise(exercise)
         }
@@ -79,7 +80,7 @@ final class ExerciseLibraryViewModel {
     func deleteExercise(_ exercise: ExerciseModel) {
         Task { [weak self] in
             guard let self else { return }
-            await deleteExercise(exercise.id)
+            await deleteExercise(exercise)
         }
     }
 
@@ -90,24 +91,20 @@ final class ExerciseLibraryViewModel {
     // MARK: - Async Methods
 
     func loadExercises() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
-            exercises = try await repository.fetchAll()
+            exercises = try await fetchExerciseLibraryUseCase.execute()
         } catch {
             self.error = error
         }
     }
 
-    func createExercise(name: String, type: ExerciseType, description: String?, muscleGroup: MuscleGroup?)
-        async {
-        guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return }
-
+    func createExercise(
+        _ exercise: ExerciseModel
+    ) async {
         do {
-            let exercise = try await repository.create(
-                name: name,
-                description: description,
-                type: type,
-                muscleGroup: muscleGroup
-            )
+            let exercise = try await manageExerciseUseCase.create(exercise)
             exercises.append(exercise)
         } catch {
             self.error = error
@@ -116,7 +113,7 @@ final class ExerciseLibraryViewModel {
 
     func updateExercise(_ exercise: ExerciseModel) async {
         do {
-            try await repository.update(exercise)
+            _ = try await manageExerciseUseCase.update(exercise)
             guard
                 let index = exercises.firstIndex(where: {
                     $0.id == exercise.id
@@ -128,10 +125,10 @@ final class ExerciseLibraryViewModel {
         }
     }
 
-    func deleteExercise(_ id: UUID) async {
+    func deleteExercise(_ exercise: ExerciseModel) async {
         do {
-            try await repository.delete(id)
-            exercises.removeAll { $0.id == id }
+            try await manageExerciseUseCase.delete(exercise)
+            exercises.removeAll { $0.id == exercise.id }
         } catch {
             self.error = error
         }

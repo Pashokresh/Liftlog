@@ -77,6 +77,7 @@ enum AppLocalization {
     static let descriptionOptional = String(localized: "Description (optional)")
     static let addExercise = String(localized: "Add Exercise")
     static let editExercise = String(localized: "Edit Exercise")
+    static let emptyName = String(localized: "Exercise name cannot be empty")
     static let muscleGroup = String(localized: "Muscle Group")
     static let notSpecified = String(localized: "Not specified")
 
@@ -97,6 +98,7 @@ enum AppLocalization {
 
     // MARK: - Exercise Set List
 
+    static let previousWorkouts = String(localized: "Previous Workouts")
     static let currentWorkout = String(localized: "Current workout")
     static let noSetsYet = String(localized: "No Sets yet")
     static let startByAddingSetsHere = String(

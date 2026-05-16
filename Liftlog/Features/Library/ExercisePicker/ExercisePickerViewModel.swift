@@ -12,6 +12,7 @@ import Observation
 @MainActor
 final class ExercisePickerViewModel {
     private(set) var exercises: [ExerciseModel] = .init()
+    private(set) var isLoading = false
     private(set) var error: Error?
     var selectedExercises: OrderedSet<ExerciseModel> = .init()
 
@@ -89,9 +90,13 @@ final class ExercisePickerViewModel {
     // MARK: Async methods
 
     func loadExercises() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             exercises = try await repository.fetchAll()
-        } catch {}
+        } catch {
+            self.error = error
+        }
     }
 
     func createAndSelectExercise(_ exercise: ExerciseModel) async {

@@ -12,6 +12,7 @@ import SwiftUI
 @MainActor
 final class WorkoutDetailViewModel {
     private(set) var workout: WorkoutModel
+    private(set) var isLoading = false
     private(set) var error: Error?
 
     private let workoutRepository: WorkoutRepositoryProtocol
@@ -102,6 +103,8 @@ final class WorkoutDetailViewModel {
     // MARK: Async Methods
 
     func reloadWorkout() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             let updated = try await workoutRepository.fetch(workout.id)
             withAnimation(.easeInOut) {

@@ -13,6 +13,7 @@ import Observation
 final class ExerciseProgressViewModel {
     let exercise: ExerciseModel
     private(set) var entries: [ExerciseProgressEntry] = []
+    private(set) var isLoading = false
     private(set) var error: Error?
     var selectedPeriod: Period = .threeMonths
 
@@ -34,6 +35,8 @@ final class ExerciseProgressViewModel {
     }
 
     func loadProgress() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             entries = try await fetchProgressUseCase.execute(
                 for: exercise,

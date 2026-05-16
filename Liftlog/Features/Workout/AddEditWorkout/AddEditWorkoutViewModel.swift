@@ -18,6 +18,7 @@ final class AddEditWorkoutViewModel {
     var newTagName: String = ""
 
     private(set) var availableTags: [TagModel] = []
+    private(set) var isLoading = false
     private(set) var error: Error?
 
     private let workout: WorkoutModel?
@@ -77,6 +78,8 @@ final class AddEditWorkoutViewModel {
     // MARK: Async Methods
 
     func loadTags() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             availableTags = try await self.tagRepository.fetchAll()
         } catch {

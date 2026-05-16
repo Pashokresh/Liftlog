@@ -23,7 +23,9 @@ struct WorkoutListView: View {
     }
 
     @ViewBuilder private var emptyState: some View {
-        if viewModel.filteredWorkouts.isEmpty {
+        if viewModel.isLoading && viewModel.workouts.isEmpty {
+            ProgressView()
+        } else if viewModel.filteredWorkouts.isEmpty {
             if viewModel.workouts.isEmpty {
                 UnavailableContentView(
                     title: AppLocalization.noWorkoutsYet,

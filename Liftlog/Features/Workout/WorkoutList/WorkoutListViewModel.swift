@@ -13,6 +13,7 @@ import SwiftUI
 final class WorkoutListViewModel {
     private(set) var workouts: [WorkoutModel] = []
     private(set) var availableTags: [TagModel] = []
+    private(set) var isLoading = false
     private(set) var error: Error?
     var selectedTagIDs: Set<UUID> = .init()
 
@@ -42,6 +43,8 @@ final class WorkoutListViewModel {
     }
 
     func loadWorkouts() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             workouts = try await workoutRepository.fetchAll()
         } catch {

@@ -150,10 +150,12 @@ struct AddEditWorkoutView: View {
                 workoutDetailsSection
 
                 Section(AppLocalization.tags) {
-                    selectedTags
-
-                    unselectedTags
-
+                    if viewModel.isLoading {
+                        ProgressView()
+                    } else {
+                        selectedTags
+                        unselectedTags
+                    }
                     tagCreation
                 }
             }

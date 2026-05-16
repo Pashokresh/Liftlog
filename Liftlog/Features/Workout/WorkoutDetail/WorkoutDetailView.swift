@@ -19,6 +19,13 @@ struct WorkoutDetailView: View {
     }
 
     @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
+        if viewModel.isLoading {
+            ToolbarItem(placement: .topBarLeading) {
+                ProgressView()
+                    .controlSize(.small)
+            }
+        }
+
         if !viewModel.workout.exercises.isEmpty {
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
