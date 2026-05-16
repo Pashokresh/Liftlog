@@ -16,7 +16,8 @@ final class ExercisePickerViewModel {
     private(set) var error: Error?
     var selectedExercises: OrderedSet<ExerciseModel> = .init()
 
-    private var repository: ExerciseRepositoryProtocol
+    private let fetchExerciseLibraryUseCase: FetchExerciseLibraryUseCaseProtocol
+    private let manageExerciseUseCase: ManageExerciseUseCaseProtocol
     private var loadTask: Task<Void, Never>?
 
     var searchText: String = ""
@@ -37,8 +38,12 @@ final class ExercisePickerViewModel {
 
     // MARK: - Init and Clean Up
 
-    init(repository: ExerciseRepositoryProtocol) {
-        self.repository = repository
+    init(
+        fetchExerciseLibraryUseCase: FetchExerciseLibraryUseCaseProtocol,
+        manageExerciseUseCase: ManageExerciseUseCaseProtocol
+    ) {
+        self.fetchExerciseLibraryUseCase = fetchExerciseLibraryUseCase
+        self.manageExerciseUseCase = manageExerciseUseCase
     }
 
     isolated deinit {
@@ -93,7 +98,7 @@ final class ExercisePickerViewModel {
         isLoading = true
         defer { isLoading = false }
         do {
-            exercises = try await repository.fetchAll()
+            exercises = try await fetchExerciseLibraryUseCase.execute()
         } catch {
             self.error = error
         }
@@ -101,12 +106,7 @@ final class ExercisePickerViewModel {
 
     func createAndSelectExercise(_ exercise: ExerciseModel) async {
         do {
-            let created = try await repository.create(
-                name: exercise.name,
-                description: exercise.description,
-                type: exercise.type,
-                muscleGroup: exercise.muscleGroup
-            )
+            let created = try await manageExerciseUseCase.create(exercise)
             exercises.append(created)
             selectedExercises.insert(created)
         } catch {

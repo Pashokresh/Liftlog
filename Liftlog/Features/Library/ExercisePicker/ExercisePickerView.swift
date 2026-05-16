@@ -56,7 +56,10 @@ struct ExercisePickerView: View {
     }
 
     @ToolbarContentBuilder private var toolbar: some ToolbarContent {
-        ToolbarItem(id: "exercise.library.create.new", placement: .topBarTrailing) {
+        ToolbarItem(
+            id: "exercise.library.create.new",
+            placement: .topBarTrailing
+        ) {
             AddTopBarButton {
                 isAddingNewExercise = true
             }
@@ -75,7 +78,11 @@ struct ExercisePickerView: View {
             id: "exercise.library.selection.done",
             placement: .bottomBar
         ) {
-            DoneBottomBarBottom(with: AppLocalization.add(count: viewModel.selectedExercises.count)) {
+            DoneBottomBarBottom(
+                with: AppLocalization.add(
+                    count: viewModel.selectedExercises.count
+                )
+            ) {
                 onAdd(viewModel.selectedExercises)
                 dismiss()
             }
@@ -104,32 +111,32 @@ struct ExercisePickerView: View {
     var body: some View {
         NavigationStack {
             content
-            .scrollDismissesKeyboard(.interactively)
-            .overlay { emptyState }
-            .navigationTitle(AppLocalization.exerciseLibrary)
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar { toolbar }
-            .searchable(
-                text: $viewModel.searchText,
-                prompt: AppLocalization.searchExercise
-            )
-            .sheet(isPresented: $isAddingNewExercise) {
-                addExerciseSheet
-            }
-            .alert(
-                AppLocalization.error,
-                isPresented: Binding(
-                    get: { viewModel.error != nil },
-                    set: { if !$0 { viewModel.clearError() } }
+                .scrollDismissesKeyboard(.interactively)
+                .overlay { emptyState }
+                .navigationTitle(AppLocalization.exerciseLibrary)
+                .navigationBarTitleDisplayMode(.large)
+                .toolbar { toolbar }
+                .searchable(
+                    text: $viewModel.searchText,
+                    prompt: AppLocalization.searchExercise
                 )
-            ) {
-                Button(AppLocalization.okay) { viewModel.clearError() }
-            } message: {
-                Text(viewModel.error?.localizedDescription ?? "")
-            }
-            .onAppear {
-                viewModel.onApper()
-            }
+                .sheet(isPresented: $isAddingNewExercise) {
+                    addExerciseSheet
+                }
+                .alert(
+                    AppLocalization.error,
+                    isPresented: Binding(
+                        get: { viewModel.error != nil },
+                        set: { if !$0 { viewModel.clearError() } }
+                    )
+                ) {
+                    Button(AppLocalization.okay) { viewModel.clearError() }
+                } message: {
+                    Text(viewModel.error?.localizedDescription ?? "")
+                }
+                .onAppear {
+                    viewModel.onApper()
+                }
         }
     }
 }
@@ -137,7 +144,9 @@ struct ExercisePickerView: View {
 #Preview {
     ExercisePickerView(
         viewModel: ExercisePickerViewModel(
-            repository: MockExerciseRepository()
+            fetchExerciseLibraryUseCase: AppDependencies.mock
+                .fetchExerciseLibraryUseCase,
+            manageExerciseUseCase: AppDependencies.mock.manageExerciseUseCase
         )
     ) { _ in
     }

@@ -32,7 +32,11 @@ final class ViewModelFactory {
     }
 
     func makeExercisePickerViewModel() -> ExercisePickerViewModel {
-        ExercisePickerViewModel(repository: dependencies.exerciseRepository)
+        ExercisePickerViewModel(
+            fetchExerciseLibraryUseCase: dependencies
+                .fetchExerciseLibraryUseCase,
+            manageExerciseUseCase: dependencies.manageExerciseUseCase
+        )
     }
 
     func makeWorkoutDetailViewModel(_ workout: WorkoutModel)
