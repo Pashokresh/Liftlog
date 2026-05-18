@@ -9,7 +9,6 @@ import CoreData
 import Foundation
 
 final class CoreDataTagRepository: TagRepositoryProtocol {
-
     private let context: NSManagedObjectContext
 
     init(context: NSManagedObjectContext) {
@@ -23,7 +22,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
                 NSSortDescriptor(key: "name", ascending: true)
             ]
 
-            return try self.context.fetch(request).map { $0.toDomain() }
+            return try self.context.fetchOrThrow(request).map { try $0.toDomain() }
         }
     }
 
@@ -34,9 +33,9 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
             tag.id = UUID()
             tag.name = name
 
-            try self.context.save()
+            try self.context.saveOrThrow()
 
-            return tag.toDomain()
+            return try tag.toDomain()
         }
     }
 
@@ -46,7 +45,7 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
 
             tag.name = model.name
 
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
@@ -55,20 +54,17 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
             let tag = try self.fetchTag(id)
 
             self.context.delete(tag)
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 }
 
 extension CoreDataTagRepository {
-
-    fileprivate func fetchTag(_ id: UUID) throws -> Tag {
-        let request = fetchRequest(for: Tag.self, with: [id])
+    func fetchTag(_ id: UUID) throws -> Tag {
+        let request = try fetchRequest(for: Tag.self, with: [id])
 
         guard let tag = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: String(localized: "Tag was not found")
-            )
+            throw RepositoryError.notFound(entity: "Tag")
         }
 
         return tag

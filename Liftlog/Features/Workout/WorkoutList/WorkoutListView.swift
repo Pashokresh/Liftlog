@@ -8,27 +8,28 @@
 import SwiftUI
 
 struct WorkoutListView: View {
-
     @State private var viewModel: WorkoutListViewModel
     @State private var isCreatingWorkout = false
     @State private var workoutToDelete: WorkoutModel?
 
-    @Environment(NavigationManager.self) var navigationManager
-    @Environment(ViewModelFactory.self) var viewModelFactory
+    @Environment(NavigationManager.self)
+    var navigationManager
+
+    @Environment(ViewModelFactory.self)
+    var viewModelFactory
 
     init(viewModel: WorkoutListViewModel) {
         _viewModel = .init(initialValue: viewModel)
     }
 
-    @ViewBuilder
-    private var emptyState: some View {
-        if viewModel.filteredWorkouts.isEmpty {
+    @ViewBuilder private var emptyState: some View {
+        if viewModel.isLoading && viewModel.workouts.isEmpty {
+            ProgressView()
+        } else if viewModel.filteredWorkouts.isEmpty {
             if viewModel.workouts.isEmpty {
                 UnavailableContentView(
-                    title: String(localized: "No workouts yet"),
-                    message: String(
-                        localized: "Create a new workout to get started."
-                    )
+                    title: AppLocalization.noWorkoutsYet,
+                    message: AppLocalization.createNewWorkoutToGetStarted
                 )
             } else {
                 ContentUnavailableView.search
@@ -36,8 +37,7 @@ struct WorkoutListView: View {
         }
     }
 
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
+    @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
         ToolbarItem(
             id: "workout.list.add",
             placement: .topBarTrailing
@@ -51,7 +51,7 @@ struct WorkoutListView: View {
             placement: .topBarLeading
         ) {
             Button {
-                navigationManager.push(Route.exerciseLibrary)
+                navigationManager.push(.exerciseLibrary)
             } label: {
                 Image(
                     systemName:
@@ -61,8 +61,7 @@ struct WorkoutListView: View {
         }
     }
 
-    @ViewBuilder
-    private var tagsPanel: some View {
+    @ViewBuilder private var tagsPanel: some View {
         if !viewModel.availableTags.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -82,14 +81,12 @@ struct WorkoutListView: View {
         }
     }
 
-    @ViewBuilder
-    private var addWorkoutSheet: some View {
+    @ViewBuilder private var addWorkoutSheet: some View {
         AddEditWorkoutView(
-            viewModel: viewModelFactory.makeAddEditWorkoutViewModel(),
-            onSave: { workout in
-                viewModel.createWorkout(workout)
-            }
-        )
+            viewModel: viewModelFactory.makeAddEditWorkoutViewModel()
+        ) { workout in
+            viewModel.createWorkout(workout)
+        }
         .presentationDetents([.large])
     }
 
@@ -122,20 +119,14 @@ struct WorkoutListView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.workouts)
-        .environment(\.defaultMinListRowHeight, 80)
-        .navigationTitle(
-            Text(
-                String(localized: "Workouts")
-            )
-        )
+        .navigationTitle(Text(AppLocalization.workouts))
         .navigationBarTitleDisplayMode(.inline)
         .overlay { emptyState }
         .toolbar { toolbarContent }
         .safeAreaInset(edge: .top) { tagsPanel }
         .deleteConfirmation(
-            item: $workoutToDelete,
-            action: { viewModel.deleteWorkout($0.id) }
-        )
+            item: $workoutToDelete
+        ) { viewModel.deleteWorkout($0.id) }
         .sheet(isPresented: $isCreatingWorkout) { addWorkoutSheet }
         .sheet(item: $viewModel.editingWorkout) { editWorkoutSheet($0) }
         .alert(
@@ -145,27 +136,25 @@ struct WorkoutListView: View {
             )
         ) {
             Alert(
-                title: Text(String(localized: "Error")),
-                message: Text(viewModel.error!.localizedDescription),
-                dismissButton: .default(Text(String(localized: "OK")))
+                title: Text(AppLocalization.error),
+                message: Text(viewModel.error?.localizedDescription ?? ""),
+                dismissButton: .default(Text(AppLocalization.okay))
             )
         }
         .onChange(
-            of: isCreatingWorkout,
-            { _, isPresented in
-                if !isPresented {
-                    updateTags()
-                }
+            of: isCreatingWorkout
+        ) { _, isPresented in
+            if !isPresented {
+                updateTags()
             }
-        )
+        }
         .onChange(
-            of: viewModel.editingWorkout,
-            { _, workout in
-                if workout == nil {
-                    updateTags()
-                }
+            of: viewModel.editingWorkout
+        ) { _, workout in
+            if workout == nil {
+                updateTags()
             }
-        )
+        }
         .task {
             await viewModel.loadWorkouts()
             await viewModel.loadTags()
@@ -178,11 +167,15 @@ struct WorkoutListView: View {
 }
 
 #Preview {
+    let workoutRepository = MockWorkoutRepository(workouts: WorkoutModel.mocks)
     NavigationStack {
         WorkoutListView(
             viewModel: WorkoutListViewModel(
-                workoutRepository: MockWorkoutRepository(),
-                tagRepository: MockTagRepository()
+                workoutRepository: workoutRepository,
+                tagRepository: MockTagRepository(),
+                deleteWorkoutUseCase: DeleteWorkoutUseCase(
+                    workoutRepository: workoutRepository
+                )
             )
         )
     }

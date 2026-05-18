@@ -52,17 +52,31 @@ enum SetType {
 `SetType` as an enum with associated values means the UI never deals with optional fields — a set is either weighted or timed, and the type system enforces that.
 
 ### Repository Layer
-Each repository is defined by a protocol and has a CoreData implementation and a mock implementation for tests and previews:
+Each repository is defined by a protocol and has a CoreData implementation and a mock implementation for tests and previews. The workout domain is split across three focused protocols so consumers only depend on what they need:
 
 ```swift
 protocol WorkoutRepositoryProtocol: AnyObject {
     func fetchAll() async throws -> [WorkoutModel]
+    func fetch(_ id: UUID) async throws -> WorkoutModel
     func create(_ model: WorkoutModel) async throws -> WorkoutModel
-    func addExercise(_ model: WorkoutExerciseModel, to workoutID: UUID) async throws
+    func update(_ model: WorkoutModel) async throws
+    func delete(_ id: UUID) async throws
+}
+
+protocol WorkoutExerciseRepositoryProtocol: AnyObject {
+    func addExercises(_ models: [WorkoutExerciseModel], to workoutID: UUID) async throws
+    func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID) async throws
+    func deleteExercise(_ id: UUID) async throws
+}
+
+protocol WorkoutSetRepositoryProtocol: AnyObject {
     func addSet(_ model: ExerciseSetModel, to workoutExerciseID: UUID) async throws
-    // ...
+    func updateSet(_ model: ExerciseSetModel) async throws
+    func deleteSet(_ id: UUID) async throws
 }
 ```
+
+`CoreDataWorkoutRepository` conforms to all three. ViewModels and use cases each declare only the protocol they actually use.
 
 ### Dependency Injection
 Dependencies are composed at app launch through `AppDependencies` and surfaced to the view hierarchy via a `ViewModelFactory` injected into SwiftUI's environment:
@@ -102,6 +116,7 @@ enum Route: Hashable {
 | **Testing** | Swift Testing (`@Suite`, `@Test`, `#expect`) |
 | **Deployment Target** | iOS 18+ |
 | **Dependencies** | None |
+| **Linting** | SwiftLint |
 
 ---
 
@@ -209,7 +224,7 @@ All `#available` checks are isolated to dedicated extensions and components — 
 
 - Xcode 16+
 - iOS 18.0+
-- No external dependencies — clone and run
+- No runtime dependencies — clone and run
 
 ---
 

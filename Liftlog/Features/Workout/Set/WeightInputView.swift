@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct WeightInputView: View {
-
     @Binding var reps: Int
     @Binding var weight: Double
 
-    @State private var kg: Int = 0
+    @State private var kilo: Int = 0
     @State private var grams: Int = 0
 
     var body: some View {
@@ -25,12 +24,14 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(String(localized: "reps"))
+                Text(AppLocalization.repsLowercase)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
             HStack {
-                Picker("", selection: $kg) {
+                Picker("", selection: $kilo) {
                     ForEach(0...300, id: \.self) {
                         Text("\($0)")
                     }
@@ -39,8 +40,9 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(String(localized: "kg"))
+                Text(AppLocalization.kilogram)
                     .foregroundStyle(.secondary)
+                    .font(.body)
             }
             .frame(maxWidth: .infinity, alignment: .center)
 
@@ -57,22 +59,24 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(String(localized: "g"))
+                Text(AppLocalization.gram)
                     .foregroundStyle(.secondary)
+                    .font(.body)
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }
-        .onChange(of: kg) { updateBinding() }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .onChange(of: kilo) { updateBinding() }
         .onChange(of: grams) { updateBinding() }
         .onAppear { loadFromBinding() }
     }
 
     private func updateBinding() {
-        weight = Double(kg) + Double(grams) / 1000.0
+        weight = Double(kilo) + Double(grams) / 1000.0
     }
 
     private func loadFromBinding() {
-        kg = Int(weight)
+        kilo = Int(weight)
         grams = Int(weight.truncatingRemainder(dividingBy: 1) * 1000)
     }
 }

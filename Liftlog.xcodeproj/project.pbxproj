@@ -27,6 +27,7 @@
 		B00480B42F46F76C00EAF81B /* Liftlog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Liftlog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00480C62F46F76D00EAF81B /* LiftlogTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftlogTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00480D02F46F76D00EAF81B /* LiftlogUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LiftlogUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B0A215712FAA1B3700CE2EB1 /* Liftlog.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Liftlog.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +76,7 @@
 		B00480AB2F46F76C00EAF81B = {
 			isa = PBXGroup;
 			children = (
+				B0A215712FAA1B3700CE2EB1 /* Liftlog.xctestplan */,
 				B00480B62F46F76C00EAF81B /* Liftlog */,
 				B00480C92F46F76D00EAF81B /* LiftlogTests */,
 				B00480D32F46F76D00EAF81B /* LiftlogUITests */,
@@ -106,6 +108,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				B0BC52412FA0A9F700F936C2 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				B00480B62F46F76C00EAF81B /* Liftlog */,
@@ -196,6 +199,9 @@
 			);
 			mainGroup = B00480AB2F46F76C00EAF81B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				B0BC523F2FA0A9B900F936C2 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B00480B52F46F76C00EAF81B /* Products */;
 			projectDirPath = "";
@@ -266,6 +272,10 @@
 			isa = PBXTargetDependency;
 			target = B00480B32F46F76C00EAF81B /* Liftlog */;
 			targetProxy = B00480D12F46F76D00EAF81B /* PBXContainerItemProxy */;
+		};
+		B0BC52412FA0A9F700F936C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = B0BC52402FA0A9F700F936C2 /* SwiftLintBuildTool */;
 		};
 /* End PBXTargetDependency section */
 
@@ -641,6 +651,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B0BC523F2FA0A9B900F936C2 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/GayleDunham/SwiftLintPlugin";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B0BC52402FA0A9F700F936C2 /* SwiftLintBuildTool */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B0BC523F2FA0A9B900F936C2 /* XCRemoteSwiftPackageReference "SwiftLintPlugin" */;
+			productName = "plugin:SwiftLintBuildTool";
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B00480AC2F46F76C00EAF81B /* Project object */;
 }

@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct AddEditWorkoutView: View {
-
     let onSave: (WorkoutModel) -> Void
     let viewModel: AddEditWorkoutViewModel
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
 
     init(
         viewModel: AddEditWorkoutViewModel,
@@ -21,11 +21,11 @@ struct AddEditWorkoutView: View {
         self.onSave = onSave
         self.viewModel = viewModel
     }
-    
+
     private var workoutDetailsSection: some View {
         Section {
             TextField(
-                String(localized: "Workout Name"),
+                AppLocalization.workoutName,
                 text: Binding.init(
                     get: {
                         viewModel.name
@@ -34,7 +34,7 @@ struct AddEditWorkoutView: View {
                 )
             )
             DatePicker(
-                String(localized: "Date"),
+                AppLocalization.date,
                 selection: Binding.init(
                     get: {
                         viewModel.date
@@ -44,7 +44,7 @@ struct AddEditWorkoutView: View {
                 displayedComponents: .date
             )
             TextField(
-                String(localized: "Notes (optional)"),
+                AppLocalization.notesOptional,
                 text: Binding.init(
                     get: {
                         viewModel.notes
@@ -56,9 +56,8 @@ struct AddEditWorkoutView: View {
             .lineLimit(1...3)
         }
     }
-    
-    @ViewBuilder
-    private var selectedTags: some View {
+
+    @ViewBuilder private var selectedTags: some View {
         if !viewModel.selectedTagIDs.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
@@ -68,39 +67,35 @@ struct AddEditWorkoutView: View {
                     ) { tag in
                         TagChipView(
                             tag: tag,
-                            isSelected: true,
-                            onTap: { viewModel.toggleTag(tag) }
-                        )
+                            isSelected: true
+                        ) { viewModel.toggleTag(tag) }
                         .padding(4)
                     }
                 }
             }
         }
     }
-    
-    @ViewBuilder
-    private var unselectedTags: some View {
+
+    @ViewBuilder private var unselectedTags: some View {
         if !viewModel.unselectedTags.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    ForEach(viewModel.unselectedTags, id: \.self) {
-                        tag in
+                    ForEach(viewModel.unselectedTags, id: \.self) { tag in
                         TagChipView(
                             tag: tag,
-                            isSelected: false,
-                            onTap: { viewModel.toggleTag(tag) }
-                        )
+                            isSelected: false
+                        ) { viewModel.toggleTag(tag) }
                         .padding(4)
                     }
                 }
             }
         }
     }
-    
+
     private var tagCreation: some View {
         HStack {
             TextField(
-                String(localized: "New tag"),
+                AppLocalization.newTag,
                 text:
                     Binding.init(
                         get: { viewModel.newTagName },
@@ -108,7 +103,7 @@ struct AddEditWorkoutView: View {
                     )
             )
             Button {
-                Task { await viewModel.createTag() }
+                viewModel.createTag()
             } label: {
                 Image(systemName: Images.plusCircle)
             }
@@ -120,15 +115,14 @@ struct AddEditWorkoutView: View {
             .buttonStyle(.plain)
         }
     }
-    
+
     private var navTitle: String {
         viewModel.isEditing
-            ? String(localized: "Edit Workout")
-            : String(localized: "Create Workout")
+            ? AppLocalization.editWorkout
+            : AppLocalization.createWorkout
     }
-    
-    @ToolbarContentBuilder
-    private var addEditToolbarContent: some ToolbarContent {
+
+    @ToolbarContentBuilder private var addEditToolbarContent: some ToolbarContent {
         ToolbarItem(
             id: "create.workout.cancel",
             placement: .topBarLeading
@@ -155,31 +149,33 @@ struct AddEditWorkoutView: View {
             Form {
                 workoutDetailsSection
 
-                Section(String(localized: "Tags")) {
-                    selectedTags
-
-                    unselectedTags
-
+                Section(AppLocalization.tags) {
+                    if viewModel.isLoading {
+                        ProgressView()
+                    } else {
+                        selectedTags
+                        unselectedTags
+                    }
                     tagCreation
                 }
             }
+            .contentMargins(.horizontal, 8, for: .scrollContent)
             .scrollDismissesKeyboard(.interactively)
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { addEditToolbarContent }
-            .task {
-                await viewModel.loadTags()
-            }
+            .task { await viewModel.loadTags() }
         }
     }
 }
 
 #Preview {
+    let tagRepository = MockTagRepository()
     AddEditWorkoutView(
         viewModel: AddEditWorkoutViewModel(
-            tagRepository: MockTagRepository(),
+            tagRepository: tagRepository,
+            manageTagUseCase: ManageWorkoutTagsUseCase(workoutRepository: MockWorkoutRepository(), tagRepository: tagRepository),
             workout: WorkoutModel.mock
-        ),
-        onSave: { _ in }
-    )
+        )
+    ) { _ in }
 }

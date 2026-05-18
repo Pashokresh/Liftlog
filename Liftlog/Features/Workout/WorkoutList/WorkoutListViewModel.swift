@@ -13,21 +13,28 @@ import SwiftUI
 final class WorkoutListViewModel {
     private(set) var workouts: [WorkoutModel] = []
     private(set) var availableTags: [TagModel] = []
+    private(set) var isLoading = false
     private(set) var error: Error?
     var selectedTagIDs: Set<UUID> = .init()
-    
+
     var editingWorkout: WorkoutModel?
 
     private var workoutRepository: WorkoutRepositoryProtocol
     private var tagRepository: TagRepositoryProtocol
+    private var deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
 
-    init(workoutRepository: WorkoutRepositoryProtocol, tagRepository: TagRepositoryProtocol) {
+    init(
+        workoutRepository: WorkoutRepositoryProtocol,
+        tagRepository: TagRepositoryProtocol,
+        deleteWorkoutUseCase: DeleteWorkoutUseCaseProtocol
+    ) {
         self.workoutRepository = workoutRepository
         self.tagRepository = tagRepository
+        self.deleteWorkoutUseCase = deleteWorkoutUseCase
     }
-    
+
     // MARK: - Workout
-    
+
     var filteredWorkouts: [WorkoutModel] {
         guard !selectedTagIDs.isEmpty else { return workouts }
         return workouts.filter { workout in
@@ -36,6 +43,8 @@ final class WorkoutListViewModel {
     }
 
     func loadWorkouts() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             workouts = try await workoutRepository.fetchAll()
         } catch {
@@ -46,11 +55,13 @@ final class WorkoutListViewModel {
     func deleteWorkout(_ id: UUID) {
         Task {
             do {
-                try await workoutRepository.delete(id)
+                try await deleteWorkoutUseCase.execute(workoutId: id)
 
                 withAnimation {
                     workouts.removeAll { $0.id == id }
                 }
+            } catch DomainError.workoutNotFound {
+                self.error = DomainError.workoutNotFound
             } catch {
                 self.error = error
             }
@@ -86,9 +97,9 @@ final class WorkoutListViewModel {
             }
         }
     }
-    
+
     // MARK: - Work with Tags
-    
+
     func loadTags() async {
         do {
             availableTags = try await tagRepository.fetchAll()
@@ -96,7 +107,7 @@ final class WorkoutListViewModel {
             self.error = error
         }
     }
-    
+
     func toggleTag(_ tag: TagModel) {
         if isTagSelected(tag) {
             selectedTagIDs.remove(tag.id)
@@ -104,11 +115,11 @@ final class WorkoutListViewModel {
             selectedTagIDs.insert(tag.id)
         }
     }
-    
+
     func isTagSelected(_ tag: TagModel) -> Bool {
         selectedTagIDs.contains(tag.id)
     }
-    
+
     // MARK: - Work with errors
 
     func nullifyError() {

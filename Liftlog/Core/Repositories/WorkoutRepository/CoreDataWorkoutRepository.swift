@@ -8,8 +8,8 @@
 import CoreData
 import Foundation
 
-final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
-
+final class CoreDataWorkoutRepository:
+    WorkoutRepositoryProtocol, WorkoutExerciseRepositoryProtocol, WorkoutSetRepositoryProtocol {
     private let context: NSManagedObjectContext
 
     init(context: NSManagedObjectContext) {
@@ -23,19 +23,19 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
                 NSSortDescriptor(key: "date", ascending: false)
             ]
 
-            return try self.context.fetch(request).map { $0.toDomain() }
+            return try self.context.fetchOrThrow(request).map { try $0.toDomain() }
         }
     }
-    
+
     func fetch(_ id: UUID) async throws -> WorkoutModel {
         try await context.perform {
-            let request = fetchRequest(for: Workout.self, with: [id])
-            
-            guard let workout = try self.context.fetch(request).first else {
-                throw LiftlogError.failure(description: String(localized: "Workout not found"))
+            let request = try fetchRequest(for: Workout.self, with: [id])
+
+            guard let workout = try self.context.fetchOrThrow(request).first else {
+                throw RepositoryError.notFound(entity: "\(Workout.self)")
             }
-            
-            return workout.toDomain()
+
+            return try workout.toDomain()
         }
     }
 
@@ -47,22 +47,22 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
             workout.name = workoutModel.name
             workout.date = workoutModel.date
             workout.notes = workoutModel.notes
-            
+
             if !workoutModel.tags.isEmpty {
-                let tagsToAddRequest = fetchRequest(
+                let tagsToAddRequest = try fetchRequest(
                     for: Tag.self,
                     with: workoutModel.tags.map { $0.id }
                 )
-                let tagsToAdd = try self.context.fetch(tagsToAddRequest)
-                
+                let tagsToAdd = try self.context.fetchOrThrow(tagsToAddRequest)
+
                 tagsToAdd.forEach {
                     workout.addToTags($0)
                 }
             }
-            
-            try self.context.save()
 
-            return workout.toDomain()
+            try self.context.saveOrThrow()
+
+            return try workout.toDomain()
         }
     }
 
@@ -82,7 +82,7 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
 
             /// * Removing old ones *
             currentTags
-                .filter { !newTagIDs.contains($0.id!) }
+                .filter { !newTagIDs.contains($0.id ?? UUID()) }
                 .forEach { workout.removeFromTags($0) }
 
             /// * Adding new ones *
@@ -90,177 +90,178 @@ final class CoreDataWorkoutRepository: WorkoutRepositoryProtocol {
                 .filter { !currentTagIds.contains($0.id) }
                 .map(\.id)
 
-            let tagsToAddRequest = fetchRequest(
+            let tagsToAddRequest = try fetchRequest(
                 for: Tag.self,
                 with: tagsToAddIDs
             )
-            let tagsToAdd = try self.context.fetch(tagsToAddRequest)
+            let tagsToAdd = try self.context.fetchOrThrow(tagsToAddRequest)
             tagsToAdd.forEach { workout.addToTags($0) }
 
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
     func delete(_ id: UUID) async throws {
-        try await context.perform {
-            let workout = try self.fetchWorkout(id)
+        let workoutID = try await self.fetchEntityID(type: Workout.self, id: id)
 
+        try await context.perform {
+            let workout = self.context.object(with: workoutID)
             self.context.delete(workout)
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
-    func addExercise(_ exerciseModel: WorkoutExerciseModel, to workoutID: UUID)
-        async throws
-    {
+    func addExercises(
+        _ exerciseModels: [WorkoutExerciseModel],
+        to workoutID: UUID
+    )
+        async throws {
         try await context.perform {
             let workout = try self.fetchWorkout(workoutID)
+            let exerciseIds = exerciseModels.map { $0.exercise.id }
 
-            guard
-                let exercise = try self.context.fetch(
-                    fetchRequest(
-                        for: Exercise.self,
-                        with: [exerciseModel.exercise.id]
-                    )
-                ).first
-            else {
-                throw LiftlogError.failure(
-                    description: String(localized: "Exercise was not found")
-                )
+            let exercises = try self.context.fetchOrThrow(
+                fetchRequest(for: Exercise.self, with: exerciseIds)
+            )
+
+            guard exercises.count == exerciseIds.count else {
+                throw RepositoryError.notFound(entity: "Exercise")
             }
 
-            let workoutExercise = WorkoutExercise(context: self.context)
-            workoutExercise.id = exerciseModel.id
-            workoutExercise.order = Int16(exerciseModel.order)
-            workoutExercise.workout = workout
-            workoutExercise.exercise = exercise
+            let exerciseMap = Dictionary(
+                uniqueKeysWithValues: exercises.map { ($0.id, $0) }
+            )
 
-            try self.context.save()
+            for exerciseModel in exerciseModels {
+                guard let exercise = exerciseMap[exerciseModel.exercise.id]
+                else {
+                    throw RepositoryError.notFound(entity: "Exercise")
+                }
+                let workoutExercise = WorkoutExercise(context: self.context)
+                workoutExercise.id = exerciseModel.id
+                workoutExercise.order = Int16(exerciseModel.order)
+                workoutExercise.workout = workout
+                workoutExercise.exercise = exercise
+            }
+
+            try self.context.saveOrThrow()
         }
     }
 
     func updateExercise(_ model: WorkoutExerciseModel, in workoutID: UUID)
-        async throws
-    {
+        async throws {
         try await context.perform {
-            let request = fetchRequest(
+            let request = try fetchRequest(
                 for: WorkoutExercise.self,
                 with: [model.id]
             )
 
-            guard let workoutExercise = try self.context.fetch(request).first
+            guard let workoutExercise = try self.context.fetchOrThrow(request).first
             else {
-                throw LiftlogError.noData(
-                    description: String("Exercise was not found")
-                )
+                throw RepositoryError.notFound(entity: "Exercise")
             }
 
             workoutExercise.order = Int16(model.order)
 
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
     func deleteExercise(_ id: UUID) async throws {
-        try await context.perform {
-            let workoutExercise = try self.fetchWorkoutExercise(id)
+        let workoutExerciseID = try await self.fetchEntityID(type: WorkoutExercise.self, id: id)
 
+        try await context.perform {
+            let workoutExercise = self.context.object(with: workoutExerciseID)
             self.context.delete(workoutExercise)
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
     func addSet(_ setModel: ExerciseSetModel, to workoutExerciseID: UUID)
-        async throws
-    {
+        async throws {
         try await context.perform {
-            let workoutExercise = try self.fetchWorkoutExercise(
-                workoutExerciseID
+            let request = try fetchRequest(
+                for: WorkoutExercise.self,
+                with: [workoutExerciseID]
             )
+
+            guard let workoutExercise = try self.context.fetchOrThrow(request).first
+            else {
+                throw RepositoryError.notFound(entity: "Set")
+            }
 
             let set = ExerciseSet(context: self.context)
             set.id = setModel.id
             set.order = Int16(setModel.order)
             set.note = setModel.note
+            set.isWarmup = setModel.isWarmup
             set.workoutExercise = workoutExercise
 
             switch setModel.type {
-            case .weighted(let reps, let weight):
+            case let .weighted(reps, weight):
                 set.reps = Int16(reps)
                 set.weight = weight
             case .timed(let duration):
                 set.duration = duration
             }
 
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
     func updateSet(_ model: ExerciseSetModel) async throws {
         try await context.perform {
-            let set = try self.fetchSet(model.id)
+            let request = try fetchRequest(for: ExerciseSet.self, with: [model.id])
+
+            guard let set = try self.context.fetchOrThrow(request).first else {
+                throw RepositoryError.notFound(entity: "Set")
+            }
 
             set.id = model.id
             set.order = Int16(model.order)
             set.note = model.note
+            set.isWarmup = model.isWarmup
 
             switch model.type {
-            case .weighted(let reps, let weight):
+            case let .weighted(reps, weight):
                 set.reps = Int16(reps)
                 set.weight = weight
             case .timed(let duration):
                 set.duration = duration
             }
 
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 
     func deleteSet(_ id: UUID) async throws {
+        let setID = try await self.fetchEntityID(type: ExerciseSet.self, id: id)
         try await context.perform {
-            let set = try self.fetchSet(id)
-
+            let set = self.context.object(with: setID)
             self.context.delete(set)
-            try self.context.save()
+            try self.context.saveOrThrow()
         }
     }
 }
 
 extension CoreDataWorkoutRepository {
-    fileprivate func fetchSet(_ id: UUID) throws -> ExerciseSet {
-        let request = fetchRequest(for: ExerciseSet.self, with: [id])
-
-        guard let set = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: String(localized: "Set was not found")
-            )
-        }
-
-        return set
-    }
-
-    fileprivate func fetchWorkoutExercise(_ id: UUID) throws -> WorkoutExercise
-    {
-        let request = fetchRequest(for: WorkoutExercise.self, with: [id])
-
-        guard let workoutExercise = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: String(localized: "Set was not found")
-            )
-        }
-
-        return workoutExercise
-    }
-
-    fileprivate func fetchWorkout(_ id: UUID) throws -> Workout {
-        let request = fetchRequest(for: Workout.self, with: [id])
+    func fetchWorkout(_ id: UUID) throws -> Workout {
+        let request = try fetchRequest(for: Workout.self, with: [id])
 
         guard let workout = try context.fetch(request).first else {
-            throw LiftlogError.noData(
-                description: String(localized: "Set was not found")
-            )
+            throw RepositoryError.notFound(entity: "Workout")
         }
 
         return workout
+    }
+
+    private func fetchEntityID<T: NSManagedObject>(type: T.Type, id: UUID) async throws -> NSManagedObjectID {
+        try await context.perform {
+            let request = try fetchRequest(for: type, with: [id])
+            guard let entity = try? self.context.fetch(request).first else {
+                throw RepositoryError.notFound(entity: "\(T.self)")
+            }
+            return entity.objectID
+        }
     }
 }

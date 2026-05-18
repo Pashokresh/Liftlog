@@ -7,17 +7,24 @@
 
 import Testing
 @testable import Liftlog
+import Foundation
 
 @Suite("ExerciseLibraryViewModel")
 @MainActor
 struct ExerciseLibraryViewModelTest {
-    
     var repository: MockExerciseRepository
+    var fetchExerciseLibraryUseCase: FetchExerciseLibraryUseCaseProtocol
+    var manageExerciseUseCase: ManageExerciseUseCaseProtocol
     var viewModel: ExerciseLibraryViewModel
-    
+
     init() {
-        repository = .mock
-        viewModel = .init(repository: repository)
+        repository = MockExerciseRepository()
+        fetchExerciseLibraryUseCase = FetchExerciseLibraryUseCase(repository: repository)
+        manageExerciseUseCase = ManageExerciseUseCase(repository: repository)
+        viewModel = .init(
+            fetchExerciseLibraryUseCase: fetchExerciseLibraryUseCase,
+            manageExerciseUseCase: manageExerciseUseCase
+        )
     }
 
     @Test("loadExercises fills the list")
@@ -28,48 +35,47 @@ struct ExerciseLibraryViewModelTest {
 
     @Test("createExercise adds a new exercise into array")
     func createExercise() async {
-        let name = "New Exercise"
-        
         await viewModel.loadExercises()
         let countBefore = viewModel.exercises.count
-        
-        await viewModel.createExercise(name: name, type: .reps, description: nil)
-        
+
+        await viewModel.createExercise(.mock)
+
         #expect(countBefore + 1 == viewModel.exercises.count)
-        #expect(viewModel.exercises.last?.name == name)
+        #expect(viewModel.exercises.last?.name == ExerciseModel.mock.name)
     }
-    
+
     @Test("deleteExercise removes an exercise from array")
     func deleteExercise() async {
         await viewModel.loadExercises()
         let first = viewModel.exercises[0]
-        await viewModel.deleteExercise(first.id)
+        await viewModel.deleteExercise(first)
         #expect(!viewModel.exercises.contains { $0.id == first.id })
     }
-    
+
     @Test("createExercise doesn't let add exercise with empty name")
     func createExerciseWithEmptyName() async {
         await viewModel.loadExercises()
         let countBefore = viewModel.exercises.count
-        
-        await viewModel.createExercise(name: "", type: .reps, description: nil)
-        
+        let exercise = ExerciseModel(id: UUID(), name: "", description: nil, type: .reps, muscleGroup: .chest)
+
+        await viewModel.createExercise(exercise)
+
         #expect(countBefore == viewModel.exercises.count)
     }
-    
+
     @Test("Repository error get's into VM's error")
     func repositoryErrorPropagates() async {
         repository.shouldThrow = true
         await viewModel.loadExercises()
         #expect(viewModel.error != nil)
     }
-    
+
     @Test("nullifyError sets error to nil")
     func nullifyError() async {
         repository.shouldThrow = true
         await viewModel.loadExercises()
         #expect(viewModel.error != nil)
-        
+
         viewModel.nullifyError()
         #expect(viewModel.error == nil)
     }

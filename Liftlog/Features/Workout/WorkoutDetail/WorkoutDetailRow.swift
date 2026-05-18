@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct WorkoutDetailRow: View {
-
     let workoutExercise: WorkoutExerciseModel
 
     private var isComplete: Bool {
@@ -16,7 +15,7 @@ struct WorkoutDetailRow: View {
     }
 
     var body: some View {
-        HStack {
+        HStack(spacing: 8) {
             Image(
                 systemName: isComplete
                 ? Images.checkmarkCircle : Images.emptyCircle
@@ -28,8 +27,10 @@ struct WorkoutDetailRow: View {
                     .rotationEffect(.degrees(isComplete ? 360 : 270))
             }
             Text(workoutExercise.exercise.name)
-                .font(.title2)
+                .font(.title3)
         }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
     }
 }
 

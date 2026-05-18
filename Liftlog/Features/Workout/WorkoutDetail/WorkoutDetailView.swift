@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct WorkoutDetailView: View {
-
-    @Environment(ViewModelFactory.self) private var viewModelFactory
+    @Environment(ViewModelFactory.self)
+    private var viewModelFactory
 
     @State private var viewModel: WorkoutDetailViewModel
     @State private var isAddingExercise = false
@@ -18,77 +18,63 @@ struct WorkoutDetailView: View {
         _viewModel = .init(initialValue: viewModel)
     }
 
-    @ToolbarContentBuilder
-    private var toolbarContent: some ToolbarContent {
+    @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
+        if viewModel.isLoading {
+            ToolbarItem(placement: .topBarLeading) {
+                ProgressView()
+                    .controlSize(.small)
+            }
+        }
+
         if !viewModel.workout.exercises.isEmpty {
             ToolbarItem(placement: .topBarTrailing) {
                 EditButton()
             }
         }
 
-        ToolbarItem(placement: .bottomBar) {
-            AddBottomBarButton(
-                with: String(localized: "Add Exercise")
-            ) {
+        ToolbarItem(placement: .topBarTrailing) {
+            AddTopBarButton {
                 isAddingExercise = true
             }
         }
     }
 
-    @ViewBuilder
-    private var emptyState: some View {
+    @ViewBuilder private var emptyState: some View {
         if viewModel.workout.exercises.isEmpty {
             ContentUnavailableView(
-                String(localized: "No Exercises yet"),
+                AppLocalization.noExercisesYet,
                 systemImage: Images.figureStrengthTraining,
-                description: Text(
-                    String(localized: "Start by adding exercises here")
-                )
+                description: Text(AppLocalization.startByAddingExercisesHere)
             )
         }
     }
 
     private var exerciseLibrarySheet: some View {
-        ExerciseLibraryView(
-            viewModel: viewModelFactory.makeExerciseLibraryViewModel(),
-            onSelect: { exercise in
-                Task {
-                    await viewModel.addExercise(exercise)
-                }
-                isAddingExercise = false
-            }
-        )
+        ExercisePickerView(
+            viewModel: viewModelFactory.makeExercisePickerViewModel()
+        ) { newExercises in
+            viewModel.addExercises(newExercises.elements)
+        }
     }
 
     var body: some View {
         List {
             ForEach(viewModel.workout.exercises) { exercise in
                 NavigationLink(
-                    value: Route.exerciseSet(exercise),
-                    label: {
-                        WorkoutDetailRow(workoutExercise: exercise)
-                    }
-                )
+                    value: Route.exerciseSet(exercise)
+                ) {
+                    WorkoutDetailRow(workoutExercise: exercise)
+                }
             }
             .onDelete { indexSet in
                 indexSet.forEach { index in
-                    Task {
-                        await viewModel.deleteExercise(
-                            viewModel.workout.exercises[index].id
-                        )
-                    }
+                    viewModel.deleteExercise(viewModel.workout.exercises[index].id)
                 }
             }
             .onMove { source, destination in
-                Task {
-                    await viewModel.moveExercise(
-                        fromSource: source,
-                        to: destination
-                    )
-                }
+                viewModel.moveExercise(fromSource: source, to: destination)
             }
         }
-        .environment(\.defaultMinListRowHeight, 80)
         .navigationTitle(viewModel.workout.name)
         .adaptiveNavigationSubtitle(
             viewModel.workout.date.formatted(date: .abbreviated, time: .omitted)
@@ -97,38 +83,36 @@ struct WorkoutDetailView: View {
         .overlay { emptyState }
         .sheet(isPresented: $isAddingExercise) { exerciseLibrarySheet }
         .alert(
-            String(localized: "Error"),
+            AppLocalization.error,
             isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button("OK") {
+            Button(AppLocalization.okay) {
                 viewModel.nullifyError()
             }
         } message: {
             Text(viewModel.error?.localizedDescription ?? "")
         }
         .onAppear {
-            Task {
-                await viewModel.reloadWorkout()
-            }
+            viewModel.onAppear()
         }
     }
 }
 
 #Preview {
+    let mockRepo = MockWorkoutRepository(workouts: WorkoutModel.mocks)
     NavigationStack {
         WorkoutDetailView(
             viewModel: WorkoutDetailViewModel(
                 workout: WorkoutModel.mock,
-                repository: MockWorkoutRepository()
+                workoutRepository: mockRepo,
+                exerciseRepository: mockRepo,
+                setRepository: mockRepo,
+                addExercisesUseCase: AppDependencies.mock.addExercisesToWorkoutUseCase
             )
         )
     }
-    .environment(
-        ViewModelFactory(
-            dependencies: .mock
-        )
-    )
+    .environment(ViewModelFactory(dependencies: .mock))
 }

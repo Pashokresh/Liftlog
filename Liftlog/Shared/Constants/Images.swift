@@ -5,8 +5,7 @@
 //  Created by Pavel Martynenkov on 05.03.26.
 //
 
-final class Images {
-    
+enum Images {
     static let checkmarkCircle = "checkmark.circle.fill"
     static let emptyCircle = "circle"
     static let plusCircle = "plus.circle.fill"
@@ -20,4 +19,7 @@ final class Images {
     static let stopwatch = "stopwatch"
     static let xmark = "xmark"
     static let copy = "document.on.document"
+    static let chart = "chart.line.uptrend.xyaxis"
+
+    static func calendar(day: Int) -> String { "\(day).calendar" }
 }

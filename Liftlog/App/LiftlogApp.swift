@@ -6,14 +6,13 @@
 //
 
 import SwiftUI
-import CoreData
 
 @main
 struct LiftlogApp: App {
     @State private var factory = ViewModelFactory(
-        dependencies: AppDependencies()
+        dependencies: CompositionRoot.makeAppDependencies()
     )
-    
+
     var body: some Scene {
         WindowGroup {
             RootView()

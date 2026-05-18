@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct TagSortButton: View {
-
     var isSelected: Bool
     var tag: TagModel
     var action: () -> Void

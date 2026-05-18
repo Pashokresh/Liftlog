@@ -9,7 +9,6 @@ import Foundation
 
 @Observable
 final class ViewModelFactory {
-
     private let dependencies: AppDependencies
 
     init(dependencies: AppDependencies) {
@@ -19,39 +18,61 @@ final class ViewModelFactory {
     func makeWorkoutListViewModel() -> WorkoutListViewModel {
         WorkoutListViewModel(
             workoutRepository: dependencies.workoutRepository,
-            tagRepository: dependencies.tagRepository
+            tagRepository: dependencies.tagRepository,
+            deleteWorkoutUseCase: dependencies.deleteWorkoutUseCase
         )
     }
 
     func makeExerciseLibraryViewModel() -> ExerciseLibraryViewModel {
-        ExerciseLibraryViewModel(repository: dependencies.exerciseRepository)
+        ExerciseLibraryViewModel(
+            fetchExerciseLibraryUseCase: dependencies
+                .fetchExerciseLibraryUseCase,
+            manageExerciseUseCase: dependencies.manageExerciseUseCase
+        )
+    }
+
+    func makeExercisePickerViewModel() -> ExercisePickerViewModel {
+        ExercisePickerViewModel(
+            fetchExerciseLibraryUseCase: dependencies
+                .fetchExerciseLibraryUseCase,
+            manageExerciseUseCase: dependencies.manageExerciseUseCase
+        )
     }
 
     func makeWorkoutDetailViewModel(_ workout: WorkoutModel)
-        -> WorkoutDetailViewModel
-    {
+        -> WorkoutDetailViewModel {
         WorkoutDetailViewModel(
             workout: workout,
-            repository: dependencies.workoutRepository
+            workoutRepository: dependencies.workoutRepository,
+            exerciseRepository: dependencies.workoutExerciseRepository,
+            setRepository: dependencies.workoutSetRepository,
+            addExercisesUseCase: dependencies.addExercisesToWorkoutUseCase
         )
     }
 
     func makeExerciseSetViewModel(workoutExercise: WorkoutExerciseModel)
-        -> ExerciseSetViewModel
-    {
+        -> ExerciseSetViewModel {
         ExerciseSetViewModel(
             workoutExercise: workoutExercise,
-            workoutRepository: dependencies.workoutRepository,
+            setRepository: dependencies.workoutSetRepository,
             exerciseRepository: dependencies.exerciseRepository
         )
     }
 
     func makeAddEditWorkoutViewModel(workout: WorkoutModel? = nil)
-        -> AddEditWorkoutViewModel
-    {
+        -> AddEditWorkoutViewModel {
         AddEditWorkoutViewModel(
             tagRepository: dependencies.tagRepository,
+            manageTagUseCase: dependencies.manageWorkoutTagsUseCase,
             workout: workout
+        )
+    }
+
+    func makeExerciseProgressViewModel(exercise: ExerciseModel)
+        -> ExerciseProgressViewModel {
+        ExerciseProgressViewModel(
+            exercise: exercise,
+            fetchProgressUseCase: dependencies.fetchExerciseProgressUseCase
         )
     }
 }

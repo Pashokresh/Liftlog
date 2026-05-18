@@ -9,15 +9,24 @@ import CoreData
 import Foundation
 
 extension ExerciseSet {
+    func toDomain() throws -> ExerciseSetModel {
+        guard let id = id else {
+            throw RepositoryError.invalidData(
+                description: AppLocalization.missingRecordID
+            )
+        }
 
-    func toDomain() -> ExerciseSetModel {
-        ExerciseSetModel(
-            id: id ?? UUID(),
+        return ExerciseSetModel(
+            id: id,
             order: Int(order),
             note: note,
+            // SetType is discriminated by duration because CoreData stores both fields on the
+            // same entity. A duration > 0 unambiguously identifies a timed set; otherwise the
+            // set is treated as weighted even if reps and weight are also zero (empty draft set).
             type: duration > 0
                 ? .timed(duration: duration)
-                : .weighted(reps: Int(reps), weight: weight)
+                : .weighted(reps: Int(reps), weight: weight),
+            isWarmup: isWarmup
         )
     }
 }

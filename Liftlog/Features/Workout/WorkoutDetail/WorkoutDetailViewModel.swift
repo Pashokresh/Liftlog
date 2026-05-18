@@ -11,20 +11,102 @@ import SwiftUI
 @Observable
 @MainActor
 final class WorkoutDetailViewModel {
-
     private(set) var workout: WorkoutModel
+    private(set) var isLoading = false
     private(set) var error: Error?
 
-    private let repository: WorkoutRepositoryProtocol
+    private let workoutRepository: WorkoutRepositoryProtocol
+    private let exerciseRepository: WorkoutExerciseRepositoryProtocol
+    private let setRepository: WorkoutSetRepositoryProtocol
+    private let addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol
 
-    init(workout: WorkoutModel, repository: WorkoutRepositoryProtocol) {
+    private var loadTask: Task<Void, Never>?
+
+    init(
+        workout: WorkoutModel,
+        workoutRepository: WorkoutRepositoryProtocol,
+        exerciseRepository: WorkoutExerciseRepositoryProtocol,
+        setRepository: WorkoutSetRepositoryProtocol,
+        addExercisesUseCase: AddExercisesToWorkoutUseCaseProtocol
+    ) {
         self.workout = workout
-        self.repository = repository
+        self.workoutRepository = workoutRepository
+        self.exerciseRepository = exerciseRepository
+        self.setRepository = setRepository
+        self.addExercisesUseCase = addExercisesUseCase
     }
-    
+
+    isolated deinit {
+        cleanUp()
+    }
+
+    func cleanUp() {
+        loadTask?.cancel()
+    }
+
+    private var workoutExerciseIds: Set<UUID> {
+        Set.init(workout.exercises.map(\.exercise.id))
+    }
+
+    func onAppear() {
+        loadTask?.cancel()
+
+        loadTask = Task {
+            await reloadWorkout()
+        }
+    }
+
+    func addExercises(_ exercises: [ExerciseModel]) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await addExercises(exercises)
+        }
+    }
+
+    func deleteExercise(_ id: UUID) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await deleteExercise(id)
+        }
+    }
+
+    func moveExercise(fromSource: IndexSet, to destination: Int) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await moveExercise(fromSource: fromSource, to: destination)
+        }
+    }
+
+    func addSet(_ set: ExerciseSetModel, to workoutExerciseID: UUID) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await addSet(set, to: workoutExerciseID)
+        }
+    }
+
+    func deleteSet(_ set: UUID, from workoutExerciseID: UUID) {
+        Task { [weak self] in
+            guard let self else { return }
+
+            await deleteSet(set, from: workoutExerciseID)
+        }
+    }
+
+    func nullifyError() {
+        error = nil
+    }
+
+    // MARK: Async Methods
+
     func reloadWorkout() async {
+        isLoading = true
+        defer { isLoading = false }
         do {
-            let updated = try await repository.fetch(workout.id)
+            let updated = try await workoutRepository.fetch(workout.id)
             withAnimation(.easeInOut) {
                 workout = updated
             }
@@ -33,25 +115,19 @@ final class WorkoutDetailViewModel {
         }
     }
 
-    func addExercise(_ exercise: ExerciseModel) async {
-        if workout.exercises.contains(where: { $0.exercise.id == exercise.id })
-        {
-            error = LiftlogError.failure(
-                description: String(localized: "Exercise already added")
-            )
-            return
-        }
-
-        let workoutExercise = WorkoutExerciseModel(
-            id: UUID(),
-            order: workout.exercises.count,
-            exercise: exercise,
-            sets: []
-        )
-
+    func addExercises(_ exercises: [ExerciseModel]) async {
         do {
-            try await repository.addExercise(workoutExercise, to: workout.id)
-            workout.exercises.append(workoutExercise)
+            let added = try await addExercisesUseCase.execute(
+                exercises: exercises,
+                workoutID: workout.id,
+                currentExercises: workout.exercises
+            )
+
+            withAnimation {
+                workout.exercises.append(contentsOf: added)
+            }
+        } catch DomainError.duplicateExercise {
+            error = DomainError.duplicateExercise
         } catch {
             self.error = error
         }
@@ -59,9 +135,9 @@ final class WorkoutDetailViewModel {
 
     func deleteExercise(_ id: UUID) async {
         do {
-            try await repository.deleteExercise(id)
+            try await exerciseRepository.deleteExercise(id)
             withAnimation {
-                workout.exercises.removeAll(where: { $0.id == id })
+                workout.exercises.removeAll { $0.id == id }
             }
         } catch {
             self.error = error
@@ -77,7 +153,7 @@ final class WorkoutDetailViewModel {
                 updated.order = index
 
                 taskGroup.addTask {
-                    try await self.repository.updateExercise(
+                    try await self.exerciseRepository.updateExercise(
                         updated,
                         in: self.workout.id
                     )
@@ -97,7 +173,7 @@ final class WorkoutDetailViewModel {
 
     func addSet(_ set: ExerciseSetModel, to workoutExerciseID: UUID) async {
         do {
-            try await repository.addSet(set, to: workoutExerciseID)
+            try await setRepository.addSet(set, to: workoutExerciseID)
             withAnimation {
                 guard
                     let index = workout.exercises.firstIndex(where: {
@@ -113,7 +189,7 @@ final class WorkoutDetailViewModel {
 
     func deleteSet(_ id: UUID, from workoutExerciseID: UUID) async {
         do {
-            try await repository.deleteSet(id)
+            try await setRepository.deleteSet(id)
             withAnimation {
                 guard
                     let index = workout.exercises.firstIndex(where: {
@@ -125,9 +201,5 @@ final class WorkoutDetailViewModel {
         } catch {
             self.error = error
         }
-    }
-
-    func nullifyError() {
-        error = nil
     }
 }

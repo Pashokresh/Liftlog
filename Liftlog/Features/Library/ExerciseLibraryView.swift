@@ -11,87 +11,23 @@ struct ExerciseLibraryView: View {
     @State private var viewModel: ExerciseLibraryViewModel
 
     @State private var isAddingExercise = false
-    @State private var searchText = ""
     @State private var exerciseToDelete: ExerciseModel?
 
-    let onSelect: ((ExerciseModel) -> Void)?
-
     init(
-        viewModel: ExerciseLibraryViewModel,
-        onSelect: ((ExerciseModel) -> Void)? = nil
+        viewModel: ExerciseLibraryViewModel
     ) {
         _viewModel = .init(
             initialValue: viewModel
         )
-
-        self.onSelect = onSelect
-    }
-
-    private var filteredExercises: [ExerciseModel] {
-        guard !searchText.isEmpty else { return viewModel.exercises }
-        return viewModel.exercises.filter {
-            $0.name.localizedCaseInsensitiveContains(searchText)
-        }
-    }
-
-    private var navigationContent: some View {
-        List(filteredExercises, id: \.id) {
-            exerciseRow($0)
-        }
-        .animation(
-            .easeInOut(duration: 0.3),
-            value: filteredExercises.map { $0.id }
-        )
-        .scrollDismissesKeyboard(.interactively)
-        .environment(\.defaultMinListRowHeight, 80)
-        .overlay { emptyState }
-        .navigationTitle(
-            String(
-                localized: "Exercise Library"
-            )
-        )
-        // TODO: Fix white navigation bar background on search
-        .toolbar { listToolbar }
-        .searchable(
-            text: $searchText,
-            prompt: String(
-                localized: "Search Exercise"
-            )
-        )
-        .sheet(isPresented: $isAddingExercise) { addExerciseSheet }
-        .sheet(item: $viewModel.editingExercise) { editExerciseSheet($0) }
-        .alert(
-            String(localized: "Error"),
-            isPresented: Binding(
-                get: { viewModel.error != nil },
-                set: { if !$0 { viewModel.nullifyError() } }
-            )
-        ) {
-            Button("OK") { viewModel.nullifyError() }
-        } message: {
-            Text(viewModel.error?.localizedDescription ?? "")
-        }
-        .onAppear {
-            Task {
-                await viewModel.loadExercises()
-            }
-        }
     }
 
     @ViewBuilder
     private func exerciseRow(_ exercise: ExerciseModel) -> some View {
-        ExerciseRowView(
-            exercise: exercise
-        )
-        .onRowTap {
-            if let onSelect = onSelect {
-                onSelect(exercise)
-            } else {
-                viewModel.editingExercise = exercise
-            }
-        }
-        .swipeActions {
-            if onSelect == nil {
+        NavigationLink(value: Route.exerciseProgress(exercise)) {
+            ExerciseRowView(
+                exercise: exercise
+            )
+            .swipeActions {
                 SwipeDeleteButton {
                     exerciseToDelete = exercise
                 }
@@ -100,34 +36,25 @@ struct ExerciseLibraryView: View {
                     viewModel.editingExercise = exercise
                 }
             }
-        }
-        .deleteConfirmation(item: $exerciseToDelete) { exercise in
-            Task {
-                await viewModel.deleteExercise(exercise.id)
+            .deleteConfirmation(item: $exerciseToDelete) { exercise in
+                viewModel.deleteExercise(exercise)
             }
         }
     }
 
-    @ViewBuilder
-    private var emptyState: some View {
-        if filteredExercises.isEmpty {
-            if !searchText.isEmpty {
+    @ViewBuilder private var emptyState: some View {
+        if viewModel.isLoading && viewModel.exercises.isEmpty {
+            ProgressView()
+        } else if viewModel.filteredExercises.isEmpty {
+            if !viewModel.searchText.isEmpty {
                 ContentUnavailableView.search
             } else {
-                UnavailableContentView(
-                    title: String(
-                        localized: "No exercises in the library yet."
-                    ),
-                    message: String(
-                        localized: "Tap \"+\" to add a new one."
-                    )
-                )
+                ExerciseLibraryEmptyView()
             }
         }
     }
 
-    @ToolbarContentBuilder
-    private var listToolbar: some ToolbarContent {
+    @ToolbarContentBuilder private var listToolbar: some ToolbarContent {
         ToolbarItem(
             id: "exercise.library.add.new",
             placement: .automatic
@@ -138,16 +65,9 @@ struct ExerciseLibraryView: View {
         }
     }
 
-    @ViewBuilder
-    private var addExerciseSheet: some View {
+    @ViewBuilder private var addExerciseSheet: some View {
         AddEditExerciseView { exercise in
-            Task {
-                await viewModel.createExercise(
-                    name: exercise.name,
-                    type: exercise.type,
-                    description: exercise.description
-                )
-            }
+            viewModel.createExercise(exercise)
         }
         .presentationDetents([.fraction(2 / 3)])
     }
@@ -155,20 +75,56 @@ struct ExerciseLibraryView: View {
     @ViewBuilder
     private func editExerciseSheet(_ exercise: ExerciseModel) -> some View {
         AddEditExerciseView(exercise: exercise) { updatedExercise in
-            Task {
-                await viewModel.updateExercise(updatedExercise)
-            }
+            viewModel.updateExercise(updatedExercise)
         }
         .presentationDetents([.fraction(2 / 3)])
     }
 
     var body: some View {
-        if onSelect != nil {
-            NavigationStack {
-                navigationContent
+        List {
+            ForEach(viewModel.exercisesByMuscleGroup, id: \.group) { item in
+                Section {
+                    ForEach(item.exercises) {
+                        exerciseRow($0)
+                    }
+                } header: {
+                    Text(
+                        item.group?.localizedName ?? AppLocalization.otherGroup
+                    )
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                }
             }
-        } else {
-            navigationContent
+        }
+        .animation(
+            .easeInOut(duration: 0.3),
+            value: viewModel.filteredExercises.map { $0.id }
+        )
+        .scrollDismissesKeyboard(.interactively)
+        .overlay { emptyState }
+        .navigationTitle(
+            AppLocalization.exerciseLibrary
+        )
+        .toolbar { listToolbar }
+        .searchable(
+            text: $viewModel.searchText,
+            prompt: AppLocalization.searchExercise
+        )
+        .sheet(isPresented: $isAddingExercise) { addExerciseSheet }
+        .sheet(item: $viewModel.editingExercise) { editExerciseSheet($0) }
+        .alert(
+            AppLocalization.error,
+            isPresented: Binding(
+                get: { viewModel.error != nil },
+                set: { if !$0 { viewModel.nullifyError() } }
+            )
+        ) {
+            Button(AppLocalization.okay) { viewModel.nullifyError() }
+        } message: {
+            Text(viewModel.error?.localizedDescription ?? "")
+        }
+        .onAppear {
+            viewModel.onAppear()
         }
     }
 }
@@ -177,9 +133,11 @@ struct ExerciseLibraryView: View {
     NavigationStack {
         ExerciseLibraryView(
             viewModel: ExerciseLibraryViewModel(
-                repository: MockExerciseRepository()
-            ),
-            onSelect: nil
+                fetchExerciseLibraryUseCase: AppDependencies.mock
+                    .fetchExerciseLibraryUseCase,
+                manageExerciseUseCase: AppDependencies.mock
+                    .manageExerciseUseCase
+            )
         )
     }
 }

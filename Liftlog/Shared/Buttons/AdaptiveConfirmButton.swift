@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AdaptiveConfirmButton: View {
-
     let action: () -> Void
 
     var body: some View {
@@ -17,7 +16,7 @@ struct AdaptiveConfirmButton: View {
                 action()
             }
         } else {
-            Button(String(localized: "Save")) {
+            Button(AppLocalization.save) {
                 action()
             }
         }

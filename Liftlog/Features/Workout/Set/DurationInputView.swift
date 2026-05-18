@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct DurationInputView: View {
-
     @Binding var duration: Double
 
     @State var minutes: Int = 0
@@ -16,7 +15,6 @@ struct DurationInputView: View {
 
     var body: some View {
         HStack {
-
             HStack(spacing: 8) {
                 Picker("", selection: $minutes) {
                     ForEach(0...300, id: \.self) {
@@ -27,10 +25,11 @@ struct DurationInputView: View {
                 .frame(width: 80)
                 .clipped()
 
-                Text(String(localized: "min"))
+                Text(AppLocalization.min)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)
-
 
             HStack(spacing: 8) {
                 Picker("", selection: $seconds) {
@@ -42,7 +41,9 @@ struct DurationInputView: View {
                 .frame(width: 80)
                 .clipped()
 
-                Text(String(localized: "sec"))
+                Text(AppLocalization.sec)
+                    .font(.body)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .center)
         }

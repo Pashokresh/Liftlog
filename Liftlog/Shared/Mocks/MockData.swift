@@ -12,14 +12,39 @@ extension ExerciseModel {
         id: UUID(),
         name: "Bench Press",
         description: "Classic chest exercise",
-        type: .reps
+        type: .reps,
+        muscleGroup: .chest
     )
-    
+
     static let mocks = [
-        ExerciseModel(id: UUID(), name: "Bench Press", description: "Chest exercise", type: .time),
-        ExerciseModel(id: UUID(), name: "Squat", description: "Leg exercise", type: .reps),
-        ExerciseModel(id: UUID(), name: "Pull Up", description: "Back exercise", type: .reps),
-        ExerciseModel(id: UUID(), name: "Plank", description: "Core exercise", type: .reps)
+        ExerciseModel(
+            id: UUID(),
+            name: "Bench Press",
+            description: "Chest exercise",
+            type: .time,
+            muscleGroup: .chest
+        ),
+        ExerciseModel(
+            id: UUID(),
+            name: "Squat",
+            description: "Leg exercise",
+            type: .reps,
+            muscleGroup: .legs
+        ),
+        ExerciseModel(
+            id: UUID(),
+            name: "Pull Up",
+            description: "Back exercise",
+            type: .reps,
+            muscleGroup: .back
+        ),
+        ExerciseModel(
+            id: UUID(),
+            name: "Plank",
+            description: "Core exercise",
+            type: .reps,
+            muscleGroup: .core
+        )
     ]
 }
 
@@ -28,34 +53,39 @@ extension ExerciseSetModel {
         id: UUID(),
         order: 0,
         note: "Could make more reps",
-        type: .weighted(reps: 10, weight: 50)
+        type: .weighted(reps: 10, weight: 50),
+        isWarmup: false
     )
-    
+
     static let mocks = [
         ExerciseSetModel(
             id: UUID(),
             order: 0,
             note: nil,
-            type: .timed(duration: 60 * 30 + 15)
+            type: .timed(duration: 60 * 30 + 15),
+            isWarmup: true
         ),
         ExerciseSetModel(
             id: UUID(),
             order: 1,
             note: nil,
-            type: .weighted(reps: 10, weight: 55)
+            type: .weighted(reps: 10, weight: 55),
+            isWarmup: false
         ),
         ExerciseSetModel(
             id: UUID(),
             order: 2,
             note: "Got sweaty",
-            type: .weighted(reps: 10, weight: 37.5)
+            type: .weighted(reps: 10, weight: 37.5),
+            isWarmup: false
         ),
         ExerciseSetModel(
             id: UUID(),
             order: 3,
             note: "Done",
-            type: .weighted(reps: 12, weight: 40.25)
-        ),
+            type: .weighted(reps: 12, weight: 40.25),
+            isWarmup: false
+        )
     ]
 }
 
@@ -64,7 +94,7 @@ extension TagModel {
         id: UUID(),
         name: "Heavy"
     )
-    
+
     static let mocks = [
         TagModel(
             id: UUID(),
@@ -82,39 +112,48 @@ extension TagModel {
 }
 
 extension WorkoutModel {
-    
     static let mock = WorkoutModel(
         id: UUID(),
         name: "New Training",
         date: Date.now,
         notes: "Training I need to repeat every week",
-        tags: [TagModel.mock], exercises: [])
-    
+        tags: [TagModel.mock],
+        exercises: []
+    )
+
     static let mocks = [
         WorkoutModel(
             id: UUID(),
             name: "Training 1",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mock], exercises: []),
+            tags: [TagModel.mock],
+            exercises: []
+        ),
         WorkoutModel(
             id: UUID(),
             name: "Training 2",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mocks[1]], exercises: []),
+            tags: [TagModel.mocks[1]],
+            exercises: []
+        ),
         WorkoutModel(
             id: UUID(),
             name: "Training 3",
             date: Date.now,
             notes: "Training I need to repeat every week",
-            tags: [TagModel.mocks[2]], exercises: []),
+            tags: [TagModel.mocks[2]],
+            exercises: []
+        ),
         WorkoutModel(
             id: UUID(),
             name: "Training 4",
             date: Date.now,
             notes: "Training I can skip once in a while",
-            tags: [TagModel.mocks[0]], exercises: []),
+            tags: [TagModel.mocks[0]],
+            exercises: []
+        )
     ]
 }
 
@@ -125,7 +164,7 @@ extension WorkoutExerciseModel {
         exercise: ExerciseModel.mock,
         sets: ExerciseSetModel.mocks
     )
-    
+
     static let mocks = [
         WorkoutExerciseModel(
             id: UUID(),
@@ -144,8 +183,143 @@ extension WorkoutExerciseModel {
             order: 2,
             exercise: ExerciseModel.mocks[2],
             sets: ExerciseSetModel.mocks
-        ),
+        )
     ]
 }
 
+extension ExerciseProgressEntry {
+    static let mocks: [ExerciseProgressEntry] = {
+        let calendar = Calendar.current
+        let today = Date.now
 
+        return [
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -90, to: today)
+                    ?? .now,
+                maxWeight: 60.0,
+                totalVolume: 1200.0,
+                maxDuration: 0,
+                workoutName: "First Training"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -76, to: today)
+                    ?? .now,
+                maxWeight: 62.5,
+                totalVolume: 1375.0,
+                maxDuration: 0,
+                workoutName: "Push Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -62, to: today)
+                    ?? .now,
+                maxWeight: 62.5,
+                totalVolume: 1500.0,
+                maxDuration: 0,
+                workoutName: "Push Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -48, to: today)
+                    ?? .now,
+                maxWeight: 65.0,
+                totalVolume: 1560.0,
+                maxDuration: 0,
+                workoutName: "Heavy Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -34, to: today)
+                    ?? .now,
+                maxWeight: 65.0,
+                totalVolume: 1625.0,
+                maxDuration: 0,
+                workoutName: "Push Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -27, to: today)
+                    ?? .now,
+                maxWeight: 67.5,
+                totalVolume: 1687.5,
+                maxDuration: 0,
+                workoutName: "Heavy Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -20, to: today)
+                    ?? .now,
+                maxWeight: 67.5,
+                totalVolume: 1800.0,
+                maxDuration: 0,
+                workoutName: "Push Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -13, to: today)
+                    ?? .now,
+                maxWeight: 70.0,
+                totalVolume: 1750.0,
+                maxDuration: 0,
+                workoutName: "Heavy Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -6, to: today)
+                    ?? .now,
+                maxWeight: 70.0,
+                totalVolume: 1960.0,
+                maxDuration: 0,
+                workoutName: "Push Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -1, to: today)
+                    ?? .now,
+                maxWeight: 72.5,
+                totalVolume: 2030.0,
+                maxDuration: 0,
+                workoutName: "PR Day"
+            )
+        ]
+    }()
+
+    static let timedMocks: [ExerciseProgressEntry] = {
+        let calendar = Calendar.current
+        let today = Date.now
+
+        return [
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -60, to: today)
+                    ?? .now,
+                maxWeight: 0,
+                totalVolume: 0,
+                maxDuration: 30,
+                workoutName: "Core Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -30, to: today)
+                    ?? .now,
+                maxWeight: 0,
+                totalVolume: 0,
+                maxDuration: 60,
+                workoutName: "Core Day"
+            ),
+            ExerciseProgressEntry(
+                id: UUID(),
+                date: calendar.date(byAdding: .day, value: -7, to: today)
+                    ?? .now,
+                maxWeight: 0,
+                totalVolume: 0,
+                maxDuration: 120,
+                workoutName: "Core Day"
+            )
+        ]
+    }()
+
+    static let mock = mocks[0]
+}

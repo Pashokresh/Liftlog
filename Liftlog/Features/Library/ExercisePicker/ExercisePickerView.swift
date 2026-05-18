@@ -1,0 +1,153 @@
+//
+//  ExercisePickerView.swift
+//  Liftlog
+//
+//  Created by Pavel Martynenkov on 21.04.26.
+//
+
+import SwiftUI
+
+struct ExercisePickerView: View {
+    @State private var viewModel: ExercisePickerViewModel
+
+    @Environment(\.dismiss)
+    private var dismiss
+
+    private let onAdd: (OrderedSet<ExerciseModel>) -> Void
+
+    @State private var isAddingNewExercise: Bool = false
+
+    init(
+        viewModel: ExercisePickerViewModel,
+        onAdd: @escaping (OrderedSet<ExerciseModel>) -> Void
+    ) {
+        _viewModel = .init(initialValue: viewModel)
+        self.onAdd = onAdd
+    }
+
+    @ViewBuilder
+    private func exerciseRow(_ exercise: ExerciseModel) -> some View {
+        ExercisePickerRowView(
+            exercise: exercise,
+            order: viewModel.selectedOrder(exercise)
+        )
+        .onRowTap {
+            viewModel.toggle(exercise)
+        }
+    }
+
+    @ViewBuilder private var emptyState: some View {
+        if viewModel.isLoading && viewModel.exercises.isEmpty {
+            ProgressView()
+        } else if viewModel.filteredExercises.isEmpty {
+            if !viewModel.searchText.isEmpty {
+                ContentUnavailableView.search
+            } else {
+                ExerciseLibraryEmptyView()
+            }
+        }
+    }
+
+    @ViewBuilder private var addExerciseSheet: some View {
+        AddEditExerciseView { exercise in
+            viewModel.createAndSelect(exercise: exercise)
+        }
+        .presentationDetents([.fraction(2 / 3)])
+    }
+
+    @ToolbarContentBuilder private var toolbar: some ToolbarContent {
+        ToolbarItem(
+            id: "exercise.library.create.new",
+            placement: .topBarTrailing
+        ) {
+            AddTopBarButton {
+                isAddingNewExercise = true
+            }
+        }
+
+        ToolbarItem(
+            id: "exercise.library.pick.cancel",
+            placement: .topBarLeading
+        ) {
+            AdaptiveCancelButton {
+                dismiss()
+            }
+        }
+
+        ToolbarItem(
+            id: "exercise.library.selection.done",
+            placement: .bottomBar
+        ) {
+            DoneBottomBarBottom(
+                with: AppLocalization.add(
+                    count: viewModel.selectedExercises.count
+                )
+            ) {
+                onAdd(viewModel.selectedExercises)
+                dismiss()
+            }
+            .disabled(viewModel.selectedExercises.isEmpty)
+        }
+    }
+
+    var content: some View {
+        List {
+            ForEach(viewModel.exercisesByMuscleGroup) { section in
+                Section {
+                    ForEach(section.exercises) { exercise in
+                        exerciseRow(exercise)
+                    }
+                } header: {
+                    Text(section.title)
+                }
+            }
+        }
+        .animation(
+            .easeInOut(duration: 0.3),
+            value: viewModel.filteredExercises.map { $0.id }
+        )
+    }
+
+    var body: some View {
+        NavigationStack {
+            content
+                .scrollDismissesKeyboard(.interactively)
+                .overlay { emptyState }
+                .navigationTitle(AppLocalization.exerciseLibrary)
+                .navigationBarTitleDisplayMode(.large)
+                .toolbar { toolbar }
+                .searchable(
+                    text: $viewModel.searchText,
+                    prompt: AppLocalization.searchExercise
+                )
+                .sheet(isPresented: $isAddingNewExercise) {
+                    addExerciseSheet
+                }
+                .alert(
+                    AppLocalization.error,
+                    isPresented: Binding(
+                        get: { viewModel.error != nil },
+                        set: { if !$0 { viewModel.clearError() } }
+                    )
+                ) {
+                    Button(AppLocalization.okay) { viewModel.clearError() }
+                } message: {
+                    Text(viewModel.error?.localizedDescription ?? "")
+                }
+                .onAppear {
+                    viewModel.onApper()
+                }
+        }
+    }
+}
+
+#Preview {
+    ExercisePickerView(
+        viewModel: ExercisePickerViewModel(
+            fetchExerciseLibraryUseCase: AppDependencies.mock
+                .fetchExerciseLibraryUseCase,
+            manageExerciseUseCase: AppDependencies.mock.manageExerciseUseCase
+        )
+    ) { _ in
+    }
+}

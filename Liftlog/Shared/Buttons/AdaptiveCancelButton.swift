@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AdaptiveCancelButton: View {
-
     let action: () -> Void
 
     var body: some View {
@@ -17,7 +16,7 @@ struct AdaptiveCancelButton: View {
                 action()
             }
         } else {
-            Button(String(localized: "Cancel"), role: .cancel) {
+            Button(AppLocalization.cancel, role: .cancel) {
                 action()
             }
         }

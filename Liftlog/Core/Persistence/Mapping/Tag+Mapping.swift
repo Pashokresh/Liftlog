@@ -8,10 +8,15 @@
 import Foundation
 
 extension Tag {
+    func toDomain() throws -> TagModel {
+        guard let id = id else {
+            throw RepositoryError.invalidData(
+                description: AppLocalization.missingRecordID
+            )
+        }
 
-    func toDomain() -> TagModel {
-        TagModel(
-            id: id ?? UUID(),
+        return TagModel(
+            id: id,
             name: name ?? ""
         )
     }

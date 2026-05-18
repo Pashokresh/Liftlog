@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct AddEditExerciseView: View {
-
     let onSave: (ExerciseModel) -> Void
     let exercise: ExerciseModel?
 
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.dismiss)
+    private var dismiss
+
     @State private var name = ""
     @State private var description = ""
     @State private var type: ExerciseType = .reps
+    @State private var muscleGroup: MuscleGroup?
 
     init(
         exercise: ExerciseModel? = nil,
@@ -29,6 +31,7 @@ struct AddEditExerciseView: View {
         _name = .init(initialValue: exercise.name)
         _description = .init(initialValue: exercise.description ?? "")
         _type = .init(initialValue: exercise.type)
+        _muscleGroup = .init(initialValue: exercise.muscleGroup)
     }
 
     private var isValid: Bool {
@@ -40,18 +43,33 @@ struct AddEditExerciseView: View {
             Form {
                 Section {
                     TextField(
-                        String(localized: "Name"),
+                        AppLocalization.name,
                         text: $name
                     )
-                    Picker(String(localized: "Exercise type"), selection: $type)
-                    {
+
+                    Picker(AppLocalization.exerciseType, selection: $type) {
                         ForEach(ExerciseType.allCases, id: \.id) {
                             Text(String(describing: $0))
                         }
                     }
                     .pickerStyle(.menu)
+
+                    Picker(
+                        AppLocalization.muscleGroup,
+                        selection: $muscleGroup
+                    ) {
+                        Text(AppLocalization.notSpecified)
+                            .tag(Optional<MuscleGroup>.none)
+
+                        ForEach(MuscleGroup.allCases) { group in
+                            Text(group.localizedName)
+                                .tag(Optional(group))
+                        }
+                    }
+                    .pickerStyle(.menu)
+
                     TextField(
-                        String(localized: "Description (optional)"),
+                        AppLocalization.descriptionOptional,
                         text: $description,
                         axis: .vertical
                     )
@@ -59,6 +77,7 @@ struct AddEditExerciseView: View {
                 }
                 .scrollDismissesKeyboard(.interactively)
             }
+            .contentMargins(.horizontal, 8, for: .scrollContent)
             .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { addEditToolbarContent }
@@ -72,18 +91,19 @@ struct AddEditExerciseView: View {
             description: description.trimmingCharacters(
                 in: .whitespacesAndNewlines
             ).isEmpty ? nil : description,
-            type: type
+            type: type,
+            muscleGroup: muscleGroup
         )
     }
-    
+
     private var navTitle: String {
         exercise != nil
-            ? String(localized: "Edit Exercise")
-            : String(localized: "Add Exercise")
+            ? AppLocalization.editExercise
+            : AppLocalization.addExercise
     }
-    
-    @ToolbarContentBuilder
-    private var addEditToolbarContent: some ToolbarContent {
+
+    @ToolbarContentBuilder private var addEditToolbarContent:
+        some ToolbarContent {
         ToolbarItem(
             id: "new.exercise.cancel",
             placement: .topBarLeading
@@ -93,8 +113,7 @@ struct AddEditExerciseView: View {
             }
         }
 
-        ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing)
-        {
+        ToolbarItem(id: "new.exercise.save", placement: .topBarTrailing) {
             AdaptiveConfirmButton {
                 onSave(makeExercise())
                 dismiss()

@@ -8,13 +8,19 @@
 import Foundation
 
 extension Exercise {
+    func toDomain() throws -> ExerciseModel {
+        guard let id = id else {
+            throw RepositoryError.invalidData(
+                description: AppLocalization.missingRecordID
+            )
+        }
 
-    func toDomain() -> ExerciseModel {
         return ExerciseModel(
-            id: id ?? UUID(),
+            id: id,
             name: name ?? "",
             description: exerciseDescription,
-            type: ExerciseType(rawValue: Int(type)) ?? .reps
+            type: ExerciseType(rawValue: Int(type)) ?? .reps,
+            muscleGroup: MuscleGroup(rawValue: Int(muscleGroup))
         )
     }
 }

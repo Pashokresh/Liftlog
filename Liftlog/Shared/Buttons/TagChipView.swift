@@ -11,7 +11,7 @@ struct TagChipView: View {
     let tag: TagModel
     var isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button {
             onTap()
@@ -35,11 +35,9 @@ struct TagChipView: View {
 #Preview {
     TagChipView(
         tag: TagModel.mock,
-        isSelected: true,
-        onTap: { })
-    
+        isSelected: true) { }
+
     TagChipView(
         tag: TagModel.mock,
-        isSelected: false,
-        onTap: { })
+        isSelected: false) { }
 }

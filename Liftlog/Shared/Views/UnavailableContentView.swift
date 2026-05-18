@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct UnavailableContentView: View {
-    
     let title: String
     let message: String
-    
+
     var body: some View {
         ContentUnavailableView(
             title,

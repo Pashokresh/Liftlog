@@ -8,23 +8,29 @@
 import Foundation
 
 extension WorkoutExercise {
+    func toDomain() throws -> WorkoutExerciseModel {
+        guard let id = id else {
+            throw RepositoryError.invalidData(
+                description: AppLocalization.missingRecordID
+            )
+        }
 
-    func toDomain() -> WorkoutExerciseModel {
         let exercise =
-            exercise?.toDomain()
+            try exercise?.toDomain()
             ?? ExerciseModel(
                 id: UUID(),
                 name: "",
                 description: description,
-                type: .reps
+                type: .reps,
+                muscleGroup: nil
             )
         let sets =
-            (sets as? Set<ExerciseSet>)?
-            .map { $0.toDomain() }
-            .sorted(by: { $0.order < $1.order }) ?? []
+            try (sets as? Set<ExerciseSet>)?
+            .map { try $0.toDomain() }
+            .sorted { $0.order < $1.order } ?? []
 
         return WorkoutExerciseModel(
-            id: id ?? UUID(),
+            id: id,
             order: Int(order),
             exercise: exercise,
             sets: sets
