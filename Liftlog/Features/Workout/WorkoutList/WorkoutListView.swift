@@ -36,8 +36,6 @@ struct WorkoutListView: View {
             }
         }
     }
-    
-    
 
     @ToolbarContentBuilder private var toolbarContent: some ToolbarContent {
         ToolbarItem(
@@ -59,16 +57,6 @@ struct WorkoutListView: View {
                     systemName:
                         Images.bookPages
                 )
-            }
-        }
-        ToolbarItem(
-            id: "workout.list.backup",
-            placement: .topBarLeading
-        ) {
-            Button {
-                navigationManager.push(.backup)
-            } label: {
-                Image(systemName: "externaldrive")
             }
         }
     }

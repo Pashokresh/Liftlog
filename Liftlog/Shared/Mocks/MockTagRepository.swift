@@ -33,9 +33,4 @@ final class MockTagRepository: TagRepositoryProtocol {
     func delete(_ id: UUID) throws {
         tags.removeAll { $0.id == id }
     }
-    
-    func restore(_ model: TagModel) async throws {
-        guard !tags.contains(where: { $0.id == model.id }) else { return }
-        tags.append(model)
-    }
 }

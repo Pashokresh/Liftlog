@@ -33,7 +33,4 @@ protocol ExerciseRepositoryProtocol: AnyObject {
     /// - Parameter exerciseID: The exercise to fetch sessions for.
     /// - Parameter startDate: Lower bound (inclusive). Pass `Date.distantPast` to fetch all time.
     func fetchProgress(for exerciseID: UUID, from startDate: Date) async throws -> [ExerciseHistorySectionModel]
-
-    /// Restores an exercise with a specific ID during backup import.
-    func restore(_ model: ExerciseModel) async throws
 }

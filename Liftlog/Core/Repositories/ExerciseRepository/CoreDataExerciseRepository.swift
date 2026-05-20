@@ -121,24 +121,6 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             }
         }
     }
-
-    func restore(_ model: ExerciseModel) async throws {
-        try await context.perform {
-            // Пропускаем если уже существует
-            let request = try fetchRequest(for: Exercise.self, with: [model.id])
-            if (try? self.context.fetch(request).first) != nil {
-                return
-            }
-
-            let exercise = Exercise(context: self.context)
-            exercise.id = model.id
-            exercise.name = model.name
-            exercise.type = Int32(model.type.rawValue)
-            exercise.exerciseDescription = model.description
-            exercise.muscleGroup = Int32(model.muscleGroup?.rawValue ?? -1)
-            try self.context.saveOrThrow()
-        }
-    }
 }
 
 extension CoreDataExerciseRepository {

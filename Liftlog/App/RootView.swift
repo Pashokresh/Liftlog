@@ -45,8 +45,6 @@ struct RootView: View {
                             exercise: exercise
                         )
                     )
-                case .backup:
-                    BackupView(viewModel: factory.makeBackupViewModel())
                 }
             }
         }
