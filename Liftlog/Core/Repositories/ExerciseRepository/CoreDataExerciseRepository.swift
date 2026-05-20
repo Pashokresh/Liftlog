@@ -59,9 +59,9 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             let exercise = Exercise(context: self.context)
             exercise.id = UUID()
             exercise.name = name
-            exercise.type = Int16(type.rawValue)
+            exercise.type = Int32(type.rawValue)
             exercise.exerciseDescription = description
-            exercise.muscleGroup = Int16(muscleGroup?.rawValue ?? -1)
+            exercise.muscleGroup = Int32(muscleGroup?.rawValue ?? -1)
 
             try self.context.saveOrThrow()
 
@@ -74,9 +74,9 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             let exercise = try self.fetchExercise(model.id)
 
             exercise.name = model.name
-            exercise.type = Int16(model.type.rawValue)
+            exercise.type = Int32(model.type.rawValue)
             exercise.exerciseDescription = model.description
-            exercise.muscleGroup = Int16(model.muscleGroup?.rawValue ?? -1)
+            exercise.muscleGroup = Int32(model.muscleGroup?.rawValue ?? -1)
 
             try self.context.saveOrThrow()
         }
@@ -119,6 +119,24 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
                         .map { try $0.toDomain() } ?? []
                 )
             }
+        }
+    }
+
+    func restore(_ model: ExerciseModel) async throws {
+        try await context.perform {
+            // Пропускаем если уже существует
+            let request = try fetchRequest(for: Exercise.self, with: [model.id])
+            if (try? self.context.fetch(request).first) != nil {
+                return
+            }
+
+            let exercise = Exercise(context: self.context)
+            exercise.id = model.id
+            exercise.name = model.name
+            exercise.type = Int32(model.type.rawValue)
+            exercise.exerciseDescription = model.description
+            exercise.muscleGroup = Int32(model.muscleGroup?.rawValue ?? -1)
+            try self.context.saveOrThrow()
         }
     }
 }

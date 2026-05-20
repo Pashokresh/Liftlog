@@ -13,4 +13,5 @@ enum Route: Hashable, Equatable {
     case workoutDetailView(WorkoutModel)
     case exerciseSet(WorkoutExerciseModel)
     case exerciseProgress(ExerciseModel)
+    case backup
 }

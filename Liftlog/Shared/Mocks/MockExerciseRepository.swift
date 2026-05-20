@@ -96,4 +96,9 @@ final class MockExerciseRepository: ExerciseRepositoryProtocol {
     static var mock: MockExerciseRepository {
         MockExerciseRepository()
     }
+
+    func restore(_ model: ExerciseModel) async throws {
+        try checkThrow()
+        exercises.append(model)
+    }
 }

@@ -75,6 +75,15 @@ final class ViewModelFactory {
             fetchProgressUseCase: dependencies.fetchExerciseProgressUseCase
         )
     }
+    
+    func makeBackupViewModel() -> BackupViewModel {
+        BackupViewModel(
+            backupService: BackupService(),
+            workoutRepository: dependencies.workoutRepository as! CoreDataWorkoutRepository,
+            exerciseRepository: dependencies.exerciseRepository,
+            tagRepository: dependencies.tagRepository
+        )
+    }
 }
 
 extension ViewModelFactory {

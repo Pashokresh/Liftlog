@@ -10,15 +10,30 @@ import CoreData
 struct PersistenceController {
     static let shared = PersistenceController()
 
-    let container: NSPersistentContainer
+    let container: NSPersistentCloudKitContainer
 
     init(inMemory: Bool = false) {
-        container = NSPersistentContainer(name: "Liftlog")
+        container = NSPersistentCloudKitContainer(name: "Liftlog")
         if inMemory {
             guard let storeDescription = container.persistentStoreDescriptions.first else {
                 preconditionFailure("No store description found")
             }
             storeDescription.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+            guard let storeDescription = container.persistentStoreDescriptions.first else {
+                preconditionFailure("No store description found")
+            }
+            storeDescription.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(
+                containerIdentifier: "iCloud.com.pavel.martynenkov.Liftlog"
+            )
+            storeDescription.setOption(
+                true as NSNumber,
+                forKey: NSMigratePersistentStoresAutomaticallyOption
+            )
+            storeDescription.setOption(
+                true as NSNumber,
+                forKey: NSInferMappingModelAutomaticallyOption
+            )
         }
         container.loadPersistentStores {_, error in
             if let error = error as NSError? {
@@ -26,5 +41,6 @@ struct PersistenceController {
             }
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
     }
 }

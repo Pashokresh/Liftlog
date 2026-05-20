@@ -16,4 +16,6 @@ protocol TagRepositoryProtocol: AnyObject {
     func update(model: TagModel) async throws
 
     func delete(_ id: UUID) async throws
+    
+    func restore(_ model: TagModel) async throws
 }

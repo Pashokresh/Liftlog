@@ -57,6 +57,19 @@ final class CoreDataTagRepository: TagRepositoryProtocol {
             try self.context.saveOrThrow()
         }
     }
+    
+    func restore(_ model: TagModel) async throws {
+        try await context.perform {
+            let request = try fetchRequest(for: Tag.self, with: [model.id])
+            if (try? self.context.fetch(request).first) != nil {
+                return
+            }
+            let tag = Tag(context: self.context)
+            tag.id = model.id
+            tag.name = model.name
+            try self.context.saveOrThrow()
+        }
+    }
 }
 
 extension CoreDataTagRepository {
