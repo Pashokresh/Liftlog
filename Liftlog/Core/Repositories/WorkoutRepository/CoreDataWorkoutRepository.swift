@@ -139,7 +139,7 @@ final class CoreDataWorkoutRepository:
                 }
                 let workoutExercise = WorkoutExercise(context: self.context)
                 workoutExercise.id = exerciseModel.id
-                workoutExercise.order = Int16(exerciseModel.order)
+                workoutExercise.order = Int32(exerciseModel.order)
                 workoutExercise.workout = workout
                 workoutExercise.exercise = exercise
             }
@@ -161,7 +161,7 @@ final class CoreDataWorkoutRepository:
                 throw RepositoryError.notFound(entity: "Exercise")
             }
 
-            workoutExercise.order = Int16(model.order)
+            workoutExercise.order = Int32(model.order)
 
             try self.context.saveOrThrow()
         }
@@ -192,14 +192,14 @@ final class CoreDataWorkoutRepository:
 
             let set = ExerciseSet(context: self.context)
             set.id = setModel.id
-            set.order = Int16(setModel.order)
+            set.order = Int32(setModel.order)
             set.note = setModel.note
             set.isWarmup = setModel.isWarmup
             set.workoutExercise = workoutExercise
 
             switch setModel.type {
             case let .weighted(reps, weight):
-                set.reps = Int16(reps)
+                set.reps = Int32(reps)
                 set.weight = weight
             case .timed(let duration):
                 set.duration = duration
@@ -218,13 +218,13 @@ final class CoreDataWorkoutRepository:
             }
 
             set.id = model.id
-            set.order = Int16(model.order)
+            set.order = Int32(model.order)
             set.note = model.note
             set.isWarmup = model.isWarmup
 
             switch model.type {
             case let .weighted(reps, weight):
-                set.reps = Int16(reps)
+                set.reps = Int32(reps)
                 set.weight = weight
             case .timed(let duration):
                 set.duration = duration
