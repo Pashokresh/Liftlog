@@ -58,7 +58,7 @@ struct ExerciseProgressView: View {
     }
 
     @ViewBuilder private var primaryChart: some View {
-        ExerciseProgressLineChartView(
+        ExerciseProgressBarChartView(
             data: viewModel.chartEntries,
             title: viewModel.chartTitle,
             valueFormatter: viewModel.chartFormatter
@@ -66,7 +66,7 @@ struct ExerciseProgressView: View {
     }
 
     @ViewBuilder private var totalVolumeChart: some View {
-        ExerciseProgressLineChartView(
+        ExerciseProgressBarChartView(
             data: viewModel.volumeEntries,
             title: AppLocalization.totalVolume,
             valueFormatter: { $0.formattedVolume }

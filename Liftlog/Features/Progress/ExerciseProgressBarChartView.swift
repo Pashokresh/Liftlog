@@ -1,5 +1,5 @@
 //
-//  ExerciseProgressLineChartView.swift
+//  ExerciseProgressBarChartView.swift
 //  Liftlog
 //
 //  Created by Pavel Martynenkov on 07.05.26.
@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-struct ExerciseProgressLineChartView: View {
+struct ExerciseProgressBarChartView: View {
     typealias DataEntry = [(date: Date, value: Double)]
 
     let data: DataEntry
@@ -16,6 +16,7 @@ struct ExerciseProgressLineChartView: View {
     let valueFormatter: (Double) -> String
 
     @State private var selectedEntry: (date: Date, value: Double)?
+    @State private var visibleCount: Int = 0
     @State private var animationProgress: Double = 0
 
     init(
@@ -34,18 +35,6 @@ struct ExerciseProgressLineChartView: View {
         }
         let padding = max(last.timeIntervalSince(first) * 0.08, 60 * 60 * 24 * 5)
         return Date(timeInterval: -padding, since: first)...Date(timeInterval: padding, since: last)
-    }
-
-    private var gradient: LinearGradient {
-        LinearGradient(
-            stops: [
-                .init(color: Color.accentColor.opacity(0.8), location: 0),
-                .init(color: Color.accentColor.opacity(0.3), location: 0.5),
-                .init(color: Color.accentColor.opacity(0.0), location: 1)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
     }
 
     // MARK: Header
@@ -79,37 +68,19 @@ struct ExerciseProgressLineChartView: View {
     // MARK: - Chart
 
     @ViewBuilder var chartView: some View {
-        Chart(data, id: \.date) { entry in
-            LineMark(
+        Chart(Array(data.prefix(visibleCount)), id: \.date) { entry in
+            BarMark(
                 x: .value(AppLocalization.date, entry.date),
-                y: .value(AppLocalization.volume, entry.value)
+                y: .value(title, entry.value),
             )
-            .foregroundStyle(Color.accentColor)
-            .lineStyle(StrokeStyle(lineWidth: 2))
-            .interpolationMethod(.catmullRom)
-
-            AreaMark(
-                x: .value(AppLocalization.date, entry.date),
-                y: .value(AppLocalization.volume, entry.value)
+            .foregroundStyle(
+                selectedEntry?.date == entry.date
+                    ? Color.accentColor
+                    : Color.accentColor.opacity(0.5)
             )
-            .foregroundStyle(gradient)
-            .interpolationMethod(.catmullRom)
-
-            PointMark(
-                x: .value(AppLocalization.date, entry.date),
-                y: .value(AppLocalization.volume, entry.value)
-            )
-            .foregroundStyle(Color.accentColor)
-            .symbolSize(30)
+            .cornerRadius(3)
 
             if let selected = selectedEntry, selected.date == entry.date {
-                PointMark(
-                    x: .value(AppLocalization.date, entry.date),
-                    y: .value(AppLocalization.volume, entry.value)
-                )
-                .foregroundStyle(Color.accentColor)
-                .symbolSize(80)
-
                 RuleMark(x: .value(AppLocalization.date, entry.date))
                     .foregroundStyle(Color.accentColor.opacity(0.3))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
@@ -154,15 +125,16 @@ struct ExerciseProgressLineChartView: View {
                     )
             }
         }
-        .chartYScale(range: .plotDimension)
         .chartXScale(domain: xDomain)
+        .chartYScale(domain: 0...(data.map(\.value).max() ?? 1))
         .chartPlotStyle { plotArea in
             plotArea
                 .padding(.top, 16)
                 .padding(.bottom, 12)
         }
+        .padding(.top, 16)
+        .padding(.bottom, 12)
         .frame(height: 200)
-        .chartAnimation(progress: animationProgress)
     }
 
     var body: some View {
@@ -173,8 +145,13 @@ struct ExerciseProgressLineChartView: View {
         .padding()
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
         .onAppear {
-            withAnimation(.easeOut(duration: 1.0)) {
-                animationProgress = 1.0
+            Task {
+                for i in 1...max(data.count, 1) {
+                    try? await Task.sleep(for: .milliseconds(80))
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                        visibleCount = i
+                    }
+                }
             }
         }
     }
@@ -203,28 +180,9 @@ struct ExerciseProgressLineChartView: View {
     }
 }
 
-// MARK: - Chart Animation modifier
-
-extension View {
-    @ViewBuilder
-    func chartAnimation(progress: Double) -> some View {
-        if #available(iOS 26, *) {
-            self.chartXVisibleDomain(length: progress)
-        } else {
-            self.mask(
-                GeometryReader { geometry in
-                    Rectangle()
-                        .frame(width: geometry.size.width * progress)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-            )
-        }
-    }
-}
-
 #Preview {
     VStack {
-        ExerciseProgressLineChartView(
+        ExerciseProgressBarChartView(
             data: ExerciseProgressEntry.mocks.map {
                 ($0.date, $0.totalVolume)
             },
@@ -232,7 +190,7 @@ extension View {
             valueFormatter: { $0.formattedVolume }
         )
         .padding()
-        ExerciseProgressLineChartView(
+        ExerciseProgressBarChartView(
             data: ExerciseProgressEntry.mocks.map {
                 ($0.date, $0.maxWeight)
             },

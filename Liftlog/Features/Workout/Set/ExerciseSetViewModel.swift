@@ -94,7 +94,7 @@ final class ExerciseSetViewModel {
 
     func addSet(set: ExerciseSetModel) async {
         var setWithOrder = set
-        setWithOrder.order = workoutExercise.sets.lazy.map(\.order).max() ?? 0 + 1
+        setWithOrder.order = (workoutExercise.sets.lazy.map(\.order).max() ?? 0) + 1
 
         do {
             try await setRepository.addSet(

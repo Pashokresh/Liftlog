@@ -73,8 +73,12 @@ final class WorkoutListViewModel {
             do {
                 let createdModel = try await workoutRepository.create(model)
 
+                let index = workouts.firstIndex {
+                    $0.date < createdModel.date
+                } ?? workouts.endIndex
+
                 withAnimation {
-                    workouts.append(createdModel)
+                    workouts.insert(createdModel, at: index)
                 }
             } catch {
                 self.error = error
