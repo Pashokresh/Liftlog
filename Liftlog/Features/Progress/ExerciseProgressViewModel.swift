@@ -62,8 +62,8 @@ final class ExerciseProgressViewModel {
 
     var chartTitle: String {
         switch exercise.type {
-        case .reps: AppLocalization.maxWeight
-        case .time: AppLocalization.maxDuration
+        case .reps: AppLocalization.Progress.maxWeight
+        case .time: AppLocalization.Progress.maxDuration
         }
     }
 

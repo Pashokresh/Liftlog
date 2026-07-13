@@ -15,7 +15,7 @@ struct SwipeDeleteButton: View {
     }
 
     var body: some View {
-        Button(AppLocalization.delete, systemImage: Images.trash) {
+        Button(AppLocalization.Common.delete, systemImage: Images.trash) {
             action()
         }
         .tint(.red)

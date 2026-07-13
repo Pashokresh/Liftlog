@@ -79,7 +79,7 @@ struct ExercisePickerView: View {
             placement: .bottomBar
         ) {
             DoneBottomBarBottom(
-                with: AppLocalization.add(
+                with: AppLocalization.Common.add(
                     count: viewModel.selectedExercises.count
                 )
             ) {
@@ -113,24 +113,24 @@ struct ExercisePickerView: View {
             content
                 .scrollDismissesKeyboard(.interactively)
                 .overlay { emptyState }
-                .navigationTitle(AppLocalization.exerciseLibrary)
+                .navigationTitle(AppLocalization.ExerciseLibrary.exerciseLibrary)
                 .navigationBarTitleDisplayMode(.large)
                 .toolbar { toolbar }
                 .searchable(
                     text: $viewModel.searchText,
-                    prompt: AppLocalization.searchExercise
+                    prompt: AppLocalization.ExerciseLibrary.searchExercise
                 )
                 .sheet(isPresented: $isAddingNewExercise) {
                     addExerciseSheet
                 }
                 .alert(
-                    AppLocalization.error,
+                    AppLocalization.Common.error,
                     isPresented: Binding(
                         get: { viewModel.error != nil },
                         set: { if !$0 { viewModel.clearError() } }
                     )
                 ) {
-                    Button(AppLocalization.okay) { viewModel.clearError() }
+                    Button(AppLocalization.Common.okay) { viewModel.clearError() }
                 } message: {
                     Text(viewModel.error?.localizedDescription ?? "")
                 }

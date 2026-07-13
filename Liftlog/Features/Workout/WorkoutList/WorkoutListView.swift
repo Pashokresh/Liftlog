@@ -28,8 +28,8 @@ struct WorkoutListView: View {
         } else if viewModel.filteredWorkouts.isEmpty {
             if viewModel.workouts.isEmpty {
                 UnavailableContentView(
-                    title: AppLocalization.noWorkoutsYet,
-                    message: AppLocalization.createNewWorkoutToGetStarted
+                    title: AppLocalization.Workout.noWorkoutsYet,
+                    message: AppLocalization.Workout.noWorkoutMessage
                 )
             } else {
                 ContentUnavailableView.search
@@ -101,7 +101,7 @@ struct WorkoutListView: View {
         .presentationDetents([.large])
     }
 
-    var body: some View {
+    private var contentList: some View {
         List {
             ForEach(viewModel.filteredWorkouts) { workout in
                 NavigationLink(value: Route.workoutDetailView(workout)) {
@@ -118,47 +118,54 @@ struct WorkoutListView: View {
                 }
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: viewModel.workouts)
-        .navigationTitle(Text(AppLocalization.workouts))
-        .navigationBarTitleDisplayMode(.inline)
         .overlay { emptyState }
-        .toolbar { toolbarContent }
-        .safeAreaInset(edge: .top) { tagsPanel }
         .deleteConfirmation(
             item: $workoutToDelete
         ) { viewModel.deleteWorkout($0.id) }
-        .sheet(isPresented: $isCreatingWorkout) { addWorkoutSheet }
-        .sheet(item: $viewModel.editingWorkout) { editWorkoutSheet($0) }
-        .alert(
-            isPresented: Binding(
-                get: { viewModel.error != nil },
-                set: { if !$0 { viewModel.nullifyError() } }
+    }
+
+    var body: some View {
+        contentList
+            .animation(
+                .easeInOut(duration: 0.3),
+                value: viewModel.workouts
             )
-        ) {
-            Alert(
-                title: Text(AppLocalization.error),
-                message: Text(viewModel.error?.localizedDescription ?? ""),
-                dismissButton: .default(Text(AppLocalization.okay))
-            )
-        }
-        .onChange(
-            of: isCreatingWorkout
-        ) { _, isPresented in
-            if !isPresented {
-                updateTags()
+            .navigationTitle(Text(AppLocalization.Workout.title))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { toolbarContent }
+            .safeAreaInset(edge: .top) { tagsPanel }
+            .sheet(isPresented: $isCreatingWorkout) { addWorkoutSheet }
+            .sheet(item: $viewModel.editingWorkout) { editWorkoutSheet($0) }
+            .alert(
+                isPresented: Binding(
+                    get: { viewModel.error != nil },
+                    set: { if !$0 { viewModel.nullifyError() } }
+                )
+            ) {
+                Alert(
+                    title: Text(AppLocalization.Common.error),
+                    message: Text(viewModel.error?.localizedDescription ?? ""),
+                    dismissButton: .default(Text(AppLocalization.Common.okay))
+                )
             }
-        }
-        .onChange(
-            of: viewModel.editingWorkout
-        ) { _, workout in
-            if workout == nil {
-                updateTags()
+            .onChange(
+                of: isCreatingWorkout
+            ) { _, isPresented in
+                if !isPresented {
+                    updateTags()
+                }
             }
-        }
-        .task {
-            await viewModel.loadWorkouts()
-            await viewModel.loadTags()
-        }
+            .onChange(
+                of: viewModel.editingWorkout
+            ) { _, workout in
+                if workout == nil {
+                    updateTags()
+                }
+            }
+            .task {
+                await viewModel.loadWorkouts()
+                await viewModel.loadTags()
+            }
     }
 
     private func updateTags() {

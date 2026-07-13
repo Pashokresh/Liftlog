@@ -25,7 +25,7 @@ struct AddEditWorkoutView: View {
     private var workoutDetailsSection: some View {
         Section {
             TextField(
-                AppLocalization.workoutName,
+                AppLocalization.Workout.name,
                 text: Binding.init(
                     get: {
                         viewModel.name
@@ -34,7 +34,7 @@ struct AddEditWorkoutView: View {
                 )
             )
             DatePicker(
-                AppLocalization.date,
+                AppLocalization.Workout.date,
                 selection: Binding.init(
                     get: {
                         viewModel.date
@@ -44,7 +44,7 @@ struct AddEditWorkoutView: View {
                 displayedComponents: .date
             )
             TextField(
-                AppLocalization.notesOptional,
+                AppLocalization.Workout.notesOptional,
                 text: Binding.init(
                     get: {
                         viewModel.notes
@@ -95,7 +95,7 @@ struct AddEditWorkoutView: View {
     private var tagCreation: some View {
         HStack {
             TextField(
-                AppLocalization.newTag,
+                AppLocalization.Workout.newTag,
                 text:
                     Binding.init(
                         get: { viewModel.newTagName },
@@ -118,8 +118,8 @@ struct AddEditWorkoutView: View {
 
     private var navTitle: String {
         viewModel.isEditing
-            ? AppLocalization.editWorkout
-            : AppLocalization.createWorkout
+        ? AppLocalization.Workout.editWorkout
+        : AppLocalization.Workout.createWorkout
     }
 
     @ToolbarContentBuilder private var addEditToolbarContent: some ToolbarContent {
@@ -149,7 +149,7 @@ struct AddEditWorkoutView: View {
             Form {
                 workoutDetailsSection
 
-                Section(AppLocalization.tags) {
+                Section(AppLocalization.Workout.tags) {
                     if viewModel.isLoading {
                         ProgressView()
                     } else {

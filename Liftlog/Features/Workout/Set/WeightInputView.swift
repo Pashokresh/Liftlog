@@ -24,7 +24,7 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(AppLocalization.repsLowercase)
+                Text(AppLocalization.ExerciseSet.repsLowercase)
                     .font(.body)
                     .foregroundStyle(.secondary)
             }
@@ -40,7 +40,7 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(AppLocalization.kilogram)
+                Text(AppLocalization.ExerciseSet.kilogram)
                     .foregroundStyle(.secondary)
                     .font(.body)
             }
@@ -59,7 +59,7 @@ struct WeightInputView: View {
                 .frame(width: 70)
                 .clipped()
 
-                Text(AppLocalization.gram)
+                Text(AppLocalization.ExerciseSet.gram)
                     .foregroundStyle(.secondary)
                     .font(.body)
             }

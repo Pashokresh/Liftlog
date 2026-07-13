@@ -16,9 +16,9 @@ enum ExerciseType: Int, CaseIterable, Identifiable, CustomStringConvertible {
     var description: String {
         switch self {
         case .reps:
-            return AppLocalization.reps
+            return AppLocalization.ExerciseLibrary.reps
         case .time:
-            return AppLocalization.time
+            return AppLocalization.ExerciseLibrary.time
         }
     }
 }
@@ -36,13 +36,13 @@ enum MuscleGroup: Int, CaseIterable, Identifiable, Hashable {
 
     var localizedName: String {
         switch self {
-        case .chest: AppLocalization.chest
-        case .back: AppLocalization.back
-        case .legs: AppLocalization.legs
-        case .shoulders: AppLocalization.shoulders
-        case .arms: AppLocalization.arms
-        case .core: AppLocalization.core
-        case .cardio: AppLocalization.cardio
+        case .chest: AppLocalization.MuscleGroup.chest
+        case .back: AppLocalization.MuscleGroup.back
+        case .legs: AppLocalization.MuscleGroup.legs
+        case .shoulders: AppLocalization.MuscleGroup.shoulders
+        case .arms: AppLocalization.MuscleGroup.arms
+        case .core: AppLocalization.MuscleGroup.core
+        case .cardio: AppLocalization.MuscleGroup.cardio
         }
     }
 }

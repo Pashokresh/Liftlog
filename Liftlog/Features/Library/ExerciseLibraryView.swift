@@ -80,7 +80,16 @@ struct ExerciseLibraryView: View {
         .presentationDetents([.fraction(2 / 3)])
     }
 
-    var body: some View {
+    @ViewBuilder
+    func header(_ muscleGroup: MuscleGroup?) -> some View {
+        Text(
+            muscleGroup?.localizedName ?? AppLocalization.ExerciseLibrary.otherGroup
+        )
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+    }
+
+    private var listContent: some View {
         List {
             ForEach(viewModel.exercisesByMuscleGroup, id: \.group) { item in
                 Section {
@@ -88,38 +97,38 @@ struct ExerciseLibraryView: View {
                         exerciseRow($0)
                     }
                 } header: {
-                    Text(
-                        item.group?.localizedName ?? AppLocalization.otherGroup
-                    )
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    header(item.group)
                 }
             }
+            emptyState
         }
+    }
+
+    var body: some View {
+        listContent
         .animation(
             .easeInOut(duration: 0.3),
             value: viewModel.filteredExercises.map { $0.id }
         )
         .scrollDismissesKeyboard(.interactively)
-        .overlay { emptyState }
         .navigationTitle(
-            AppLocalization.exerciseLibrary
+            AppLocalization.ExerciseLibrary.exerciseLibrary
         )
         .toolbar { listToolbar }
         .searchable(
             text: $viewModel.searchText,
-            prompt: AppLocalization.searchExercise
+            prompt: AppLocalization.ExerciseLibrary.searchExercise
         )
         .sheet(isPresented: $isAddingExercise) { addExerciseSheet }
         .sheet(item: $viewModel.editingExercise) { editExerciseSheet($0) }
         .alert(
-            AppLocalization.error,
+            AppLocalization.Common.error,
             isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button(AppLocalization.okay) { viewModel.nullifyError() }
+            Button(AppLocalization.Common.okay) { viewModel.nullifyError() }
         } message: {
             Text(viewModel.error?.localizedDescription ?? "")
         }

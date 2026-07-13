@@ -12,7 +12,7 @@ extension ExerciseSet {
     func toDomain() throws -> ExerciseSetModel {
         guard let id = id else {
             throw RepositoryError.invalidData(
-                description: AppLocalization.missingRecordID
+                description: AppLocalization.Errors.missingRecordID
             )
         }
 

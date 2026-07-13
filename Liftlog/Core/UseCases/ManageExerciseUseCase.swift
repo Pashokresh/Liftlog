@@ -22,7 +22,7 @@ final class ManageExerciseUseCase: ManageExerciseUseCaseProtocol {
 
     func create(_ exercise: ExerciseModel) async throws -> ExerciseModel {
         guard !exercise.name.trimmingCharacters(in: .whitespaces).isEmpty else {
-            throw DomainError.invalidInput(description: AppLocalization.emptyName)
+            throw DomainError.invalidInput(description: AppLocalization.ExerciseLibrary.emptyName)
         }
 
         do {
@@ -40,7 +40,7 @@ final class ManageExerciseUseCase: ManageExerciseUseCaseProtocol {
 
     func update(_ exercise: ExerciseModel) async throws -> ExerciseModel {
         guard !exercise.name.trimmingCharacters(in: .whitespaces).isEmpty else {
-            throw DomainError.invalidInput(description: AppLocalization.emptyName)
+            throw DomainError.invalidInput(description: AppLocalization.ExerciseLibrary.emptyName)
         }
 
         do {

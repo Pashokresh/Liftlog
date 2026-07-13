@@ -16,7 +16,7 @@ struct AdaptiveCancelButton: View {
                 action()
             }
         } else {
-            Button(AppLocalization.cancel, role: .cancel) {
+            Button(AppLocalization.Common.cancel, role: .cancel) {
                 action()
             }
         }

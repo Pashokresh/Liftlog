@@ -54,14 +54,14 @@ struct AddEditSetView: View {
     }
 
     var repSection: some View {
-        Section(AppLocalization.repsAndWeight) {
+        Section(AppLocalization.ExerciseSet.repsAndWeight) {
             WeightInputView(reps: $reps, weight: $weight)
                 .frame(maxHeight: 180)
         }
     }
 
     var durationSection: some View {
-        Section(AppLocalization.duration) {
+        Section(AppLocalization.ExerciseSet.duration) {
             DurationInputView(duration: $duration)
                 .frame(maxHeight: 180)
         }
@@ -70,16 +70,16 @@ struct AddEditSetView: View {
     var warmupSection: some View {
         Section {
             Toggle(isOn: $isWarmup) {
-                Text(AppLocalization.isWarmUp)
+                Text(AppLocalization.ExerciseSet.isWarmUp)
             }
             .tint(.accent)
         }
     }
 
     var noteSection: some View {
-        Section(AppLocalization.notes) {
+        Section(AppLocalization.ExerciseSet.notes) {
             TextField(
-                AppLocalization.optional,
+                AppLocalization.ExerciseSet.optional,
                 text: $note,
                 axis: .vertical
             )
@@ -107,8 +107,8 @@ struct AddEditSetView: View {
 
     private var navTitle: String {
         isEditing
-            ? AppLocalization.editSet
-            : AppLocalization.addSet
+        ? AppLocalization.ExerciseSet.editSet
+        : AppLocalization.ExerciseSet.addSet
     }
 
     var body: some View {

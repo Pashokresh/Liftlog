@@ -12,6 +12,6 @@ struct MuscleGroupSection: Identifiable {
     var id: Int { group?.rawValue ?? -1 }
 
     var title: String {
-        group?.localizedName ?? AppLocalization.otherGroup
+        group?.localizedName ?? AppLocalization.ExerciseLibrary.otherGroup
     }
 }

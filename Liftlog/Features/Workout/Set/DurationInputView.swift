@@ -25,7 +25,7 @@ struct DurationInputView: View {
                 .frame(width: 80)
                 .clipped()
 
-                Text(AppLocalization.min)
+                Text(AppLocalization.ExerciseSet.min)
                     .font(.body)
                     .foregroundStyle(.secondary)
             }
@@ -41,7 +41,7 @@ struct DurationInputView: View {
                 .frame(width: 80)
                 .clipped()
 
-                Text(AppLocalization.sec)
+                Text(AppLocalization.ExerciseSet.sec)
                     .font(.body)
                     .foregroundStyle(.secondary)
             }

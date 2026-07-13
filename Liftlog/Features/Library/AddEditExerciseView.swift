@@ -40,47 +40,51 @@ struct AddEditExerciseView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    TextField(
-                        AppLocalization.name,
-                        text: $name
-                    )
-
-                    Picker(AppLocalization.exerciseType, selection: $type) {
-                        ForEach(ExerciseType.allCases, id: \.id) {
-                            Text(String(describing: $0))
-                        }
-                    }
-                    .pickerStyle(.menu)
-
-                    Picker(
-                        AppLocalization.muscleGroup,
-                        selection: $muscleGroup
-                    ) {
-                        Text(AppLocalization.notSpecified)
-                            .tag(Optional<MuscleGroup>.none)
-
-                        ForEach(MuscleGroup.allCases) { group in
-                            Text(group.localizedName)
-                                .tag(Optional(group))
-                        }
-                    }
-                    .pickerStyle(.menu)
-
-                    TextField(
-                        AppLocalization.descriptionOptional,
-                        text: $description,
-                        axis: .vertical
-                    )
-                    .lineLimit(3...6)
-                }
+            formContent
                 .scrollDismissesKeyboard(.interactively)
+                .contentMargins(.horizontal, 8, for: .scrollContent)
+                .navigationTitle(navTitle)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar { addEditToolbarContent }
+        }
+    }
+
+    private var formContent: some View {
+        Form {
+            Section {
+                TextField(
+                    AppLocalization.ExerciseLibrary.name,
+                    text: $name
+                )
+
+                Picker(AppLocalization.ExerciseLibrary.exerciseType, selection: $type) {
+                    ForEach(ExerciseType.allCases, id: \.id) {
+                        Text(String(describing: $0))
+                    }
+                }
+                .pickerStyle(.menu)
+
+                Picker(
+                    AppLocalization.ExerciseLibrary.muscleGroup,
+                    selection: $muscleGroup
+                ) {
+                    Text(AppLocalization.ExerciseLibrary.notSpecified)
+                        .tag(Optional<MuscleGroup>.none)
+
+                    ForEach(MuscleGroup.allCases) { group in
+                        Text(group.localizedName)
+                            .tag(Optional(group))
+                    }
+                }
+                .pickerStyle(.menu)
+
+                TextField(
+                    AppLocalization.ExerciseLibrary.descriptionOptional,
+                    text: $description,
+                    axis: .vertical
+                )
+                .lineLimit(3...6)
             }
-            .contentMargins(.horizontal, 8, for: .scrollContent)
-            .navigationTitle(navTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar { addEditToolbarContent }
         }
     }
 
@@ -98,8 +102,8 @@ struct AddEditExerciseView: View {
 
     private var navTitle: String {
         exercise != nil
-            ? AppLocalization.editExercise
-            : AppLocalization.addExercise
+        ? AppLocalization.ExerciseLibrary.editExercise
+        : AppLocalization.ExerciseLibrary.addExercise
     }
 
     @ToolbarContentBuilder private var addEditToolbarContent:

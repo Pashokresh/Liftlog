@@ -16,7 +16,7 @@ struct AdaptiveConfirmButton: View {
                 action()
             }
         } else {
-            Button(AppLocalization.save) {
+            Button(AppLocalization.Common.save) {
                 action()
             }
         }

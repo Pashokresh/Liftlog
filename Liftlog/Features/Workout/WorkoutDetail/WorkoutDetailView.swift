@@ -42,9 +42,9 @@ struct WorkoutDetailView: View {
     @ViewBuilder private var emptyState: some View {
         if viewModel.workout.exercises.isEmpty {
             ContentUnavailableView(
-                AppLocalization.noExercisesYet,
+                AppLocalization.Workout.emptyTitle,
                 systemImage: Images.figureStrengthTraining,
-                description: Text(AppLocalization.startByAddingExercisesHere)
+                description: Text(AppLocalization.Workout.startByAddingExercisesHere)
             )
         }
     }
@@ -83,13 +83,13 @@ struct WorkoutDetailView: View {
         .overlay { emptyState }
         .sheet(isPresented: $isAddingExercise) { exerciseLibrarySheet }
         .alert(
-            AppLocalization.error,
+            AppLocalization.Common.error,
             isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button(AppLocalization.okay) {
+            Button(AppLocalization.Common.okay) {
                 viewModel.nullifyError()
             }
         } message: {

@@ -20,15 +20,15 @@ extension DomainError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .duplicateExercise:
-            return AppLocalization.exerciseAlreadyAdded
+            return AppLocalization.Workout.exerciseAlreadyAdded
         case .workoutNotFound:
-            return AppLocalization.workoutNotFound
+            return AppLocalization.Errors.workoutNotFound
         case .exerciseNotFound:
-            return AppLocalization.exerciseWasNotFound
+            return AppLocalization.Errors.exerciseWasNotFound
         case .setNotFound:
-            return AppLocalization.setWasNotFound
+            return AppLocalization.Errors.setWasNotFound
         case .tagNotFound:
-            return AppLocalization.tagWasNotFound
+            return AppLocalization.Errors.tagWasNotFound
         case .invalidInput(let description):
             return description
         }

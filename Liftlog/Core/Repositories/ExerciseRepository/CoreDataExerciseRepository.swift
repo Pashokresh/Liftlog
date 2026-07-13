@@ -107,7 +107,7 @@ final class CoreDataExerciseRepository: ExerciseRepositoryProtocol {
             return try self.context.fetchOrThrow(request).map { workoutExercise in
                 guard let id = workoutExercise.id else {
                     throw RepositoryError.invalidData(
-                        description: AppLocalization.missingRecordID
+                        description: AppLocalization.Errors.missingRecordID
                     )
                 }
                 return ExerciseHistorySectionModel(

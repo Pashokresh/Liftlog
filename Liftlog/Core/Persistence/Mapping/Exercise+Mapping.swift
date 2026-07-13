@@ -11,7 +11,7 @@ extension Exercise {
     func toDomain() throws -> ExerciseModel {
         guard let id = id else {
             throw RepositoryError.invalidData(
-                description: AppLocalization.missingRecordID
+                description: AppLocalization.Errors.missingRecordID
             )
         }
 

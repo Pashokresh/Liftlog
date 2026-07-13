@@ -68,7 +68,7 @@ struct ExerciseProgressView: View {
     @ViewBuilder private var totalVolumeChart: some View {
         ExerciseProgressBarChartView(
             data: viewModel.volumeEntries,
-            title: AppLocalization.totalVolume,
+            title: AppLocalization.Progress.totalVolume,
             valueFormatter: { $0.formattedVolume }
         )
     }
@@ -77,9 +77,9 @@ struct ExerciseProgressView: View {
 
     @ViewBuilder private var emptyState: some View {
         ContentUnavailableView(
-            AppLocalization.noProgressYet,
+            AppLocalization.Progress.noProgressYet,
             systemImage: Images.chart,
-            description: Text(AppLocalization.startLoggingToSeeProgress)
+            description: Text(AppLocalization.Progress.startLoggingToSeeProgress)
         )
         .frame(maxHeight: .infinity)
     }

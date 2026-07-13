@@ -12,7 +12,7 @@ extension Workout {
     func toDomain() throws -> WorkoutModel {
         guard let id = id else {
             throw RepositoryError.invalidData(
-                description: AppLocalization.missingRecordID
+                description: AppLocalization.Errors.missingRecordID
             )
         }
 

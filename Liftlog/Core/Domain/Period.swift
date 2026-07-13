@@ -31,10 +31,10 @@ enum Period: String, CaseIterable, Identifiable {
 
     var localizedName: String {
         switch self {
-        case .threeMonths: AppLocalization.threeMonths
-        case .sixMonths: AppLocalization.sixMonths
-        case .year: AppLocalization.oneYear
-        case .all: AppLocalization.allTime
+        case .threeMonths: AppLocalization.TimePeriod.threeMonths
+        case .sixMonths: AppLocalization.TimePeriod.sixMonths
+        case .year: AppLocalization.TimePeriod.oneYear
+        case .all: AppLocalization.TimePeriod.allTime
         }
     }
 }

@@ -50,7 +50,7 @@ final class ManageWorkoutTagsUseCase: ManageWorkoutTagsUseCaseProtocol {
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmed.isEmpty else {
-            throw DomainError.invalidInput(description: AppLocalization.name)
+            throw DomainError.invalidInput(description: AppLocalization.ExerciseLibrary.name)
         }
 
         do {

@@ -68,9 +68,49 @@ struct ExerciseProgressBarChartView: View {
     // MARK: - Chart
 
     @ViewBuilder var chartView: some View {
-        Chart(Array(data.prefix(visibleCount)), id: \.date) { entry in
+        chartWithAxes
+            .chartOverlay { proxy in
+                chartOverlayGesture(proxy: proxy)
+            }
+            .chartXScale(domain: xDomain)
+            .chartYScale(domain: 0...(data.map(\.value).max() ?? 1))
+            .chartPlotStyle { plotArea in
+                plotArea
+                    .padding(.top, 16)
+                    .padding(.bottom, 12)
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 12)
+            .frame(height: 200)
+    }
+
+    private var chartWithAxes: some View {
+        chartContent
+            .chartXAxis {
+                AxisMarks(values: .stride(by: .month)) { _ in
+                    AxisGridLine()
+                    AxisValueLabel(format: .dateTime.month(.abbreviated))
+                }
+            }
+            .chartYAxis {
+                AxisMarks { value in
+                    AxisGridLine()
+                    AxisValueLabel {
+                        if let doubleValue = value.as(Double.self) {
+                            Text(valueFormatter(doubleValue))
+                                .font(.caption)
+                        }
+                    }
+                }
+            }
+    }
+
+    @ViewBuilder private var chartContent: some View {
+        let chartData = Array(data.prefix(visibleCount))
+
+        Chart(chartData, id: \.date) { entry in
             BarMark(
-                x: .value(AppLocalization.date, entry.date),
+                x: .value(AppLocalization.Workout.date, entry.date),
                 y: .value(title, entry.value),
             )
             .foregroundStyle(
@@ -81,60 +121,34 @@ struct ExerciseProgressBarChartView: View {
             .cornerRadius(3)
 
             if let selected = selectedEntry, selected.date == entry.date {
-                RuleMark(x: .value(AppLocalization.date, entry.date))
+                RuleMark(x: .value(AppLocalization.Workout.date, entry.date))
                     .foregroundStyle(Color.accentColor.opacity(0.3))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
             }
         }
-        .chartXAxis {
-            AxisMarks(values: .stride(by: .month)) { _ in
-                AxisGridLine()
-                AxisValueLabel(format: .dateTime.month(.abbreviated))
-            }
-        }
-        .chartYAxis {
-            AxisMarks { value in
-                AxisGridLine()
-                AxisValueLabel {
-                    if let doubleValue = value.as(Double.self) {
-                        Text(valueFormatter(doubleValue))
-                            .font(.caption)
-                    }
-                }
-            }
-        }
-        .chartOverlay { proxy in
-            GeometryReader { geometry in
-                Rectangle()
-                    .fill(.clear)
-                    .contentShape(Rectangle())
-                    .gesture(
-                        DragGesture(minimumDistance: 0)
-                            .onChanged { value in
-                                updateSelectedEntry(
-                                    at: value.location,
-                                    proxy: proxy,
-                                    geometry: geometry
-                                )
+    }
+
+    private func chartOverlayGesture(proxy: ChartProxy) -> some View {
+        GeometryReader { geometry in
+            Rectangle()
+                .fill(.clear)
+                .contentShape(Rectangle())
+                .gesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { value in
+                            updateSelectedEntry(
+                                at: value.location,
+                                proxy: proxy,
+                                geometry: geometry
+                            )
+                        }
+                        .onEnded { _ in
+                            withAnimation(.easeOut(duration: 0.3)) {
+                                selectedEntry = nil
                             }
-                            .onEnded { _ in
-                                withAnimation(.easeOut(duration: 0.3)) {
-                                    selectedEntry = nil
-                                }
-                            }
-                    )
-            }
+                        }
+                )
         }
-        .chartXScale(domain: xDomain)
-        .chartYScale(domain: 0...(data.map(\.value).max() ?? 1))
-        .chartPlotStyle { plotArea in
-            plotArea
-                .padding(.top, 16)
-                .padding(.bottom, 12)
-        }
-        .padding(.top, 16)
-        .padding(.bottom, 12)
-        .frame(height: 200)
     }
 
     var body: some View {
@@ -186,7 +200,7 @@ struct ExerciseProgressBarChartView: View {
             data: ExerciseProgressEntry.mocks.map {
                 ($0.date, $0.totalVolume)
             },
-            title: AppLocalization.totalVolume,
+            title: AppLocalization.Progress.totalVolume,
             valueFormatter: { $0.formattedVolume }
         )
         .padding()
@@ -194,7 +208,7 @@ struct ExerciseProgressBarChartView: View {
             data: ExerciseProgressEntry.mocks.map {
                 ($0.date, $0.maxWeight)
             },
-            title: AppLocalization.maxWeight,
+            title: AppLocalization.Progress.maxWeight,
             valueFormatter: { $0.formattedWeight }
         )
         .padding()

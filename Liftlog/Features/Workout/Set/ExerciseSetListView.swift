@@ -73,7 +73,7 @@ struct ExerciseSetListView: View {
                 noSetsPlaceholder
             }
         } header: {
-            Text(AppLocalization.currentWorkout)
+            Text(AppLocalization.ExerciseSet.currentWorkout)
         }
     }
 
@@ -86,7 +86,7 @@ struct ExerciseSetListView: View {
                     Spacer()
                 }
             } header: {
-                Text(AppLocalization.previousWorkouts)
+                Text(AppLocalization.ExerciseSet.previousWorkouts)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -138,8 +138,8 @@ struct ExerciseSetListView: View {
 
     var noSetsPlaceholder: some View {
         UnavailableContentView(
-            title: AppLocalization.noSetsYet,
-            message: AppLocalization.startByAddingSetsHere
+            title: AppLocalization.ExerciseSet.noSetsYet,
+            message: AppLocalization.ExerciseSet.startByAddingSetsHere
         )
     }
 
@@ -198,13 +198,13 @@ struct ExerciseSetListView: View {
             viewModel.deleteSet(set)
         }
         .alert(
-            AppLocalization.error,
+            AppLocalization.Common.error,
             isPresented: Binding(
                 get: { viewModel.error != nil },
                 set: { if !$0 { viewModel.nullifyError() } }
             )
         ) {
-            Button(AppLocalization.okay) {
+            Button(AppLocalization.Common.okay) {
                 viewModel.nullifyError()
             }
         } message: {

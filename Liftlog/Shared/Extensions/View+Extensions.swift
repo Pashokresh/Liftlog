@@ -24,8 +24,8 @@ extension View {
 
     func deleteConfirmation<T: Identifiable>(
         item: Binding<T?>,
-        title: String = AppLocalization.deleteConfirmationTitle,
-        message: String = AppLocalization.deleteConfirmationMessage,
+        title: String = AppLocalization.Common.deleteConfirmationTitle,
+        message: String = AppLocalization.Common.deleteConfirmationMessage,
         action: @escaping (T) -> Void
     ) -> some View {
         self.alert(
@@ -36,11 +36,11 @@ extension View {
             ),
             presenting: item.wrappedValue
         ) { itemToDelete in
-            Button(AppLocalization.delete, role: .destructive) {
+            Button(AppLocalization.Common.delete, role: .destructive) {
                 action(itemToDelete)
                 item.wrappedValue = nil
             }
-            Button(AppLocalization.cancel, role: .cancel) {
+            Button(AppLocalization.Common.cancel, role: .cancel) {
                 item.wrappedValue = nil
             }
         } message: { _ in

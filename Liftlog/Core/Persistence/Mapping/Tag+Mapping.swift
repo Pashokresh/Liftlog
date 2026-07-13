@@ -11,7 +11,7 @@ extension Tag {
     func toDomain() throws -> TagModel {
         guard let id = id else {
             throw RepositoryError.invalidData(
-                description: AppLocalization.missingRecordID
+                description: AppLocalization.Errors.missingRecordID
             )
         }
 
