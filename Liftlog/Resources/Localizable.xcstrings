@@ -126,7 +126,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "1Y"
+            "value" : "1Г"
           }
         }
       }
@@ -198,7 +198,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавить упражнение"
+            "value" : "Создание упражнения"
           }
         }
       }
@@ -216,7 +216,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добавить подход"
+            "value" : "Добавление подхода"
           }
         }
       }
@@ -376,7 +376,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Создать тренировку"
+            "value" : "Создание тренировки"
           }
         }
       }
@@ -520,7 +520,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Изменение Упражнение"
+            "value" : "Изменение Упражнения"
           }
         }
       }
@@ -736,7 +736,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Максимальная продолжительность"
+            "value" : "Макс. продолжительность"
           }
         }
       }
@@ -754,7 +754,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Максимальное количество повторений"
+            "value" : "Макc. кол-во повторений"
           }
         }
       }
@@ -1042,7 +1042,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Другая"
+            "value" : "Другие"
           }
         }
       }
@@ -1258,7 +1258,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Начните вести дневник или изменить период времени для отображения"
+            "value" : "Начните записывать подходы или измените период времени для просмотра прогресса."
           }
         }
       }
@@ -1438,7 +1438,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Тренировка"
+            "value" : "Тренировки"
           }
         }
       }
